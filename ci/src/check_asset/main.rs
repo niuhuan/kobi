@@ -3,7 +3,7 @@ use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use serde_json::Value;
 
-const UA: &str = "actions ci";
+use ci::common;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -20,18 +20,11 @@ async fn main() -> Result<()> {
 
     let code = vs_code_txt.trim();
 
-    let release_file_name = match target.as_str() {
-        "macos" => format!("{app_name}-{code}.dmg"),
-        "ios" => format!("{app_name}-{code}-nosign.ipa"),
-        "windows" => format!("{app_name}-{code}-windows-x86_64.zip"),
-        "linux" => format!("{app_name}-{code}-linux-x86_64.AppImage"),
-        "android-arm32" => format!("{app_name}-{code}-arm32.apk"),
-        "android-arm64" => format!("{app_name}-{code}-arm64.apk"),
-        "android-x86_64" => format!("{app_name}-{code}-x86_64.apk"),
-        un => panic!("unknown target : {target}"),
-    };
+    let release_file_name = common::asset_name(app_name, code, target.as_str());
 
-    let client = reqwest::ClientBuilder::new().user_agent(UA).build()?;
+    let client = reqwest::ClientBuilder::new()
+        .user_agent(common::UA)
+        .build()?;
 
     let check_response = client
         .get(format!(
