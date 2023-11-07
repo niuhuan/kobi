@@ -62,6 +62,7 @@ jobs:
           cd kobi/ci
           cargo run --release --bin check-release
 
+
   build_release_assets:
     name: Build release assets
     needs:

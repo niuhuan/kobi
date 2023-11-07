@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../bridge_generated.dart';
+import '../comic_info_screen.dart';
 
 class ComicList extends StatelessWidget {
   final List<CommonComicInfo> comics;
@@ -13,7 +14,16 @@ class ComicList extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       itemCount: comics.length,
       itemBuilder: (context, index) {
-        return CommonComicCard(comics[index]);
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) {
+                return ComicInfoScreen(comicInfo: comics[index]);
+              },
+            ));
+          },
+          child: CommonComicCard(comics[index]),
+        );
       },
     );
   }
@@ -46,45 +56,49 @@ class CommonComicCard extends StatelessWidget {
           Container(
             width: 10,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                comic.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              Container(
-                height: 5,
-              ),
-              Text(
-                comic.author.map((e) => e.name).join(','),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.red.shade300,
-                ),
-              ),
-              Container(
-                height: 5,
-              ),
-              Text.rich(TextSpan(children: [
-                const WidgetSpan(
-                  child: Icon(
-                    Icons.local_fire_department,
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-                TextSpan(
-                  text: comic.popular.toString(),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  comic.name + "\n",
                   style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Container(
+                  height: 5,
+                ),
+                Text(
+                  comic.author.map((e) => e.name).join(','),
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
+                    color: Colors.red.shade300,
                   ),
                 ),
-              ])),
-            ],
+                Container(
+                  height: 5,
+                ),
+                Text.rich(TextSpan(children: [
+                  const WidgetSpan(
+                    child: Icon(
+                      Icons.local_fire_department,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  TextSpan(
+                    text: comic.popular.toString(),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ])),
+              ],
+            ),
           ),
         ],
       ),

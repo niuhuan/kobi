@@ -1,4 +1,7 @@
-use crate::copy_client::{Author, ComicInRank, Page, RankItem};
+use crate::copy_client::{
+    Author, ClassifyItem, Comic, ComicData, ComicInRank, FreeType, Group, LastChapter, Page,
+    RankItem, Tag,
+};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -64,6 +67,88 @@ impl From<ComicInRank> for UIComicInRank {
             name: comic.name,
             path_word: comic.path_word,
             popular: comic.popular,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIComicData {
+    pub comic: UIComic,
+    pub groups: Vec<Group>,
+    pub is_lock: bool,
+    pub is_login: bool,
+    pub is_mobile_bind: bool,
+    pub is_vip: bool,
+    pub popular: i64,
+}
+
+impl From<ComicData> for UIComicData {
+    fn from(comic: ComicData) -> Self {
+        Self {
+            comic: UIComic::from(comic.comic),
+            groups: comic.groups.into_iter().map(|(_, v)| v).collect(),
+            is_lock: comic.is_lock,
+            is_login: comic.is_login,
+            is_mobile_bind: comic.is_mobile_bind,
+            is_vip: comic.is_vip,
+            popular: comic.popular,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIComic {
+    pub alias: Option<String>,
+    pub author: Vec<Author>,
+    pub b_404: bool,
+    pub b_hidden: bool,
+    pub ban: i64,
+    pub brief: String,
+    pub close_comment: bool,
+    pub close_roast: bool,
+    pub cover: String,
+    pub datetime_updated: String,
+    pub free_type: FreeType,
+    pub img_type: i64,
+    pub last_chapter: LastChapter,
+    pub name: String,
+    pub path_word: String,
+    pub popular: i64,
+    pub reclass: ClassifyItem,
+    pub region: ClassifyItem,
+    pub restrict: ClassifyItem,
+    pub seo_baidu: String,
+    pub status: ClassifyItem,
+    pub theme: Vec<Tag>,
+    pub uuid: String,
+}
+
+impl From<Comic> for UIComic {
+    fn from(comic: Comic) -> Self {
+        Self {
+            alias: comic.alias,
+            author: comic.author,
+            b_404: comic.b_404,
+            b_hidden: comic.b_hidden,
+            ban: comic.ban,
+            brief: comic.brief,
+            close_comment: comic.close_comment,
+            close_roast: comic.close_roast,
+            cover: comic.cover,
+            datetime_updated: comic.datetime_updated,
+            free_type: comic.free_type,
+            img_type: comic.img_type,
+            last_chapter: comic.last_chapter,
+            name: comic.name,
+            path_word: comic.path_word,
+            popular: comic.popular,
+            reclass: comic.reclass,
+            region: comic.region,
+            restrict: comic.restrict,
+            seo_baidu: comic.seo_baidu,
+            status: comic.status,
+            theme: comic.theme,
+            uuid: comic.uuid,
         }
     }
 }

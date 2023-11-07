@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib", "staticlib", "rlib"]
 
 [dependencies]
 anyhow = "1.0.75"
@@ -36,3 +36,4 @@ serde_path_to_error = "0.1.14"
 tokio = { version = "1.33.0", features = ["full"] }
 reqwest = { version = "0.11.22", features = ["tokio-rustls", "rustls", "rustls-tls", "socks", "tokio-socks"], default-features = false }
 sea-orm = { version = "0.12.4", features = ["sqlx-sqlite", "macros", "runtime-tokio-rustls"], default-features = false }
+linked-hash-map = { version = "0.5.6", features = ["serde", "serde_impl"] }

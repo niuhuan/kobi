@@ -1,6 +1,6 @@
 use crate::database::cache::web_cache;
 use crate::database::properties::property;
-use crate::udto::UIPageRankItem;
+use crate::udto::{UIComicData, UIPageRankItem};
 use crate::{CLIENT, RUNTIME};
 use anyhow::Result;
 use reqwest::Proxy;
@@ -60,5 +60,14 @@ pub fn rank(date_type: String, offset: u64, limit: u64) -> Result<UIPageRankItem
                 .comic_rank(date_type.as_str(), offset, limit)
                 .await
         }),
+    ))
+}
+
+pub fn comic(path_word: String) -> Result<UIComicData> {
+    let key = format!("COMIC${}", path_word);
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move { CLIENT.read().await.comic(path_word.as_str()).await }),
     ))
 }

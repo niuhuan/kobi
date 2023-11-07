@@ -1,5 +1,7 @@
 pub use super::types::*;
-use crate::copy_client::{ComicInSearch, Page, RankItem, Response, Tags};
+use crate::copy_client::{
+    ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, Response, Tags,
+};
 use std::str::FromStr;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -119,6 +121,47 @@ impl Client {
                 "date_type": date_type,
                 "offset": offset,
                 "limit": limit,
+            }),
+        )
+        .await
+    }
+
+    pub async fn comic(&self, path_word: &str) -> Result<ComicData> {
+        self.request(
+            reqwest::Method::GET,
+            format!("/api/v3/comic2/{path_word}").as_str(),
+            serde_json::json!({
+                 "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn comic_chapter(
+        &self,
+        comic_path_word: &str,
+        group_path_word: &str,
+        limit: u64,
+        offset: u64,
+    ) -> Result<Page<ComicChapter>> {
+        self.request(
+            reqwest::Method::GET,
+            format!("/api/v3/comic/{comic_path_word}/group/{group_path_word}/chapters").as_str(),
+            serde_json::json!({
+                "offset": offset,
+                "limit": limit,
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn comic_query(&self, path_word: &str) -> Result<ComicQuery> {
+        self.request(
+            reqwest::Method::GET,
+            format!("/api/v3/comic2/{path_word}/query ").as_str(),
+            serde_json::json!({
+                 "platform": 3,
             }),
         )
         .await

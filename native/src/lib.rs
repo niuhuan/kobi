@@ -9,7 +9,7 @@ use tokio::sync::RwLock;
 use utils::create_dir_if_not_exists;
 use utils::join_paths;
 
-mod api;
+pub mod api;
 mod bridge_generated;
 mod copy_client;
 mod database;

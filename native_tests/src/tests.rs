@@ -9,3 +9,9 @@ fn test_rank() {
     let response = native::api::rank("day".to_string(), 0, 21).unwrap();
     println!("{:?}", serde_json::to_string(&response).unwrap());
 }
+#[test]
+fn test_comic() {
+    test_init();
+    let response = native::api::comic("zhinaiyulian".to_string()).unwrap();
+    println!("{:?}", serde_json::to_string(&response).unwrap());
+}
