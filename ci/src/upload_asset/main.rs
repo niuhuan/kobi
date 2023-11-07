@@ -13,7 +13,7 @@ async fn main() -> Result<()> {
     }
     // get ghToken
 
-    let repo = std::env::var("GITHUB_ACTION_REPOSITORY")?;
+    let repo = std::env::var("GITHUB_REPOSITORY")?;
     if repo.is_empty() {
         panic!("Can't got repo path");
     }

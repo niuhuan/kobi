@@ -58,7 +58,6 @@ jobs:
       - name: Check release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTION_REPOSITORY: ${{ GITHUB_ACTION_REPOSITORY }}
         run: |
           cd kobi/ci
           cargo run --release --bin check-release
@@ -123,8 +122,6 @@ jobs:
 
       - id: check_asset
         name: Check asset
-        env:
-          GITHUB_ACTION_REPOSITORY: ${{ GITHUB_ACTION_REPOSITORY }}
         run: |
           cd kobi/ci
           cargo run --release --bin check-asset
@@ -385,7 +382,6 @@ jobs:
         if: steps.check_asset.outputs.skip_build != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTION_REPOSITORY: ${{ GITHUB_ACTION_REPOSITORY }}
         run: |
           cd kobi/ci
           cargo run --release --bin upload-asset

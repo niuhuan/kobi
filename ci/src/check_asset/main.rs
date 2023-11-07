@@ -7,7 +7,7 @@ const UA: &str = "actions ci";
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let repo = std::env::var("GITHUB_ACTION_REPOSITORY")?;
+    let repo = std::env::var("GITHUB_REPOSITORY")?;
     if repo.is_empty() {
         panic!("Can't got repo path");
     }

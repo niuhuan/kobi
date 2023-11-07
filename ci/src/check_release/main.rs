@@ -11,7 +11,7 @@ async fn main() -> Result<()> {
         panic!("Please set GITHUB_TOKEN");
     }
 
-    let repo = std::env::var("GITHUB_ACTION_REPOSITORY")?;
+    let repo = std::env::var("GITHUB_REPOSITORY")?;
     if repo.is_empty() {
         panic!("Can't got repo path");
     }
