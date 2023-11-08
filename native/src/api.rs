@@ -1,7 +1,9 @@
 use crate::copy_client::ComicQuery;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::properties::property;
-use crate::udto::{UICacheImage, UIComicData, UIComicQuery, UIPageComicChapter, UIPageRankItem};
+use crate::udto::{
+    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter, UIPageRankItem,
+};
 use crate::utils::{hash_lock, join_paths};
 use crate::{get_image_cache_dir, CLIENT, RUNTIME};
 use anyhow::Result;
@@ -106,6 +108,21 @@ pub fn comic_query(path_word: String) -> Result<UIComicQuery> {
         key,
         Duration::from_secs(60 * 60 * 2),
         Box::pin(async move { CLIENT.read().await.comic_query(path_word.as_str()).await }),
+    ))
+}
+
+pub fn comic_chapter_data(comic_path_word: String, chapter_uuid: String) -> Result<UIChapterData> {
+    let key = format!("COMIC_CHAPTER_DATA${comic_path_word}${chapter_uuid}");
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move {
+            CLIENT
+                .read()
+                .await
+                .comic_chapter_data(comic_path_word.as_str(), chapter_uuid.as_str())
+                .await
+        }),
     ))
 }
 

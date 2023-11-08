@@ -1,6 +1,6 @@
 use crate::copy_client::{
-    Author, ClassifyItem, Comic, ComicChapter, ComicData, ComicInRank, Group, LastChapter, Page,
-    RankItem, Tag,
+    Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
+    ComicChapter, ComicData, ComicInRank, Group, LastChapter, Page, RankItem, Tag,
 };
 use crate::get_image_cache_dir;
 use crate::utils::join_paths;
@@ -273,6 +273,79 @@ impl From<crate::copy_client::ComicQuery> for UIComicQuery {
             is_login: query.is_login,
             is_mobile_bind: query.is_mobile_bind,
             is_vip: query.is_vip,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIChapterData {
+    pub chapter: UIChapterAndContents,
+    pub comic: ChapterComicInfo,
+    pub is_lock: bool,
+    pub is_login: bool,
+    pub is_mobile_bind: bool,
+    pub is_vip: bool,
+    pub show_app: bool,
+}
+
+impl From<ChapterData> for UIChapterData {
+    fn from(value: ChapterData) -> Self {
+        Self {
+            chapter: UIChapterAndContents::from(value.chapter),
+            comic: value.comic,
+            is_lock: value.is_lock,
+            is_login: value.is_login,
+            is_mobile_bind: value.is_mobile_bind,
+            is_vip: value.is_vip,
+            show_app: value.show_app,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIChapterAndContents {
+    pub comic_id: String,
+    pub comic_path_word: String,
+    pub contents: Vec<ChapterImage>,
+    pub count: i64,
+    pub datetime_created: String,
+    pub group_path_word: String,
+    pub img_type: i64,
+    pub index: i64,
+    pub is_long: bool,
+    pub name: String,
+    pub news: String,
+    pub next: String,
+    pub ordered: i64,
+    pub prev: Option<String>,
+    pub size: i64,
+    #[serde(rename = "type")]
+    pub type_field: i64,
+    pub uuid: String,
+    pub words: Vec<i64>,
+}
+
+impl From<ChapterAndContents> for UIChapterAndContents {
+    fn from(value: ChapterAndContents) -> Self {
+        Self {
+            comic_id: value.comic_id,
+            comic_path_word: value.comic_path_word,
+            contents: value.contents,
+            count: value.count,
+            datetime_created: value.datetime_created,
+            group_path_word: value.group_path_word,
+            img_type: value.img_type,
+            index: value.index,
+            is_long: value.is_long,
+            name: value.name,
+            news: value.news,
+            next: value.next,
+            ordered: value.ordered,
+            prev: value.prev,
+            size: value.size,
+            type_field: value.type_field,
+            uuid: value.uuid,
+            words: value.words,
         }
     }
 }
