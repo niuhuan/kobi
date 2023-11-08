@@ -5,11 +5,28 @@ import '../../ffi.io.dart';
 import 'commons.dart';
 import 'file_photo_view_screen.dart';
 
+String imageUrlToCacheKey(String url){
+  final uri = Uri.parse(url);
+  return uri.path;
+}
+
+final errorColor = Color.alphaBlend(Colors.red.withOpacity(.2), Colors.black12);
+
 Widget buildError(double? width, double? height) {
-  return Image(
-    image: const AssetImage('lib/assets/error.png'),
+  double? size;
+  if (width != null && height != null) {
+    size = width < height ? width : height;
+  }
+  return SizedBox(
     width: width,
     height: height,
+    child: Center(
+      child: Icon(
+        Icons.error_outline,
+        size: size,
+        color: errorColor,
+      ),
+    ),
   );
 }
 
@@ -33,7 +50,6 @@ Widget buildLoading(double? width, double? height) {
 
 //
 class LoadingCacheImage extends StatefulWidget {
-  final String cacheKey;
   final String url;
   final String useful;
   final String? extendsFieldFirst;
@@ -46,7 +62,6 @@ class LoadingCacheImage extends StatefulWidget {
 
   const LoadingCacheImage({
     Key? key,
-    required this.cacheKey,
     required this.url,
     required this.useful,
     this.extendsFieldFirst,
@@ -72,8 +87,9 @@ class _LoadingCacheImageState extends State<LoadingCacheImage> {
   }
 
   Future<String> _init() async {
+    final cacheKey = imageUrlToCacheKey(widget.url);
     final loadedImage = await api.cacheImage(
-      cacheKey: widget.cacheKey,
+      cacheKey: cacheKey,
       url: widget.url,
       useful: widget.useful,
       extendsFieldFirst: widget.extendsFieldFirst,
