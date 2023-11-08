@@ -163,12 +163,19 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
     return ListView(
       controller: _scrollController,
       children: [
+        // 站位APP-BAR
         AppBar(
           automaticallyImplyLeading: false,
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
-        CommonComicCard(widget.comicInfo),
+        ComicInfoCard(_comic.comic),
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: _brief(_comic.comic.brief),
+        ),
+        const Divider(),
+        ..._chapters(),
       ],
     );
   }
@@ -223,10 +230,49 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
       ],
     );
   }
+
+  Widget _brief(String text) {
+    return Text(text);
+  }
+
+  List<Widget> _chapters() {
+    if (_gcMap.length == 1) {
+      for (var e in _gcMap.entries) {
+        return _groupChapters(e.value);
+      }
+    } else {
+      List<Widget> _result = [];
+      for (var e in _gcMap.entries) {
+        _result.addAll(_groupTitle(e.key));
+        _result.addAll(_groupChapters(e.value));
+      }
+      return _result;
+    }
+    return [];
+  }
+
+  List<Widget> _groupTitle(Group key) {
+    return [
+      Text(key.name),
+    ];
+  }
+
+  List<Widget> _groupChapters(List<UIComicChapter> value) {
+    return [
+      Wrap(children: value.map(_buildChapter).toList()),
+    ];
+  }
+
+  Widget _buildChapter(UIComicChapter c) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      child: Text(c.name),
+    );
+  }
 }
 
 class ComicInfoCard extends StatelessWidget {
-  final CommonComicInfo comic;
+  final UIComic comic;
 
   const ComicInfoCard(this.comic, {super.key});
 
@@ -248,8 +294,8 @@ class ComicInfoCard extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: LoadingCacheImage(
               url: comic.cover,
-              width: 328 / 4,
-              height: 422 / 4,
+              width: 328 / 3,
+              height: 422 / 3,
               useful: 'COMIC_COVER',
               extendsFieldFirst: comic.pathWord,
               fit: BoxFit.cover,
@@ -263,12 +309,10 @@ class ComicInfoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  comic.name + "\n",
+                  comic.name,
                   style: const TextStyle(
                     fontSize: 16,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 Container(
                   height: 5,
@@ -299,10 +343,80 @@ class ComicInfoCard extends StatelessWidget {
                     ),
                   ),
                 ])),
+                Container(
+                  height: 6,
+                ),
+                Wrap(
+                  alignment: WrapAlignment.start,
+                  runAlignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  direction: Axis.horizontal,
+                  spacing: 10.0,
+                  runSpacing: 5.0,
+                  children: [
+                    _ci(comic.status),
+                    _ci(comic.reclass),
+                    _ci(comic.region),
+                    _ci(comic.restrict),
+                    _ft(comic.freeType),
+                  ],
+                ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _ci(ClassifyItem ci) {
+    return Container(
+      padding: const EdgeInsets.only(
+        left: 7,
+        top: 2,
+        right: 7,
+        bottom: 2,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey.withAlpha(220),
+          style: BorderStyle.solid,
+          width: .5,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+      ),
+      child: Text(
+        ci.display,
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey.withAlpha(220),
+        ),
+      ),
+    );
+  }
+
+  Widget _ft(FreeType freeType) {
+    return Container(
+      padding: const EdgeInsets.only(
+        left: 7,
+        top: 2,
+        right: 7,
+        bottom: 2,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey.withAlpha(220),
+          style: BorderStyle.solid,
+          width: .6,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+      ),
+      child: Text(
+        freeType.display,
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey.withAlpha(220),
+        ),
       ),
     );
   }
