@@ -1,6 +1,6 @@
 pub use super::types::*;
 use crate::copy_client::{
-    ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, Response, Tags,
+    ChapterData, ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, Response, Tags,
 };
 use reqwest::Method;
 use std::str::FromStr;
@@ -161,7 +161,22 @@ impl Client {
     pub async fn comic_query(&self, path_word: &str) -> Result<ComicQuery> {
         self.request(
             reqwest::Method::GET,
-            format!("/api/v3/comic2/{path_word}/query ").as_str(),
+            format!("/api/v3/comic2/{path_word}/query").as_str(),
+            serde_json::json!({
+                 "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn comic_chapter_data(
+        &self,
+        comic_path_word: &str,
+        chapter_uuid: &str,
+    ) -> Result<ChapterData> {
+        self.request(
+            reqwest::Method::GET,
+            format!("/api/v3/comic/{comic_path_word}/chapter2/{chapter_uuid}").as_str(),
             serde_json::json!({
                  "platform": 3,
             }),

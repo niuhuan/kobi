@@ -1,5 +1,12 @@
 use super::client::Client;
 use anyhow::Result;
+use base64::Engine;
+
+const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
+
+fn api_url() -> String {
+    String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
+}
 
 #[tokio::test]
 async fn test_client() -> Result<()> {
@@ -8,26 +15,14 @@ async fn test_client() -> Result<()> {
             .proxy(reqwest::Proxy::all("http://127.0.0.1:1087").unwrap())
             .build()
             .unwrap(),
-        "https://api.copymanga.net",
+        api_url(),
     );
-    // let value: serde_json::Value = client
-    //     .request(
-    //         reqwest::Method::GET,
-    //         "/api/v3/h5/filter/comic/tags",
-    //         serde_json::json!({
-    //             "platform": 3,
-    //         }),
-    //     )
-    //     .await?;
     let value: serde_json::Value = client
         .request(
             reqwest::Method::GET,
-            "/api/v3/ranks",
+            "/api/v3/comic/fxzhanshijiuliumei/chapter2/d59724f2-d432-11eb-84f6-00163e0ca5bd",
             serde_json::json!({
                 "platform": 3,
-                "limit": 21,
-                "offset": 21,
-                "date_type": "month",
             }),
         )
         .await?;

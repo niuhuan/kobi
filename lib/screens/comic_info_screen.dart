@@ -176,6 +176,8 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
         ),
         const Divider(),
         ..._chapters(),
+        const Divider(),
+        SafeArea(child: Container()),
       ],
     );
   }
@@ -259,16 +261,45 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
 
   List<Widget> _groupChapters(List<UIComicChapter> value) {
     return [
-      Wrap(children: value.map(_buildChapter).toList()),
+      Container(
+        margin: const EdgeInsets.only(
+          left: 10,
+          right: 10,
+        ),
+        child: Wrap(
+          spacing: 10,
+          runSpacing: 3,
+          alignment: WrapAlignment.center,
+          children: value.map(_buildChapter).toList(),
+        ),
+      ),
     ];
   }
 
   Widget _buildChapter(UIComicChapter c) {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      child: Text(c.name),
+    return GestureDetector(
+      onTap: () {
+        _goReader(c, 0);
+      },
+      child: Card(
+        elevation: 0.3,
+        child: Container(
+          padding: const EdgeInsets.only(
+            left: 10,
+            right: 10,
+            top: 5,
+            bottom: 5,
+          ),
+          child: Text(c.name),
+        ),
+      ),
     );
   }
+
+  void _goReader(UIComicChapter c, int initRank) {
+    // todo
+  }
+
 }
 
 class ComicInfoCard extends StatelessWidget {
@@ -358,7 +389,7 @@ class ComicInfoCard extends StatelessWidget {
                     _ci(comic.reclass),
                     _ci(comic.region),
                     _ci(comic.restrict),
-                    _ft(comic.freeType),
+                    _ci(comic.freeType),
                   ],
                 ),
               ],
@@ -395,29 +426,4 @@ class ComicInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _ft(FreeType freeType) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 7,
-        top: 2,
-        right: 7,
-        bottom: 2,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.withAlpha(220),
-          style: BorderStyle.solid,
-          width: .6,
-        ),
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Text(
-        freeType.display,
-        style: TextStyle(
-          fontSize: 13,
-          color: Colors.grey.withAlpha(220),
-        ),
-      ),
-    );
-  }
 }

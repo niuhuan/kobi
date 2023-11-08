@@ -1,4 +1,5 @@
 use crate::database::init_database;
+use base64::Engine;
 use copy_client::Client;
 use lazy_static::lazy_static;
 use once_cell::sync::OnceCell;
@@ -16,6 +17,12 @@ mod database;
 mod udto;
 mod utils;
 
+const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
+
+fn api_url() -> String {
+    String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
+}
+
 lazy_static! {
     pub(crate) static ref RUNTIME: runtime::Runtime = runtime::Builder::new_multi_thread()
         .enable_all()
@@ -24,10 +31,8 @@ lazy_static! {
         .max_blocking_threads(30)
         .build()
         .unwrap();
-    pub(crate) static ref CLIENT: Arc<RwLock<Client>> = Arc::new(RwLock::new(Client::new(
-        reqwest::Client::new(),
-        "https://www.mangacopy.com",
-    )));
+    pub(crate) static ref CLIENT: Arc<RwLock<Client>> =
+        Arc::new(RwLock::new(Client::new(reqwest::Client::new(), api_url(),)));
     static ref INIT_ED: Mutex<bool> = Mutex::new(false);
 }
 

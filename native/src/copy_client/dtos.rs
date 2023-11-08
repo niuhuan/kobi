@@ -109,7 +109,7 @@ pub struct Comic {
     pub cover: String,
     pub datetime_updated: String,
     pub females: Vec<Value>,
-    pub free_type: FreeType,
+    pub free_type: ClassifyItem,
     pub img_type: i64,
     pub last_chapter: LastChapter,
     pub males: Vec<Value>,
@@ -124,12 +124,6 @@ pub struct Comic {
     pub status: ClassifyItem,
     pub theme: Vec<Tag>,
     pub uuid: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct FreeType {
-    pub display: String,
-    pub value: i64,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -180,4 +174,52 @@ pub struct ComicQuery {
     pub is_login: bool,
     pub is_mobile_bind: bool,
     pub is_vip: bool,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ChapterData {
+    pub chapter: ChapterAndContents,
+    pub comic: ChapterComicInfo,
+    pub is_lock: bool,
+    pub is_login: bool,
+    pub is_mobile_bind: bool,
+    pub is_vip: bool,
+    pub show_app: bool,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ChapterAndContents {
+    pub comic_id: String,
+    pub comic_path_word: String,
+    pub contents: Vec<ChapterImage>,
+    pub count: i64,
+    pub datetime_created: String,
+    pub group_id: Value,
+    pub group_path_word: String,
+    pub img_type: i64,
+    pub index: i64,
+    pub is_long: bool,
+    pub name: String,
+    pub news: String,
+    pub next: String,
+    pub ordered: i64,
+    pub prev: Option<String>,
+    pub size: i64,
+    #[serde(rename = "type")]
+    pub type_field: i64,
+    pub uuid: String,
+    pub words: Vec<i64>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ChapterImage {
+    pub url: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ChapterComicInfo {
+    pub name: String,
+    pub path_word: String,
+    pub restrict: ClassifyItem,
+    pub uuid: String,
 }

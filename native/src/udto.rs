@@ -1,6 +1,6 @@
 use crate::copy_client::{
-    Author, ClassifyItem, Comic, ComicChapter, ComicData, ComicInRank, FreeType, Group,
-    LastChapter, Page, RankItem, Tag,
+    Author, ClassifyItem, Comic, ComicChapter, ComicData, ComicInRank, Group, LastChapter, Page,
+    RankItem, Tag,
 };
 use crate::get_image_cache_dir;
 use crate::utils::join_paths;
@@ -110,7 +110,7 @@ pub struct UIComic {
     pub close_roast: bool,
     pub cover: String,
     pub datetime_updated: String,
-    pub free_type: FreeType,
+    pub free_type: ClassifyItem,
     pub img_type: i64,
     pub last_chapter: LastChapter,
     pub name: String,
