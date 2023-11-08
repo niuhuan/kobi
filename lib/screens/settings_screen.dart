@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../configs/cache_time.dart';
 import '../configs/proxy.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -12,6 +13,7 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           proxySetting(),
+          cacheTimeNameSetting(),
         ],
       ),
     );

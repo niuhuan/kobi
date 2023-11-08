@@ -126,3 +126,33 @@ pub fn cache_image(
         }
     })
 }
+
+pub fn clean_cache(time: i64) -> Result<()> {
+    block_on(async move {
+        let time = chrono::Local::now().timestamp() - time;
+        clean_web(time).await?;
+        clean_image(time).await?;
+        crate::database::cache::vacuum().await?;
+        Ok(())
+    })
+}
+
+async fn clean_web(time: i64) -> Result<()> {
+    web_cache::clean_web_cache_by_time(time).await
+}
+
+async fn clean_image(time: i64) -> Result<()> {
+    let dir = get_image_cache_dir();
+    loop {
+        let caches: Vec<image_cache::Model> = image_cache::take_100_cache(time).await?;
+        if caches.is_empty() {
+            break;
+        }
+        for cache in caches {
+            let local = join_paths(vec![dir.as_str(), cache.local_path.as_str()]);
+            image_cache::delete_by_cache_key(cache.cache_key).await?; // 不管有几条被作用
+            let _ = std::fs::remove_file(local); // 不管成功与否
+        }
+    }
+    Ok(())
+}

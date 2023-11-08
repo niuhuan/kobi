@@ -79,9 +79,9 @@ pub(crate) async fn take_100_cache(time: i64) -> anyhow::Result<Vec<Model>> {
         .await?)
 }
 
-pub(crate) async fn delete_by_url(url: String) -> anyhow::Result<()> {
+pub(crate) async fn delete_by_cache_key(cache_key: String) -> anyhow::Result<()> {
     Entity::delete_many()
-        .filter(Column::Url.eq(url))
+        .filter(Column::CacheKey.eq(cache_key))
         .exec(CACHE_DATABASE.get().unwrap().lock().await.deref())
         .await?;
     Ok(())
