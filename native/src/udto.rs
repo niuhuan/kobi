@@ -176,7 +176,7 @@ impl From<crate::database::cache::image_cache::Model> for UICacheImage {
         Self {
             abs_path: join_paths(vec![
                 get_image_cache_dir().as_str(),
-                model.abs_path.as_str(),
+                model.local_path.as_str(),
             ]),
             cache_key: model.cache_key,
             cache_time: model.cache_time,

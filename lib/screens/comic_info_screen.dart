@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:kobi/screens/components/comic_list.dart';
 
+import 'components/images.dart';
+
 class ComicInfoScreen extends StatefulWidget {
   final CommonComicInfo comicInfo;
 
@@ -70,11 +72,13 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
                   );
                 },
                 blendMode: BlendMode.dstIn,
-                child: Image.network(
-                  widget.comicInfo.cover,
-                  fit: BoxFit.fill,
+                child: LoadingCacheImage(
+                  url: widget.comicInfo.cover,
                   width: constraints.maxWidth,
                   height: constraints.maxHeight / 3,
+                  useful: 'COMIC_COVER',
+                  extendsFieldFirst: widget.comicInfo.pathWord,
+                  fit: BoxFit.fill,
                 ),
               );
             },
@@ -146,7 +150,6 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
   }
 }
 
-
 class ComicInfoCard extends StatelessWidget {
   final CommonComicInfo comic;
 
@@ -168,10 +171,13 @@ class ComicInfoCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(5)),
-            child: Image.network(
-              comic.cover,
+            child: LoadingCacheImage(
+              url: comic.cover,
               width: 328 / 4,
               height: 422 / 4,
+              useful: 'COMIC_COVER',
+              extendsFieldFirst: comic.pathWord,
+              fit: BoxFit.cover,
             ),
           ),
           Container(

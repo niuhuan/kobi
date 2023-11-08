@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../bridge_generated.dart';
 import '../comic_info_screen.dart';
+import 'images.dart';
 
 class ComicList extends StatelessWidget {
   final List<CommonComicInfo> comics;
@@ -50,10 +51,13 @@ class CommonComicCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(5)),
-            child: Image.network(
-              comic.cover,
+            child: LoadingCacheImage(
+              url: comic.cover,
               width: 328 / 4,
               height: 422 / 4,
+              useful: 'COMIC_COVER',
+              extendsFieldFirst: comic.pathWord,
+              fit: BoxFit.cover,
             ),
           ),
           Container(
