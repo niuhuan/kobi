@@ -1,6 +1,6 @@
 use crate::copy_client::{
-    Author, ClassifyItem, Comic, ComicData, ComicInRank, FreeType, Group, LastChapter, Page,
-    RankItem, Tag,
+    Author, ClassifyItem, Comic, ComicChapter, ComicData, ComicInRank, FreeType, Group,
+    LastChapter, Page, RankItem, Tag,
 };
 use crate::get_image_cache_dir;
 use crate::utils::join_paths;
@@ -189,6 +189,90 @@ impl From<crate::database::cache::image_cache::Model> for UICacheImage {
             image_format: model.image_format,
             image_width: model.image_width,
             image_height: model.image_height,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageComicChapter {
+    pub list: Vec<UIComicChapter>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+impl From<Page<ComicChapter>> for UIPageComicChapter {
+    fn from(page: Page<ComicChapter>) -> Self {
+        Self {
+            list: page
+                .list
+                .into_iter()
+                .map(|x| UIComicChapter::from(x))
+                .collect(),
+            total: page.total,
+            limit: page.limit,
+            offset: page.offset,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIComicChapter {
+    pub comic_id: String,
+    pub comic_path_word: String,
+    pub count: i64,
+    pub datetime_created: String,
+    pub group_path_word: String,
+    pub img_type: i64,
+    pub index: i64,
+    pub name: String,
+    pub news: String,
+    pub next: Option<String>,
+    pub ordered: i64,
+    pub prev: Option<String>,
+    pub size: i64,
+    #[serde(rename = "type")]
+    pub type_field: i64,
+    pub uuid: String,
+}
+
+impl From<ComicChapter> for UIComicChapter {
+    fn from(chapter: ComicChapter) -> Self {
+        Self {
+            comic_id: chapter.comic_id,
+            comic_path_word: chapter.comic_path_word,
+            count: chapter.count,
+            datetime_created: chapter.datetime_created,
+            group_path_word: chapter.group_path_word,
+            img_type: chapter.img_type,
+            index: chapter.index,
+            name: chapter.name,
+            news: chapter.news,
+            next: chapter.next,
+            ordered: chapter.ordered,
+            prev: chapter.prev,
+            size: chapter.size,
+            type_field: chapter.type_field,
+            uuid: chapter.uuid,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIComicQuery {
+    pub is_lock: bool,
+    pub is_login: bool,
+    pub is_mobile_bind: bool,
+    pub is_vip: bool,
+}
+
+impl From<crate::copy_client::ComicQuery> for UIComicQuery {
+    fn from(query: crate::copy_client::ComicQuery) -> Self {
+        Self {
+            is_lock: query.is_lock,
+            is_login: query.is_login,
+            is_mobile_bind: query.is_mobile_bind,
+            is_vip: query.is_vip,
         }
     }
 }

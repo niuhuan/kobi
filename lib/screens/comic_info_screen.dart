@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:kobi/bridge_generated.dart';
+import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/components/comic_list.dart';
 
 import 'components/images.dart';
@@ -17,6 +19,10 @@ class ComicInfoScreen extends StatefulWidget {
 class _ComicInfoScreenState extends State<ComicInfoScreen> {
   final _scrollController = ScrollController();
   double _scrollOffset = 0;
+  late Future _fetchFuture = fetch();
+  late UIComicData _comic;
+  late Map<Group, List<UIComicChapter>> _gcMap;
+  late UIComicQuery _query;
 
   @override
   void initState() {
@@ -31,6 +37,35 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
     super.dispose();
   }
 
+  static const _chapterLimit = 100;
+
+  Future fetch() async {
+    final comic = await api.comic(pathWord: widget.comicInfo.pathWord);
+    final Map<Group, List<UIComicChapter>> gcMap = {};
+    for (var group in comic.groups) {
+      var offset = 0;
+      List<UIComicChapter> cList = [];
+      while (true) {
+        final response = await api.comicChapters(
+          comicPathWord: widget.comicInfo.pathWord,
+          groupPathWord: group.pathWord,
+          offset: offset,
+          limit: _chapterLimit,
+        );
+        cList.addAll(response.list);
+        offset += _chapterLimit;
+        if (response.total <= offset) {
+          break;
+        }
+      }
+      gcMap[group] = cList;
+    }
+    final query = await api.comicQuery(pathWord: widget.comicInfo.pathWord);
+    _comic = comic;
+    _gcMap = gcMap;
+    _query = query;
+  }
+
   void _onScroll() {
     setState(() {
       _scrollOffset = _scrollController.offset;
@@ -40,112 +75,152 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
   static const _appHiddenStart = 50.0;
   static const _appHiddenEnd = 150.0;
 
+  double get _appbarOpacity => _scrollOffset < _appHiddenStart
+      ? 1.0
+      : _scrollOffset > _appHiddenEnd
+          ? 0.0
+          : (_appHiddenEnd - _scrollOffset) / (_appHiddenEnd - _appHiddenStart);
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final _appbarOpacity = _scrollOffset < _appHiddenStart
-        ? 1.0
-        : _scrollOffset > _appHiddenEnd
-            ? 0.0
-            : (_appHiddenEnd - _scrollOffset) /
-                (_appHiddenEnd - _appHiddenStart);
     return Scaffold(
       body: Stack(children: [
-        Opacity(
-          opacity: .25,
-          child: LayoutBuilder(
-            builder: (
-              BuildContext context,
-              BoxConstraints constraints,
-            ) {
-              return ShaderMask(
-                shaderCallback: (rect) {
-                  return const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black,
-                      Colors.transparent,
-                    ],
-                  ).createShader(
-                    Rect.fromLTRB(0, 0, rect.width, rect.height),
-                  );
-                },
-                blendMode: BlendMode.dstIn,
-                child: LoadingCacheImage(
-                  url: widget.comicInfo.cover,
-                  width: constraints.maxWidth,
-                  height: constraints.maxHeight / 3,
-                  useful: 'COMIC_COVER',
-                  extendsFieldFirst: widget.comicInfo.pathWord,
-                  fit: BoxFit.fill,
-                ),
-              );
+        ..._background(),
+        _comicInfo(),
+        _appbar(),
+        _floatBackButton(),
+      ]),
+    );
+  }
+
+  List<Widget> _background() {
+    return [
+      Opacity(
+        opacity: .25,
+        child: LayoutBuilder(
+          builder: (
+            BuildContext context,
+            BoxConstraints constraints,
+          ) {
+            return ShaderMask(
+              shaderCallback: (rect) {
+                return const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black,
+                    Colors.transparent,
+                  ],
+                ).createShader(
+                  Rect.fromLTRB(0, 0, rect.width, rect.height),
+                );
+              },
+              blendMode: BlendMode.dstIn,
+              child: LoadingCacheImage(
+                url: widget.comicInfo.cover,
+                width: constraints.maxWidth,
+                height: constraints.maxHeight / 3,
+                useful: 'COMIC_COVER',
+                extendsFieldFirst: widget.comicInfo.pathWord,
+                fit: BoxFit.fill,
+              ),
+            );
+          },
+        ),
+      ),
+      Positioned.fromRect(
+        rect: Rect.largest,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+          child: Container(),
+        ),
+      ),
+    ];
+  }
+
+  Widget _comicInfo() {
+    return FutureBuilder(
+      future: _fetchFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasError) {
+          print("${snapshot.error}");
+          print("${snapshot.stackTrace}");
+          return const Center(
+            child: Text('加载失败'),
+          );
+        }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return _comicInfoLoaded();
+      },
+    );
+  }
+
+  Widget _comicInfoLoaded() {
+    return ListView(
+      controller: _scrollController,
+      children: [
+        AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+        ),
+        CommonComicCard(widget.comicInfo),
+      ],
+    );
+  }
+
+  Widget _appbar() {
+    final theme = Theme.of(context);
+    return Opacity(
+      opacity: _appbarOpacity,
+      child: Column(
+        children: [
+          AppBar(
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.transparent,
+              ),
+              onPressed: () {},
+            ),
+            title: Text(
+              widget.comicInfo.name,
+            ),
+            foregroundColor: theme.textTheme.bodyMedium?.color,
+            backgroundColor: Colors.transparent,
+            elevation: .0,
+            actions: const [],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _floatBackButton() {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        AppBar(
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: theme.textTheme.bodyMedium?.color,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
             },
           ),
+          backgroundColor: Colors.transparent,
+          elevation: .0,
+          actions: const [],
         ),
-        Positioned.fromRect(
-          rect: Rect.largest,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-            child: Container(),
-          ),
-        ),
-        ListView(
-          controller: _scrollController,
-          children: [
-            AppBar(
-              automaticallyImplyLeading: false,
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-            ),
-            CommonComicCard(widget.comicInfo),
-          ],
-        ),
-        Opacity(
-          opacity: _appbarOpacity,
-          child: Column(
-            children: [
-              AppBar(
-                centerTitle: true,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.transparent,
-                  ),
-                  onPressed: () {},
-                ),
-                title: Text(
-                  widget.comicInfo.name,
-                ),
-                foregroundColor: theme.textTheme.bodyMedium?.color,
-                backgroundColor: Colors.transparent,
-                elevation: .0,
-                actions: const [],
-              ),
-            ],
-          ),
-        ),
-        Column(
-          children: [
-            AppBar(
-              centerTitle: true,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: theme.textTheme.bodyMedium?.color,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              backgroundColor: Colors.transparent,
-              elevation: .0,
-              actions: const [],
-            ),
-          ],
-        ),
-      ]),
+      ],
     );
   }
 }
