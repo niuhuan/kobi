@@ -2,6 +2,8 @@ use crate::copy_client::{
     Author, ClassifyItem, Comic, ComicData, ComicInRank, FreeType, Group, LastChapter, Page,
     RankItem, Tag,
 };
+use crate::get_image_cache_dir;
+use crate::utils::join_paths;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -149,6 +151,44 @@ impl From<Comic> for UIComic {
             status: comic.status,
             theme: comic.theme,
             uuid: comic.uuid,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UICacheImage {
+    pub abs_path: String,
+    pub cache_key: String,
+    pub cache_time: i64,
+    pub url: String,
+    pub useful: String,
+    pub extends_field_first: Option<String>,
+    pub extends_field_second: Option<String>,
+    pub extends_field_third: Option<String>,
+    pub local_path: String,
+    pub image_format: String,
+    pub image_width: u32,
+    pub image_height: u32,
+}
+
+impl From<crate::database::cache::image_cache::Model> for UICacheImage {
+    fn from(model: crate::database::cache::image_cache::Model) -> Self {
+        Self {
+            abs_path: join_paths(vec![
+                get_image_cache_dir().as_str(),
+                model.abs_path.as_str(),
+            ]),
+            cache_key: model.cache_key,
+            cache_time: model.cache_time,
+            url: model.url,
+            useful: model.useful,
+            extends_field_first: model.extends_field_first,
+            extends_field_second: model.extends_field_second,
+            extends_field_third: model.extends_field_third,
+            local_path: model.local_path,
+            image_format: model.image_format,
+            image_width: model.image_width,
+            image_height: model.image_height,
         }
     }
 }

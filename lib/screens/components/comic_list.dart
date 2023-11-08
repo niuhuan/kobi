@@ -48,10 +48,13 @@ class CommonComicCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.network(
-            comic.cover,
-            width: 328 / 4,
-            height: 422 / 4,
+          ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+            child: Image.network(
+              comic.cover,
+              width: 328 / 4,
+              height: 422 / 4,
+            ),
           ),
           Container(
             width: 10,

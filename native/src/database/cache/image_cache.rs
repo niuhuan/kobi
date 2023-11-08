@@ -6,20 +6,19 @@ use sea_orm::EntityTrait;
 use sea_orm::IntoActiveModel;
 use sea_orm::QueryOrder;
 use sea_orm::QuerySelect;
-use std::convert::TryInto;
 use std::ops::Deref;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "image_cache")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub url: String,
-    pub useful: String,
     pub cache_key: String,
     pub cache_time: i64,
-    pub extends_field_first: String,
-    pub extends_field_second: String,
-    pub extends_field_third: String,
+    pub url: String,
+    pub useful: String,
+    pub extends_field_first: Option<String>,
+    pub extends_field_second: Option<String>,
+    pub extends_field_third: Option<String>,
     pub local_path: String,
     pub image_format: String,
     pub image_width: u32,
@@ -46,8 +45,8 @@ pub(crate) async fn init() {
     }
 }
 
-pub(crate) async fn load_image_by_url(url: String) -> anyhow::Result<Option<Model>> {
-    Ok(Entity::find_by_id(url)
+pub(crate) async fn load_image_by_cache_key(cache_key: &str) -> anyhow::Result<Option<Model>> {
+    Ok(Entity::find_by_id(cache_key.clone())
         .one(CACHE_DATABASE.get().unwrap().lock().await.deref())
         .await?)
 }
@@ -59,13 +58,13 @@ pub(crate) async fn insert(model: Model) -> anyhow::Result<Model> {
         .await?)
 }
 
-pub(crate) async fn update_cache_time(url: String) -> anyhow::Result<()> {
+pub(crate) async fn update_cache_time(cache_key: &str) -> anyhow::Result<()> {
     Entity::update_many()
         .col_expr(
             Column::CacheTime,
             Expr::value(chrono::Local::now().timestamp_millis()),
         )
-        .filter(Column::Url.eq(url))
+        .filter(Column::CacheKey.eq(cache_key))
         .exec(CACHE_DATABASE.get().unwrap().lock().await.deref())
         .await?;
     Ok(())

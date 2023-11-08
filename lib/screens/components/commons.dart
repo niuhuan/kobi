@@ -1,6 +1,11 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../cross.dart';
 
 /// 显示一个toast
 void defaultToast(BuildContext context, String title) {
@@ -78,4 +83,46 @@ Future<String?> displayTextInputDialog(BuildContext context,
       );
     },
   );
+}
+
+Future<T?> chooseListDialog<T>(BuildContext context,
+    {required List<T> values, required String title, String? tips}) async {
+  return showDialog<T>(
+    context: context,
+    builder: (BuildContext context) {
+      return SimpleDialog(
+        title: Text(title),
+        children: [
+          ...values.map((e) => SimpleDialogOption(
+            onPressed: () {
+              Navigator.of(context).pop(e);
+            },
+            child: Text('$e'),
+          )),
+          ...tips != null
+              ? [
+            Container(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
+              child: Text(tips),
+            ),
+          ]
+              : [],
+        ],
+      );
+    },
+  );
+}
+
+Future saveImageFileToGallery(BuildContext context, String path) async {
+  if (Platform.isAndroid) {
+    if (!(await Permission.storage.request()).isGranted) {
+      return;
+    }
+  }
+  if (Platform.isIOS || Platform.isAndroid) {
+    await cross.saveImageToGallery(path);
+    defaultToast(context, "保存成功");
+    return;
+  }
+  defaultToast(context, "暂不支持该平台");
 }

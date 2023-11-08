@@ -2,6 +2,7 @@ pub use super::types::*;
 use crate::copy_client::{
     ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, Response, Tags,
 };
+use reqwest::Method;
 use std::str::FromStr;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -41,12 +42,13 @@ impl Client {
         params: serde_json::Value,
     ) -> Result<T> {
         let obj = params.as_object().expect("query must be object");
-        let agent = self.agent.lock().await;
+        let agent_lock = self.agent.lock().await;
+        let agent = agent_lock.clone();
+        drop(agent_lock);
         let request = agent.request(
             method.clone(),
             format!("{}{}", &self.api_host_string().await.as_str(), path),
         );
-        drop(agent);
         let request = request
             .header("authorization", "Token")
             .header("referer", "com.copymanga.app-2.0.7")
@@ -165,5 +167,12 @@ impl Client {
             }),
         )
         .await
+    }
+
+    pub async fn download_image(&self, url: &str) -> Result<bytes::Bytes> {
+        let agent_lock = self.agent.lock().await;
+        let agent = agent_lock.clone();
+        drop(agent_lock);
+        Ok(agent.get(url).send().await?.bytes().await?)
     }
 }
