@@ -361,9 +361,9 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           cd kobi
-          echo $KEY_FILE_BASE64 > key.jks.base64
+          echo $ANDROID_JKS_BASE64 > key.jks.base64
           base64 -d key.jks.base64 > key.jks
-          echo $KEY_PASSWORD | $ANDROID_HOME/build-tools/30.0.2/apksigner sign --ks key.jks build/app/outputs/flutter-apk/app-release.apk
+          echo $ANDROID_JKS_PASSWORD | $ANDROID_HOME/build-tools/30.0.2/apksigner sign --ks key.jks build/app/outputs/flutter-apk/app-release.apk
 
       - name: Cargo ci build cache
         if: steps.check_asset.outputs.skip_build != 'true'
