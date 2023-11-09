@@ -411,7 +411,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
         if (c.uuid == _viewLog!.chapterUuid) {
           _goReader(
             c,
-            0,
+            _viewLog!.pageRank,
           );
           return;
         }
