@@ -5,6 +5,7 @@ import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/components/comic_list.dart';
 
+import 'comic_reader_screen.dart';
 import 'components/images.dart';
 
 class ComicInfoScreen extends StatefulWidget {
@@ -297,9 +298,24 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
   }
 
   void _goReader(UIComicChapter c, int initRank) {
-    // todo
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ComicReaderScreen(
+          comic: _comic.comic,
+          chapterUuid: c.uuid,
+          initRank: initRank,
+          loadChapter: (String comicPathWord, String chapterUuid) async {
+            final response = await api.comicChapterData(
+              comicPathWord: comicPathWord,
+              chapterUuid: chapterUuid,
+            );
+            return response.chapter;
+          },
+          groupChaptersMap: _gcMap,
+        ),
+      ),
+    );
   }
-
 }
 
 class ComicInfoCard extends StatelessWidget {
@@ -425,5 +441,4 @@ class ComicInfoCard extends StatelessWidget {
       ),
     );
   }
-
 }
