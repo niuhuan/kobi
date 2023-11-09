@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Size;
+import 'package:kobi/screens/components/router.dart';
 import 'screens/init_screen.dart';
 
 void main() => runApp(const MyApp());
@@ -14,6 +15,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [
+        routeObserver,
+      ],
       theme: _lightTheme,
       darkTheme: _darkTheme,
       home: const InitScreen(),

@@ -7,6 +7,7 @@ import 'package:kobi/screens/components/comic_list.dart';
 
 import 'comic_reader_screen.dart';
 import 'components/images.dart';
+import 'components/router.dart';
 
 class ComicInfoScreen extends StatefulWidget {
   final CommonComicInfo comicInfo;
@@ -17,13 +18,14 @@ class ComicInfoScreen extends StatefulWidget {
   _ComicInfoScreenState createState() => _ComicInfoScreenState();
 }
 
-class _ComicInfoScreenState extends State<ComicInfoScreen> {
+class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   final _scrollController = ScrollController();
   double _scrollOffset = 0;
   late Future _fetchFuture = fetch();
   late UIComicData _comic;
   late Map<Group, List<UIComicChapter>> _gcMap;
   late UIComicQuery _query;
+  late UIViewLog? _viewLog;
 
   @override
   void initState() {
@@ -36,6 +38,18 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+    routeObserver.unsubscribe(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    _loadViewLog();
   }
 
   static const _chapterLimit = 100;
@@ -62,9 +76,27 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
       gcMap[group] = cList;
     }
     final query = await api.comicQuery(pathWord: widget.comicInfo.pathWord);
+    final viewLog =
+        await api.findComicViewLog(pathWord: widget.comicInfo.pathWord);
     _comic = comic;
     _gcMap = gcMap;
     _query = query;
+    _viewLog = viewLog;
+    // async
+    api.viewComicInfo(
+      comicPathWord: comic.comic.pathWord,
+      comicName: comic.comic.name,
+      comicAuthors: comic.comic.author,
+      comicCover: comic.comic.cover,
+    );
+  }
+
+  _loadViewLog() async {
+    final viewLog =
+        await api.findComicViewLog(pathWord: widget.comicInfo.pathWord);
+    setState(() {
+      _viewLog = viewLog;
+    });
   }
 
   void _onScroll() {
@@ -176,6 +208,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
           child: _brief(_comic.comic.brief),
         ),
         const Divider(),
+        ..._continueAndRestart(),
         ..._chapters(),
         const Divider(),
         SafeArea(child: Container()),
@@ -236,6 +269,58 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
 
   Widget _brief(String text) {
     return Text(text);
+  }
+
+  List<Widget> _continueAndRestart() {
+    List<Widget> list = [];
+    if (_viewLog != null && _viewLog!.chapterUuid.isNotEmpty) {
+      list.add(Container(
+        padding: const EdgeInsets.only(
+          left: 30,
+          right: 30,
+          top: 10,
+          bottom: 10,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: MaterialButton(
+                elevation: 0,
+                color: Colors.grey.shade500.withOpacity(.3),
+                textColor: Theme.of(context).textTheme.bodyMedium?.color,
+                child: Text(
+                    "继续阅读 : ${_viewLog!.chapterName} (${_viewLog!.pageRank + 1})"),
+                onPressed: _continueRead,
+              ),
+            ),
+          ],
+        ),
+      ));
+    }
+    {
+      list.add(Container(
+        padding: const EdgeInsets.only(
+          left: 30,
+          right: 30,
+          top: 10,
+          bottom: 10,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: MaterialButton(
+                elevation: 0,
+                color: Colors.grey.shade500.withOpacity(.3),
+                textColor: Theme.of(context).textTheme.bodyMedium?.color,
+                child: const Text("从头开始"),
+                onPressed: _startRead,
+              ),
+            ),
+          ],
+        ),
+      ));
+    }
+    return list;
   }
 
   List<Widget> _chapters() {
@@ -315,6 +400,35 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> {
         ),
       ),
     );
+  }
+
+  void _continueRead() {
+    if (_viewLog == null) {
+      return;
+    }
+    for (var e in _gcMap.entries) {
+      for (var c in e.value) {
+        if (c.uuid == _viewLog!.chapterUuid) {
+          _goReader(
+            c,
+            0,
+          );
+          return;
+        }
+      }
+    }
+  }
+
+  void _startRead() {
+    for (var e in _gcMap.entries) {
+      for (var c in e.value) {
+        _goReader(
+          c,
+          0,
+        );
+        return;
+      }
+    }
   }
 }
 

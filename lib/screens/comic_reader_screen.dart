@@ -13,6 +13,7 @@ import '../configs/reader_controller_type.dart';
 import '../configs/reader_direction.dart';
 import '../configs/reader_slider_position.dart';
 import '../configs/reader_type.dart';
+import '../ffi.io.dart';
 import 'components/commons.dart';
 import 'components/content_error.dart';
 import 'components/content_loading.dart';
@@ -59,14 +60,16 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
       _chapterFuture = widget
           .loadChapter(widget.comic.pathWord, widget.chapterUuid)
           .then((value) {
-        // todo
-        // var _ = api.comicViewPage(
-        //   comicId: value.comicId,
-        //   chapterId: value.chapterId,
-        //   chapterTitle: value.title,
-        //   chapterOrder: value.chapterOrder,
-        //   pageRank: widget.initRank,
-        // ); // 在后台
+        // async
+        api.viewChapterPage(
+          comicPathWord: widget.comic.pathWord,
+          chapterUuid: widget.chapterUuid,
+          chapterName: value.name,
+          chapterOrdered: value.ordered,
+          chapterSize: value.size,
+          chapterCount: value.count,
+          pageRank: widget.initRank,
+        );
         setState(() {
           _loaded = true;
         });
@@ -298,15 +301,16 @@ abstract class _ComicReaderState extends State<_ComicReader> {
       setState(() {
         _current = index;
         _slider = index;
-        // todo
-        // update viewLog
-        // var _ = api.comicViewPage(
-        //   comicId: widget.chapter.comicId,
-        //   chapterId: widget.chapter.chapterId,
-        //   chapterTitle: widget.chapter.title,
-        //   chapterOrder: widget.chapter.chapterOrder,
-        //   pageRank: index,
-        // ); // 在后台线程入库
+        // async
+        api.viewChapterPage(
+          comicPathWord: widget.comic.pathWord,
+          chapterUuid: widget.chapter.uuid,
+          chapterName: widget.chapter.name,
+          chapterOrdered: widget.chapter.ordered,
+          chapterSize: widget.chapter.size,
+          chapterCount: widget.chapter.count,
+          pageRank: index,
+        );
       });
     }
   }
