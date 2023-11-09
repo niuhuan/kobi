@@ -184,6 +184,20 @@ impl Client {
         .await
     }
 
+    pub async fn recommend(&self, offset: u64, limit: u64) -> Result<Page<ComicInSearch>> {
+        self.request(
+            reqwest::Method::GET,
+            "/api/v3/recs",
+            serde_json::json!({
+                "pos": 3200102,
+                "limit": limit,
+                "offset": offset,
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
     pub async fn download_image(&self, url: &str) -> Result<bytes::Bytes> {
         let agent_lock = self.agent.lock().await;
         let agent = agent_lock.clone();

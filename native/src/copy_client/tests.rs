@@ -1,6 +1,7 @@
 use super::client::Client;
 use anyhow::Result;
 use base64::Engine;
+use serde_json::json;
 
 const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
 
@@ -19,8 +20,26 @@ fn client() -> Client {
 }
 
 #[tokio::test]
+async fn test_request() -> Result<()> {
+    let value = client()
+        .request(
+            reqwest::Method::GET,
+            "/api/v3/recs",
+            json!({
+                "pos": 3200102,
+                "limit": 21,
+                "offset": 42,
+                "platform": 3,
+            }),
+        )
+        .await?;
+    println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
+
+#[tokio::test]
 async fn test_chapters() -> Result<()> {
-    let value = client
+    let value = client()
         .comic_chapter("fxzhanshijiuliumei", "default", 100, 0)
         .await?;
     println!("{}", serde_json::to_string(&value).unwrap());
