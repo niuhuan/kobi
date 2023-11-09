@@ -184,7 +184,7 @@ impl Client {
         .await
     }
 
-    pub async fn recommend(&self, offset: u64, limit: u64) -> Result<Page<ComicInSearch>> {
+    pub async fn recommends(&self, offset: u64, limit: u64) -> Result<Page<ComicInSearch>> {
         self.request(
             reqwest::Method::GET,
             "/api/v3/recs",

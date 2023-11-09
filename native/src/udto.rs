@@ -1,6 +1,6 @@
 use crate::copy_client::{
     Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
-    ComicChapter, ComicData, ComicInRank, Group, LastChapter, Page, RankItem, Tag,
+    ComicChapter, ComicData, ComicInRank, ComicInSearch, Group, LastChapter, Page, RankItem, Tag,
 };
 use crate::database::active::comic_view_log;
 use crate::get_image_cache_dir;
@@ -384,6 +384,42 @@ impl From<ChapterAndContents> for UIChapterAndContents {
             type_field: value.type_field,
             uuid: value.uuid,
             words: value.words,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageUIComicInRank {
+    pub list: Vec<UIComicInRank>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+impl From<Page<ComicInSearch>> for UIPageUIComicInRank {
+    fn from(page: Page<ComicInSearch>) -> Self {
+        Self {
+            list: page
+                .list
+                .into_iter()
+                .map(|x| UIComicInRank::from(x))
+                .collect(),
+            total: page.total,
+            limit: page.limit,
+            offset: page.offset,
+        }
+    }
+}
+
+impl From<ComicInSearch> for UIComicInRank {
+    fn from(comic: ComicInSearch) -> Self {
+        Self {
+            author: comic.author,
+            cover: comic.cover,
+            img_type: comic.img_type,
+            name: comic.name,
+            path_word: comic.path_word,
+            popular: comic.popular,
         }
     }
 }

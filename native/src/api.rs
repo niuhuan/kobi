@@ -4,7 +4,7 @@ use crate::database::cache::{image_cache, web_cache};
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter, UIPageRankItem,
-    UIViewLog,
+    UIPageUIComicInRank, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{get_image_cache_dir, CLIENT, RUNTIME};
@@ -67,6 +67,15 @@ pub fn rank(date_type: String, offset: u64, limit: u64) -> Result<UIPageRankItem
                 .comic_rank(date_type.as_str(), offset, limit)
                 .await
         }),
+    ))
+}
+
+pub fn recommends(offset: u64, limit: u64) -> Result<UIPageUIComicInRank> {
+    let key = format!("COMIC_RECOMMENDS${}${}", offset, limit);
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move { CLIENT.read().await.recommends(offset, limit).await }),
     ))
 }
 
