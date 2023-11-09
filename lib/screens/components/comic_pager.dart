@@ -17,6 +17,7 @@ class ComicPager extends StatefulWidget {
 
 class _ComicPagerState extends State<ComicPager> {
   final _refreshController = RefreshController(initialRefresh: true);
+  final _scrollController = ScrollController();
   final List<CommonComicInfo> _records = [];
   bool finish = false;
   bool error = false;
@@ -24,7 +25,15 @@ class _ComicPagerState extends State<ComicPager> {
   static const int _limit = 21;
 
   @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final lines = comicListLines(context, _records);
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,
@@ -33,7 +42,14 @@ class _ComicPagerState extends State<ComicPager> {
       onLoading: _onLoading,
       header: customerHeader(context),
       footer: customerFooter(context, _records.isNotEmpty),
-      child: ComicList(comics: _records),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(0),
+        itemCount: lines.length,
+        itemBuilder: (context, index) {
+          return lines[index];
+        },
+      ),
     );
   }
 
@@ -62,7 +78,7 @@ class _ComicPagerState extends State<ComicPager> {
       if (e is PanicException) {
         PanicException e1 = e as PanicException;
         print("$e\n${e1.error}\n\n$s");
-      }else if (e is FrbAnyhowException) {
+      } else if (e is FrbAnyhowException) {
         FrbAnyhowException e1 = e as FrbAnyhowException;
         print("$e\n${e1.anyhow}\n\n$s");
       }
@@ -149,7 +165,6 @@ Widget customerFooter(BuildContext context, bool recordsIsEmpty) =>
         return Container();
       },
     );
-
 
 Widget loadingBanner2(String message) {
   return Column(

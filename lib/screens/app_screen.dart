@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'rank_screen.dart';
 import 'recommends_screen.dart';
 import 'user_screen.dart';
-import 'update_screen.dart';
+import 'discovery_screen.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({Key? key}) : super(key: key);
@@ -80,15 +80,19 @@ class _AppScreenState extends State<AppScreen> {
       '推荐',
       Icons.stars_outlined,
     ),
-    AppScreenData(UpdateScreen(), '更新', Icons.filter_list_sharp),
     AppScreenData(
-      UpdateScreen(),
+      DiscoveryScreen(),
+      '发现',
+      Icons.filter_list_sharp,
+    ),
+    AppScreenData(
+      DiscoveryScreen(),
       '书架',
       Icons.book_outlined,
     ),
     AppScreenData(
       UserScreen(),
-      '我的',
+      '偏好',
       Icons.account_box_outlined,
     ),
   ];
