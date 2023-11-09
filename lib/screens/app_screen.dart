@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kobi/screens/rank_screen.dart';
-import 'package:kobi/screens/user_screen.dart';
+import 'rank_screen.dart';
+import 'recommends_screen.dart';
+import 'user_screen.dart';
 import 'update_screen.dart';
 
 class AppScreen extends StatefulWidget {
@@ -57,8 +58,8 @@ class _AppScreenState extends State<AppScreen> {
         unselectedLabelStyle: const TextStyle(
           fontSize: 12,
         ),
-        selectedItemColor: Colors.red.shade600,
-        unselectedItemColor: Colors.grey.shade600,
+        selectedItemColor: theme.tabBarTheme.labelColor,
+        unselectedItemColor: theme.tabBarTheme.unselectedLabelColor,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         iconSize: 24,
@@ -75,8 +76,8 @@ class _AppScreenState extends State<AppScreen> {
       Icons.local_fire_department_outlined,
     ),
     AppScreenData(
-      UpdateScreen(),
-      '专题',
+      RecommendsScreen(),
+      '推荐',
       Icons.stars_outlined,
     ),
     AppScreenData(UpdateScreen(), '更新', Icons.filter_list_sharp),

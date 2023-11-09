@@ -26,10 +26,8 @@ class _RankScreenState extends State<RankScreen> {
           Container(
             height: 40,
             color: theme.colorScheme.secondary.withOpacity(.025),
-            child: TabBar(
-              indicatorColor: theme.colorScheme.secondary,
-              labelColor: theme.colorScheme.secondary,
-              tabs: const [
+            child: const TabBar(
+              tabs: [
                 Tab(text: '天'),
                 Tab(text: '周'),
                 Tab(text: '月'),

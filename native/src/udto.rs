@@ -1,6 +1,7 @@
 use crate::copy_client::{
     Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
-    ComicChapter, ComicData, ComicInRank, ComicInSearch, Group, LastChapter, Page, RankItem, Tag,
+    ComicChapter, ComicData, ComicInList, ComicInSearch, Group, LastChapter, Page, RankItem,
+    RecommendItem, Tag,
 };
 use crate::database::active::comic_view_log;
 use crate::get_image_cache_dir;
@@ -65,7 +66,7 @@ impl From<Page<RankItem>> for UIPageRankItem {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UIRankItem {
-    pub comic: UIComicInRank,
+    pub comic: UIComicInList,
     pub date_type: i64,
     pub popular: i64,
     pub rise_num: i64,
@@ -77,7 +78,7 @@ pub struct UIRankItem {
 impl From<RankItem> for UIRankItem {
     fn from(item: RankItem) -> Self {
         Self {
-            comic: UIComicInRank::from(item.comic),
+            comic: UIComicInList::from(item.comic),
             date_type: item.date_type,
             popular: item.popular,
             rise_num: item.rise_num,
@@ -89,7 +90,7 @@ impl From<RankItem> for UIRankItem {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIComicInRank {
+pub struct UIComicInList {
     pub author: Vec<Author>,
     pub cover: String,
     pub img_type: i64,
@@ -98,8 +99,8 @@ pub struct UIComicInRank {
     pub popular: i64,
 }
 
-impl From<ComicInRank> for UIComicInRank {
-    fn from(comic: ComicInRank) -> Self {
+impl From<ComicInList> for UIComicInList {
+    fn from(comic: ComicInList) -> Self {
         Self {
             author: comic.author,
             cover: comic.cover,
@@ -389,20 +390,20 @@ impl From<ChapterAndContents> for UIChapterAndContents {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UIPageUIComicInRank {
-    pub list: Vec<UIComicInRank>,
+pub struct UIPageUIComicInList {
+    pub list: Vec<UIComicInList>,
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }
 
-impl From<Page<ComicInSearch>> for UIPageUIComicInRank {
-    fn from(page: Page<ComicInSearch>) -> Self {
+impl From<Page<RecommendItem>> for UIPageUIComicInList {
+    fn from(page: Page<RecommendItem>) -> Self {
         Self {
             list: page
                 .list
                 .into_iter()
-                .map(|x| UIComicInRank::from(x))
+                .map(|x| UIComicInList::from(x))
                 .collect(),
             total: page.total,
             limit: page.limit,
@@ -411,8 +412,22 @@ impl From<Page<ComicInSearch>> for UIPageUIComicInRank {
     }
 }
 
-impl From<ComicInSearch> for UIComicInRank {
+impl From<ComicInSearch> for UIComicInList {
     fn from(comic: ComicInSearch) -> Self {
+        Self {
+            author: comic.author,
+            cover: comic.cover,
+            img_type: comic.img_type,
+            name: comic.name,
+            path_word: comic.path_word,
+            popular: comic.popular,
+        }
+    }
+}
+
+impl From<RecommendItem> for UIComicInList {
+    fn from(comic: RecommendItem) -> Self {
+        let comic = comic.comic;
         Self {
             author: comic.author,
             cover: comic.cover,

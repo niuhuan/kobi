@@ -278,8 +278,8 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
         padding: const EdgeInsets.only(
           left: 30,
           right: 30,
-          top: 10,
-          bottom: 10,
+          top: 5,
+          bottom: 5,
         ),
         child: Row(
           children: [
@@ -302,8 +302,8 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
         padding: const EdgeInsets.only(
           left: 30,
           right: 30,
-          top: 10,
-          bottom: 10,
+          top: 5,
+          bottom: 5,
         ),
         child: Row(
           children: [
@@ -341,7 +341,16 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
 
   List<Widget> _groupTitle(Group key) {
     return [
-      Text(key.name),
+      Center(
+        child: Text(
+          "----  ${key.name}  ----",
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+            height: 2,
+          )
+        ),
+      ),
     ];
   }
 

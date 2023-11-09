@@ -1,6 +1,7 @@
 pub use super::types::*;
 use crate::copy_client::{
-    ChapterData, ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, Response, Tags,
+    ChapterData, ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, RecommendItem,
+    Response, Tags,
 };
 use reqwest::Method;
 use std::str::FromStr;
@@ -184,7 +185,7 @@ impl Client {
         .await
     }
 
-    pub async fn recommends(&self, offset: u64, limit: u64) -> Result<Page<ComicInSearch>> {
+    pub async fn recommends(&self, offset: u64, limit: u64) -> Result<Page<RecommendItem>> {
         self.request(
             reqwest::Method::GET,
             "/api/v3/recs",

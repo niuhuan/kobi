@@ -62,7 +62,7 @@ pub struct Author {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RankItem {
-    pub comic: ComicInRank,
+    pub comic: ComicInList,
     pub date_type: i64,
     pub popular: i64,
     pub rise_num: i64,
@@ -72,7 +72,7 @@ pub struct RankItem {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ComicInRank {
+pub struct ComicInList {
     pub author: Vec<Author>,
     pub cover: String,
     pub females: Vec<Value>,
@@ -222,4 +222,11 @@ pub struct ChapterComicInfo {
     pub path_word: String,
     pub restrict: ClassifyItem,
     pub uuid: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct RecommendItem {
+    #[serde(rename = "type")]
+    pub type_field: i64,
+    pub comic: ComicInList,
 }

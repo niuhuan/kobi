@@ -45,3 +45,10 @@ async fn test_chapters() -> Result<()> {
     println!("{}", serde_json::to_string(&value).unwrap());
     Ok(())
 }
+
+#[tokio::test]
+async fn test_recommends() -> Result<()> {
+    let value = client().recommends(0, 21).await?;
+    println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
