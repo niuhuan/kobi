@@ -1,8 +1,10 @@
-use crate::copy_client::ComicQuery;
+use crate::copy_client::{Author, ComicQuery};
+use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter, UIPageRankItem,
+    UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{get_image_cache_dir, CLIENT, RUNTIME};
@@ -124,6 +126,54 @@ pub fn comic_chapter_data(comic_path_word: String, chapter_uuid: String) -> Resu
                 .await
         }),
     ))
+}
+
+pub fn view_comic_info(
+    comic_path_word: String,
+    comic_name: String,
+    comic_authors: Vec<Author>,
+    comic_cover: String,
+) -> Result<()> {
+    block_on(comic_view_log::view_info(comic_view_log::Model {
+        comic_path_word,
+        comic_name,
+        comic_authors: serde_json::to_string(&comic_authors)?,
+        comic_cover,
+        ..Default::default()
+    }))
+}
+
+pub fn view_chapter_page(
+    comic_path_word: String,
+    chapter_uuid: String,
+    chapter_name: String,
+    chapter_ordered: i64,
+    chapter_size: i64,
+    chapter_count: i64,
+    page_rank: i32,
+) -> Result<()> {
+    block_on(comic_view_log::view_page(comic_view_log::Model {
+        comic_path_word,
+        chapter_uuid,
+        chapter_name,
+        chapter_ordered,
+        chapter_size,
+        chapter_count,
+        page_rank,
+        ..Default::default()
+    }))
+}
+
+pub fn find_comic_view_log(path_word: String) -> Result<Option<UIViewLog>> {
+    block_on(async move {
+        Ok(
+            if let Some(model) = comic_view_log::view_log_by_comic_path_word(path_word).await? {
+                Some(UIViewLog::from(model))
+            } else {
+                None
+            },
+        )
+    })
 }
 
 pub fn cache_image(

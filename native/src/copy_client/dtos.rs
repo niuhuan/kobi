@@ -201,7 +201,7 @@ pub struct ChapterAndContents {
     pub is_long: bool,
     pub name: String,
     pub news: String,
-    pub next: String,
+    pub next: Option<String>,
     pub ordered: i64,
     pub prev: Option<String>,
     pub size: i64,

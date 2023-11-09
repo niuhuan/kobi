@@ -2,9 +2,47 @@ use crate::copy_client::{
     Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
     ComicChapter, ComicData, ComicInRank, Group, LastChapter, Page, RankItem, Tag,
 };
+use crate::database::active::comic_view_log;
 use crate::get_image_cache_dir;
 use crate::utils::join_paths;
 use serde_derive::{Deserialize, Serialize};
+
+//////////////////////////////////////
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIViewLog {
+    pub comic_path_word: String,
+    pub comic_name: String,
+    pub comic_authors: String,
+    pub comic_cover: String,
+    pub chapter_uuid: String,
+    pub chapter_name: String,
+    pub chapter_ordered: i64,
+    pub chapter_size: i64,
+    pub chapter_count: i64,
+    pub page_rank: i32,
+    pub view_time: i64,
+}
+
+impl From<comic_view_log::Model> for UIViewLog {
+    fn from(model: comic_view_log::Model) -> Self {
+        Self {
+            comic_path_word: model.comic_path_word,
+            comic_name: model.comic_name,
+            comic_authors: model.comic_authors,
+            comic_cover: model.comic_cover,
+            chapter_uuid: model.chapter_uuid,
+            chapter_name: model.chapter_name,
+            chapter_ordered: model.chapter_ordered,
+            chapter_size: model.chapter_size,
+            chapter_count: model.chapter_count,
+            page_rank: model.page_rank,
+            view_time: model.view_time,
+        }
+    }
+}
+
+//////////////////////////////////////
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UIPageRankItem {
@@ -315,7 +353,7 @@ pub struct UIChapterAndContents {
     pub is_long: bool,
     pub name: String,
     pub news: String,
-    pub next: String,
+    pub next: Option<String>,
     pub ordered: i64,
     pub prev: Option<String>,
     pub size: i64,

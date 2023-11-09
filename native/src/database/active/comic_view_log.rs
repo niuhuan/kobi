@@ -7,21 +7,22 @@ use sea_orm::{EntityTrait, IntoActiveModel, Set};
 use std::convert::TryInto;
 use std::ops::Deref;
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Default, Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "comic_view_log")]
 pub struct Model {
+    // comic info
     #[sea_orm(primary_key, auto_increment = false)]
-    pub comic_id: i32,
-    pub comic_title: String,
+    pub comic_path_word: String,
+    pub comic_name: String,
     pub comic_authors: String,
-    pub comic_status: String,
     pub comic_cover: String,
-    pub comic_types: String,
-    pub comic_last_update_time: i64,
-    pub comic_last_update_chapter_name: String,
-    pub chapter_id: i32,
-    pub chapter_title: String,
-    pub chapter_order: i32,
+    // chapter info
+    pub chapter_uuid: String,
+    pub chapter_name: String,
+    pub chapter_ordered: i64,
+    pub chapter_size: i64,
+    pub chapter_count: i64,
+    // read info
     pub page_rank: i32,
     pub view_time: i64,
 }
@@ -47,19 +48,15 @@ pub(crate) async fn init() {
 
 pub(crate) async fn view_info(mut model: Model) -> anyhow::Result<()> {
     let db = ACTIVE_DATABASE.get().unwrap().lock().await;
-    if let Some(in_db) = Entity::find_by_id(model.comic_id.clone())
+    if let Some(in_db) = Entity::find_by_id(model.comic_path_word.clone())
         .one(db.deref())
         .await?
     {
         let mut in_db = in_db.into_active_model();
-        in_db.comic_id = Set(model.comic_id);
-        in_db.comic_title = Set(model.comic_title);
+        in_db.comic_path_word = Set(model.comic_path_word);
+        in_db.comic_name = Set(model.comic_name);
         in_db.comic_authors = Set(model.comic_authors);
-        in_db.comic_status = Set(model.comic_status);
         in_db.comic_cover = Set(model.comic_cover);
-        in_db.comic_types = Set(model.comic_types);
-        in_db.comic_last_update_time = Set(model.comic_last_update_time);
-        in_db.comic_last_update_chapter_name = Set(model.comic_last_update_chapter_name);
         in_db.view_time = Set(chrono::Local::now().timestamp_millis());
         in_db.update(db.deref()).await?;
     } else {
@@ -71,14 +68,17 @@ pub(crate) async fn view_info(mut model: Model) -> anyhow::Result<()> {
 
 pub(crate) async fn view_page(model: Model) -> anyhow::Result<()> {
     let db = ACTIVE_DATABASE.get().unwrap().lock().await;
-    if let Some(in_db) = Entity::find_by_id(model.comic_id.clone())
+    if let Some(in_db) = Entity::find_by_id(model.comic_path_word.clone())
         .one(db.deref())
         .await?
     {
         let mut in_db = in_db.into_active_model();
-        in_db.chapter_id = Set(model.chapter_id);
-        in_db.chapter_title = Set(model.chapter_title);
-        in_db.chapter_order = Set(model.chapter_order);
+        in_db.comic_path_word = Set(model.comic_path_word);
+        in_db.chapter_uuid = Set(model.chapter_uuid);
+        in_db.chapter_name = Set(model.chapter_name);
+        in_db.chapter_ordered = Set(model.chapter_ordered);
+        in_db.chapter_size = Set(model.chapter_size);
+        in_db.chapter_count = Set(model.chapter_count);
         in_db.page_rank = Set(model.page_rank);
         in_db.view_time = Set(chrono::Local::now().timestamp_millis());
         in_db.update(db.deref()).await?;
@@ -96,7 +96,9 @@ pub(crate) async fn load_view_logs(page: i64) -> anyhow::Result<Vec<Model>> {
         .await?)
 }
 
-pub(crate) async fn view_log_by_comic_id(comic_id: i32) -> anyhow::Result<Option<Model>> {
+pub(crate) async fn view_log_by_comic_path_word(
+    path_word: String,
+) -> anyhow::Result<Option<Model>> {
     let db = ACTIVE_DATABASE.get().unwrap().lock().await;
-    Ok(Entity::find_by_id(comic_id).one(db.deref()).await?)
+    Ok(Entity::find_by_id(path_word).one(db.deref()).await?)
 }
