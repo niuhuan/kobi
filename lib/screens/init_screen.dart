@@ -6,7 +6,7 @@ import '../ffi.io.dart';
 import 'app_screen.dart';
 
 class InitScreen extends StatefulWidget {
-  const InitScreen();
+  const InitScreen({super.key});
 
   @override
   _InitScreenState createState() => _InitScreenState();

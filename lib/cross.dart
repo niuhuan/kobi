@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:kobi/ffi.io.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const cross = Cross._();
@@ -15,7 +16,7 @@ class Cross {
       return await _channel.invokeMethod("root");
     }
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      // todo return await api.desktopRoot();
+      return await api.desktopRoot();
     }
     throw "没有适配的平台";
   }

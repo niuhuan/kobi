@@ -319,3 +319,46 @@ async fn clean_image(time: i64) -> Result<()> {
     }
     Ok(())
 }
+
+pub fn desktop_root() -> Result<String> {
+    #[cfg(target_os = "windows")]
+    {
+        use anyhow::Context;
+        Ok(join_paths(vec![
+            std::env::current_exe()?
+                .parent()
+                .with_context(|| "error")?
+                .to_str()
+                .with_context(|| "error")?,
+            "data",
+        ]))
+    }
+    #[cfg(target_os = "macos")]
+    {
+        use anyhow::Context;
+        let home = std::env::var_os("HOME")
+            .with_context(|| "error")?
+            .to_str()
+            .with_context(|| "error")?
+            .to_string();
+        Ok(join_paths(vec![
+            home.as_str(),
+            "Library",
+            "Application Support",
+            "opensource",
+            "kobi",
+        ]))
+    }
+    #[cfg(target_os = "linux")]
+    {
+        use anyhow::Context;
+        let home = std::env::var_os("HOME")
+            .with_context(|| "error")?
+            .to_str()
+            .with_context(|| "error")?
+            .to_string();
+        Ok(join_paths(vec![home.as_str(), ".opensource", "kobi"]))
+    }
+    #[cfg(not(any(target_os = "linux", target_os = "windows", target_os = "macos")))]
+    panic!("未支持的平台")
+}

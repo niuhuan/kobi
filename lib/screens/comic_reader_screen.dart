@@ -613,6 +613,7 @@ abstract class _ComicReaderState extends State<_ComicReader> {
       ? Container()
       : AppBar(
           backgroundColor: Colors.black.withOpacity(.5),
+          foregroundColor: Colors.white,
           title: Text(widget.chapter.name),
           actions: [
             IconButton(

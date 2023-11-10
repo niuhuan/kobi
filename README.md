@@ -12,11 +12,16 @@ kobi
 
 仓库地址 https://github.com/niuhuan/kobi
 
+## 其他
+
+### 数据保存位置
+
+- macos: `~/Library/Application Support/opensource/kobi`
+- windows: `%CURRENT_DIR%\data`
+- linux: `$HOME/.opensource/kobi`
 
 ## 技术架构
 
 客户端使用前后端分离架构, flutter作为渲染框架. rust作为底层调度网络和文件系统. Flutter与rust均为跨平台编程语言, 以此支持 android/iOS/windows/macOS 等不同操作系统.
 
 ![](https://raw.githubusercontent.com/fzyzcjy/flutter_rust_bridge/master/book/logo.png)
-
-# kobi
