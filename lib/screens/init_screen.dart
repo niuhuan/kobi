@@ -24,7 +24,7 @@ class _InitScreenState extends State<InitScreen> {
     await api.init(root: await cross.root());
     await initConfigs();
     RendererBinding.instance.addPostFrameCallback((_) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AppScreen()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const AppScreen()));
     });
   }
 
