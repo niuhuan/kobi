@@ -29,6 +29,14 @@ final _defaultLight = ThemeData.light();
 final _defaultDark = ThemeData.dark();
 
 final _lightTheme = _defaultLight.copyWith(
+  appBarTheme: _defaultLight.appBarTheme.copyWith(
+    backgroundColor: Color.alphaBlend(
+      Colors.redAccent.shade700.withOpacity(.05),
+      _defaultLight.scaffoldBackgroundColor,
+    ),
+    foregroundColor: _defaultLight.textTheme.bodyMedium?.color,
+    elevation: 0.5,
+  ),
   tabBarTheme: _defaultLight.tabBarTheme.copyWith(
     labelColor: Colors.red.shade600,
     unselectedLabelColor: Colors.grey.shade600,

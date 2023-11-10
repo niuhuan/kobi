@@ -3,6 +3,8 @@ import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/screens/components/content_error.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart' as sb;
 import '../ffi.io.dart';
+import 'components/comic_list.dart';
+import 'components/comic_pager.dart';
 
 class DiscoveryScreen extends StatefulWidget {
   const DiscoveryScreen({Key? key}) : super(key: key);
@@ -213,6 +215,53 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _searchBar.build(context),
+      body: DiscoveryFetch(
+        keyOrdering: _keyOrdering,
+        keyTop: _keyTop,
+        keyTheme: _keyTheme,
+        key: Key("DiscoveryFetch:$_keyOrdering:$_keyTop:$_keyTheme"),
+      ),
     );
+  }
+}
+
+class DiscoveryFetch extends StatelessWidget {
+  final String keyOrdering;
+  final String keyTop;
+  final String keyTheme;
+
+  const DiscoveryFetch({
+    Key? key,
+    required this.keyOrdering,
+    required this.keyTop,
+    required this.keyTheme,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ComicPager(fetcher: (offset, limit) async {
+      final result = await api.explorer(
+        ordering: keyOrdering.isNotEmpty ? keyOrdering : null,
+        top: keyTop.isNotEmpty ? keyTop : null,
+        theme: keyTheme.isNotEmpty ? keyTheme : null,
+        offset: offset,
+        limit: limit,
+      );
+      return CommonPage<CommonComicInfo>(
+        list: result.list
+            .map((e) => CommonComicInfo(
+                  author: e.author,
+                  cover: e.cover,
+                  imgType: 1,
+                  name: e.name,
+                  pathWord: e.pathWord,
+                  popular: e.popular,
+                ))
+            .toList(),
+        total: result.total,
+        limit: result.limit,
+        offset: result.offset,
+      );
+    });
   }
 }
