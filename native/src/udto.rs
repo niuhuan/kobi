@@ -1,7 +1,7 @@
 use crate::copy_client::{
     Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
-    ComicChapter, ComicData, ComicInList, ComicInSearch, Group, LastChapter, Page, RankItem,
-    RecommendItem, Tag,
+    ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch, Group, LastChapter, Page,
+    RankItem, RecommendItem, Tag,
 };
 use crate::database::active::comic_view_log;
 use crate::get_image_cache_dir;
@@ -435,6 +435,90 @@ impl From<RecommendItem> for UIComicInList {
             name: comic.name,
             path_word: comic.path_word,
             popular: comic.popular,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UITags {
+    pub ordering: Vec<Tag>,
+    pub theme: Vec<UITheme>,
+    pub top: Vec<Tag>,
+}
+
+impl From<crate::copy_client::Tags> for UITags {
+    fn from(tags: crate::copy_client::Tags) -> Self {
+        Self {
+            ordering: tags.ordering,
+            theme: tags.theme.into_iter().map(|x| UITheme::from(x)).collect(),
+            top: tags.top,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UITheme {
+    pub count: i64,
+    pub initials: i64,
+    pub name: String,
+    pub path_word: String,
+}
+
+impl From<crate::copy_client::Theme> for UITheme {
+    fn from(theme: crate::copy_client::Theme) -> Self {
+        Self {
+            count: theme.count,
+            initials: theme.initials,
+            name: theme.name,
+            path_word: theme.path_word,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageComicInExplore {
+    pub list: Vec<UIComicInExplore>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+impl From<Page<ComicInExplore>> for UIPageComicInExplore {
+    fn from(page: Page<ComicInExplore>) -> Self {
+        Self {
+            list: page
+                .list
+                .into_iter()
+                .map(|x| UIComicInExplore::from(x))
+                .collect(),
+            total: page.total,
+            limit: page.limit,
+            offset: page.offset,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIComicInExplore {
+    pub name: String,
+    pub path_word: String,
+    pub free_type: ClassifyItem,
+    pub author: Vec<Author>,
+    pub cover: String,
+    pub popular: i64,
+    pub datetime_updated: String,
+}
+
+impl From<ComicInExplore> for UIComicInExplore {
+    fn from(comic: ComicInExplore) -> Self {
+        Self {
+            name: comic.name,
+            path_word: comic.path_word,
+            free_type: comic.free_type,
+            author: comic.author,
+            cover: comic.cover,
+            popular: comic.popular,
+            datetime_updated: comic.datetime_updated,
         }
     }
 }

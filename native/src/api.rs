@@ -1,10 +1,10 @@
-use crate::copy_client::{Author, ComicQuery};
+use crate::copy_client::{Author, ComicQuery, Tags};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::properties::property;
 use crate::udto::{
-    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter, UIPageRankItem,
-    UIPageUIComicInList, UIViewLog,
+    UICacheImage, UIChapterData, UIComicData, UIComicInExplore, UIComicQuery, UIPageComicChapter,
+    UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{get_image_cache_dir, CLIENT, RUNTIME};
@@ -132,6 +132,45 @@ pub fn comic_chapter_data(comic_path_word: String, chapter_uuid: String) -> Resu
                 .read()
                 .await
                 .comic_chapter_data(comic_path_word.as_str(), chapter_uuid.as_str())
+                .await
+        }),
+    ))
+}
+
+pub fn tags() -> Result<UITags> {
+    let key = format!("COMIC_TAGS");
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 15),
+        Box::pin(async move { CLIENT.read().await.tags().await }),
+    ))
+}
+
+pub fn explorer(
+    ordering: Option<String>,
+    top: Option<String>,
+    theme: Option<String>,
+    offset: u64,
+    limit: u64,
+) -> Result<UIPageComicInExplore> {
+    let key = format!(
+        "COMIC_EXPLORER${:?}${:?}${:?}${}${}",
+        ordering, top, theme, limit, offset
+    );
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move {
+            CLIENT
+                .read()
+                .await
+                .explore(
+                    ordering.as_deref(),
+                    top.as_deref(),
+                    theme.as_deref(),
+                    offset,
+                    limit,
+                )
                 .await
         }),
     ))

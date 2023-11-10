@@ -242,5 +242,5 @@ pub struct ComicInExplore {
     pub theme: Vec<Value>,
     pub cover: String,
     pub popular: i64,
-    pub datetime_updated: chrono::NaiveDate,
+    pub datetime_updated: String,
 }
