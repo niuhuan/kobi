@@ -14,25 +14,11 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub comic_path_word: String,
     #[sea_orm(primary_key, auto_increment = false)]
-    pub uuid: String,
-    pub comic_id: String,
-    pub count: i64,
-    pub datetime_created: String,
     pub group_path_word: String,
-    pub img_type: i64,
-    pub index: i64,
-    pub is_long: bool,
+    pub count: i64,
     pub name: String,
-    pub news: String,
-    pub next: Option<String>,
-    pub ordered: i64,
-    pub prev: Option<String>,
-    pub size: i64,
-    #[serde(rename = "type")]
-    pub type_field: i64,
     //
-    pub download_status: i64,
-    // pub contents: Vec<ChapterImage>,
+    pub group_rank: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -45,16 +31,16 @@ pub(crate) async fn init() {
     create_table_if_not_exists(db.deref(), Entity).await;
     if !index_exists(
         db.deref(),
-        "download_comic_chapter",
-        "download_comic_chapter_idx_comic_path_word",
+        "download_comic_group",
+        "download_comic_group_idx_comic_path_word",
     )
     .await
     {
         create_index(
             db.deref(),
-            "download_comic_chapter",
+            "download_comic_group",
             vec!["comic_path_word"],
-            "download_comic_chapter_idx_comic_path_word",
+            "download_comic_group_idx_comic_path_word",
         )
         .await;
     }

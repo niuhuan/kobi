@@ -3,10 +3,10 @@ use sea_orm::prelude::DatabaseConnection;
 use sea_orm::{ConnectionTrait, EntityTrait, Schema, Statement};
 use std::time::Duration;
 
-pub(crate) mod cache;
-pub(crate) mod properties;
 pub(crate) mod active;
+pub(crate) mod cache;
 pub(crate) mod download;
+pub(crate) mod properties;
 
 pub(crate) async fn init_database() {
     cache::init().await;
