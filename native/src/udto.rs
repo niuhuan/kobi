@@ -116,6 +116,21 @@ impl From<ComicInList> for UIComicInList {
     }
 }
 
+impl From<ComicInSearch> for UIComicInList {
+    fn from(comic: ComicInSearch) -> Self {
+        Self {
+            author: comic.author,
+            cover: comic.cover,
+            img_type: comic.img_type,
+            name: comic.name,
+            path_word: comic.path_word,
+            popular: comic.popular,
+            males: vec![],
+            females: vec![],
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UIComicData {
     pub comic: UIComic,
@@ -432,6 +447,21 @@ impl From<RecommendItem> for UIComicInList {
             popular: comic.popular,
             males: comic.males,
             females: comic.females,
+        }
+    }
+}
+
+impl From<Page<ComicInSearch>> for UIPageUIComicInList {
+    fn from(page: Page<ComicInSearch>) -> Self {
+        Self {
+            list: page
+                .list
+                .into_iter()
+                .map(|x| UIComicInList::from(x))
+                .collect(),
+            total: page.total,
+            limit: page.limit,
+            offset: page.offset,
         }
     }
 }

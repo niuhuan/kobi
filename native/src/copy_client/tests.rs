@@ -10,13 +10,7 @@ fn api_url() -> String {
 }
 
 fn client() -> Client {
-    Client::new(
-        reqwest::Client::builder()
-            .proxy(reqwest::Proxy::all("http://127.0.0.1:1087").unwrap())
-            .build()
-            .unwrap(),
-        api_url(),
-    )
+    Client::new(reqwest::Client::builder().build().unwrap(), api_url())
 }
 
 #[tokio::test]

@@ -176,6 +176,26 @@ pub fn explorer(
     ))
 }
 
+pub fn comic_search(
+    q_type: String,
+    q: String,
+    offset: u64,
+    limit: u64,
+) -> Result<UIPageUIComicInList> {
+    let key = format!("COMIC_SEARCH${}${}${}${}", q_type, q, limit, offset);
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move {
+            CLIENT
+                .read()
+                .await
+                .comic_search(q_type.as_str(), q.as_str(), offset, limit)
+                .await
+        }),
+    ))
+}
+
 pub fn view_comic_info(
     comic_path_word: String,
     comic_name: String,
