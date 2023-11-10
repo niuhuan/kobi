@@ -55,7 +55,9 @@ async fn test_recommends() -> Result<()> {
 
 #[tokio::test]
 async fn test_explore() -> Result<()> {
-    let value = client().explore(None, None, None, 0, 21).await?;
+    let value = client()
+        .explore(Some("-datetime_updated"), None, None, 0, 21)
+        .await?;
     println!("{}", serde_json::to_string(&value).unwrap());
     Ok(())
 }

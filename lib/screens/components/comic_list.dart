@@ -133,6 +133,8 @@ class CommonComicInfo {
   final String name;
   final String pathWord;
   final int popular;
+  final List<SexualOrientation> females;
+  final List<SexualOrientation> males;
 
   const CommonComicInfo({
     required this.author,
@@ -141,5 +143,7 @@ class CommonComicInfo {
     required this.name,
     required this.pathWord,
     required this.popular,
+    required this.females,
+    required this.males,
   });
 }

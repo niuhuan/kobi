@@ -1,7 +1,7 @@
 use crate::copy_client::{
     Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
     ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch, Group, LastChapter, Page,
-    RankItem, RecommendItem, Tag,
+    RankItem, RecommendItem, SexualOrientation, Tag,
 };
 use crate::database::active::comic_view_log;
 use crate::get_image_cache_dir;
@@ -97,6 +97,8 @@ pub struct UIComicInList {
     pub name: String,
     pub path_word: String,
     pub popular: i64,
+    pub females: Vec<SexualOrientation>,
+    pub males: Vec<SexualOrientation>,
 }
 
 impl From<ComicInList> for UIComicInList {
@@ -108,6 +110,8 @@ impl From<ComicInList> for UIComicInList {
             name: comic.name,
             path_word: comic.path_word,
             popular: comic.popular,
+            males: comic.males,
+            females: comic.females,
         }
     }
 }
@@ -162,6 +166,8 @@ pub struct UIComic {
     pub status: ClassifyItem,
     pub theme: Vec<Tag>,
     pub uuid: String,
+    pub females: Vec<SexualOrientation>,
+    pub males: Vec<SexualOrientation>,
 }
 
 impl From<Comic> for UIComic {
@@ -190,6 +196,8 @@ impl From<Comic> for UIComic {
             status: comic.status,
             theme: comic.theme,
             uuid: comic.uuid,
+            females: comic.females,
+            males: comic.males,
         }
     }
 }
@@ -412,19 +420,6 @@ impl From<Page<RecommendItem>> for UIPageUIComicInList {
     }
 }
 
-impl From<ComicInSearch> for UIComicInList {
-    fn from(comic: ComicInSearch) -> Self {
-        Self {
-            author: comic.author,
-            cover: comic.cover,
-            img_type: comic.img_type,
-            name: comic.name,
-            path_word: comic.path_word,
-            popular: comic.popular,
-        }
-    }
-}
-
 impl From<RecommendItem> for UIComicInList {
     fn from(comic: RecommendItem) -> Self {
         let comic = comic.comic;
@@ -435,6 +430,8 @@ impl From<RecommendItem> for UIComicInList {
             name: comic.name,
             path_word: comic.path_word,
             popular: comic.popular,
+            males: comic.males,
+            females: comic.females,
         }
     }
 }
@@ -506,7 +503,9 @@ pub struct UIComicInExplore {
     pub author: Vec<Author>,
     pub cover: String,
     pub popular: i64,
-    pub datetime_updated: String,
+    pub datetime_updated: Option<String>,
+    pub females: Vec<SexualOrientation>,
+    pub males: Vec<SexualOrientation>,
 }
 
 impl From<ComicInExplore> for UIComicInExplore {
@@ -519,6 +518,8 @@ impl From<ComicInExplore> for UIComicInExplore {
             cover: comic.cover,
             popular: comic.popular,
             datetime_updated: comic.datetime_updated,
+            females: comic.females,
+            males: comic.males,
         }
     }
 }

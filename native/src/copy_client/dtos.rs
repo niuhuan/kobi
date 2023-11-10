@@ -75,9 +75,9 @@ pub struct RankItem {
 pub struct ComicInList {
     pub author: Vec<Author>,
     pub cover: String,
-    pub females: Vec<Value>,
+    pub females: Vec<SexualOrientation>,
     pub img_type: i64,
-    pub males: Vec<Value>,
+    pub males: Vec<SexualOrientation>,
     pub name: String,
     pub path_word: String,
     pub popular: i64,
@@ -108,11 +108,11 @@ pub struct Comic {
     pub clubs: Vec<Value>,
     pub cover: String,
     pub datetime_updated: String,
-    pub females: Vec<Value>,
+    pub females: Vec<SexualOrientation>,
     pub free_type: ClassifyItem,
     pub img_type: i64,
     pub last_chapter: LastChapter,
-    pub males: Vec<Value>,
+    pub males: Vec<SexualOrientation>,
     pub name: String,
     pub parodies: Vec<Value>,
     pub path_word: String,
@@ -236,11 +236,18 @@ pub struct ComicInExplore {
     pub name: String,
     pub path_word: String,
     pub free_type: ClassifyItem,
-    pub females: Vec<Value>,
-    pub males: Vec<Value>,
+    pub females: Vec<SexualOrientation>,
+    pub males: Vec<SexualOrientation>,
     pub author: Vec<Author>,
     pub theme: Vec<Value>,
     pub cover: String,
     pub popular: i64,
-    pub datetime_updated: String,
+    pub datetime_updated: Option<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SexualOrientation {
+    pub name: String,
+    pub path_word: String,
+    pub gender: i64,
 }

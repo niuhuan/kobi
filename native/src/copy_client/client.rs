@@ -211,6 +211,7 @@ impl Client {
             "offset": offset,
             "limit": limit,
             "platform": 3,
+            "_update": true,
         });
         if let Some(ordering) = ordering {
             params["ordering"] = serde_json::json!(ordering);

@@ -70,6 +70,8 @@ class RankTypeScreen extends StatelessWidget {
                   name: e.comic.name,
                   pathWord: e.comic.pathWord,
                   popular: e.comic.popular,
+                  males: e.comic.males,
+                  females: e.comic.females,
                 ))
             .toList(),
         total: result.total,

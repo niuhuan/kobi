@@ -20,6 +20,8 @@ class RecommendsScreen extends StatelessWidget {
                   name: e.name,
                   pathWord: e.pathWord,
                   popular: e.popular,
+                  females: e.females,
+                  males: e.males,
                 ))
             .toList(),
         total: result.total,

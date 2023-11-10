@@ -77,7 +77,14 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
       String orderingTitle = "默认";
       if (_keyOrdering != "") {
         for (var ordering in uiTags.ordering) {
-          if (ordering.pathWord == _keyOrdering) {
+          // if (ordering.pathWord == _keyOrdering) {
+          //   orderingTitle = "${ordering.name}(正序)";
+          //   break;
+          // } else if ("-${ordering.pathWord}" == _keyOrdering) {
+          //   orderingTitle = "${ordering.name}(倒序)";
+          //   break;
+          // }
+          if ("-${ordering.pathWord}" == _keyOrdering) {
             orderingTitle = ordering.name;
             break;
           }
@@ -94,8 +101,20 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
             ),
           ));
           for (var ordering in uiTags.ordering) {
+            // orderingItems.add(PopupMenuItem<String>(
+            //   value: "-${ordering.pathWord}",
+            //   child: ListTile(
+            //     title: Text("${ordering.name}(倒序)"),
+            //   ),
+            // ));
+            // orderingItems.add(PopupMenuItem<String>(
+            //   value: ordering.pathWord,
+            //   child: ListTile(
+            //     title: Text("${ordering.name}(正序)"),
+            //   ),
+            // ));
             orderingItems.add(PopupMenuItem<String>(
-              value: ordering.pathWord,
+              value: "-${ordering.pathWord}",
               child: ListTile(
                 title: Text(ordering.name),
               ),
@@ -256,6 +275,8 @@ class DiscoveryFetch extends StatelessWidget {
                   name: e.name,
                   pathWord: e.pathWord,
                   popular: e.popular,
+                  males: e.males,
+                  females: e.females,
                 ))
             .toList(),
         total: result.total,
