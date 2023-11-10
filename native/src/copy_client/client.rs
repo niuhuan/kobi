@@ -1,7 +1,7 @@
 pub use super::types::*;
 use crate::copy_client::{
-    ChapterData, ComicChapter, ComicData, ComicInSearch, ComicQuery, Page, RankItem, RecommendItem,
-    Response, Tags,
+    ChapterData, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, Page,
+    RankItem, RecommendItem, Response, Tags,
 };
 use reqwest::Method;
 use std::str::FromStr;
@@ -197,6 +197,32 @@ impl Client {
             }),
         )
         .await
+    }
+
+    pub async fn explore(
+        &self,
+        ordering: Option<&str>,
+        top: Option<&str>,
+        theme: Option<&str>,
+        offset: u64,
+        limit: u64,
+    ) -> Result<Page<ComicInExplore>> {
+        let mut params = serde_json::json!({
+            "offset": offset,
+            "limit": limit,
+            "platform": 3,
+        });
+        if let Some(ordering) = ordering {
+            params["ordering"] = serde_json::json!(ordering);
+        }
+        if let Some(top) = top {
+            params["top"] = serde_json::json!(top);
+        }
+        if let Some(theme) = theme {
+            params["theme"] = serde_json::json!(theme);
+        }
+        self.request(reqwest::Method::GET, "/api/v3/comics", params)
+            .await
     }
 
     pub async fn download_image(&self, url: &str) -> Result<bytes::Bytes> {

@@ -24,9 +24,9 @@ async fn test_request() -> Result<()> {
     let value = client()
         .request(
             reqwest::Method::GET,
-            "/api/v3/recs",
+            "/api/v3/comics",
             json!({
-                "pos": 3200102,
+                "_update": true,
                 "limit": 21,
                 "offset": 42,
                 "platform": 3,
@@ -49,6 +49,13 @@ async fn test_chapters() -> Result<()> {
 #[tokio::test]
 async fn test_recommends() -> Result<()> {
     let value = client().recommends(0, 21).await?;
+    println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_explore() -> Result<()> {
+    let value = client().explore(None, None, None, 0, 21).await?;
     println!("{}", serde_json::to_string(&value).unwrap());
     Ok(())
 }

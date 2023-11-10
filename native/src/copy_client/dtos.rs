@@ -230,3 +230,17 @@ pub struct RecommendItem {
     pub type_field: i64,
     pub comic: ComicInList,
 }
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ComicInExplore {
+    pub name: String,
+    pub path_word: String,
+    pub free_type: ClassifyItem,
+    pub females: Vec<Value>,
+    pub males: Vec<Value>,
+    pub author: Vec<Author>,
+    pub theme: Vec<Value>,
+    pub cover: String,
+    pub popular: i64,
+    pub datetime_updated: chrono::NaiveDate,
+}
