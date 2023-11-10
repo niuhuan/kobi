@@ -76,9 +76,9 @@ jobs:
           - target: windows
             host: windows-latest
           - target: macos
-            host: macos-11
+            host: macos-latest
           - target: ios
-            host: macos-11
+            host: macos-latest
           - target: android-arm32
             host: ubuntu-latest
           - target: android-arm64
@@ -357,8 +357,8 @@ jobs:
       - name: Sign APK (Android)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
         env:
-          KEY_FILE_BASE64: ${{ secrets.KEY_FILE_BASE64 }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ANDROID_JKS_BASE64: ${{ secrets.ANDROID_JKS_BASE64 }}
+          ANDROID_JKS_PASSWORD: ${{ secrets.ANDROID_JKS_PASSWORD }}
         run: |
           cd kobi
           echo $ANDROID_JKS_BASE64 > key.jks.base64
