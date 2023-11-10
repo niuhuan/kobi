@@ -145,7 +145,7 @@ jobs:
       - name: Install cargo-expand
         if: steps.check_asset.outputs.skip_build != 'true'
         run: |
-          cargo install cargo-expand
+          cargo install cargo-expand --force
 
       - name: Cache Flutter dependencies (Linux/Android)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' || matrix.config.target == 'linux' )
