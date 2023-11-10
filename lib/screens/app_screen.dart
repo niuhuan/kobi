@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kobi/screens/books_screen.dart';
 import 'rank_screen.dart';
 import 'recommends_screen.dart';
 import 'user_screen.dart';
@@ -86,7 +87,7 @@ class _AppScreenState extends State<AppScreen> {
       Icons.filter_list_sharp,
     ),
     AppScreenData(
-      DiscoveryScreen(),
+      BooksScreen(),
       '书架',
       Icons.book_outlined,
     ),

@@ -523,3 +523,11 @@ impl From<ComicInExplore> for UIComicInExplore {
         }
     }
 }
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageUIViewLog {
+    pub list: Vec<UIViewLog>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}

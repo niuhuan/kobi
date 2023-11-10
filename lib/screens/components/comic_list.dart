@@ -98,31 +98,38 @@ class CommonComicCard extends StatelessWidget {
                     color: Colors.red.shade300,
                   ),
                 ),
-                Container(
-                  height: 5,
-                ),
-                Text.rich(TextSpan(children: [
-                  const WidgetSpan(
-                    child: Icon(
-                      Icons.local_fire_department,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: comic.popular.toString(),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ])),
+                ..._popular(),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  List<Widget> _popular() {
+    if (comic.popular == 0) return [];
+    return [
+      Container(
+        height: 5,
+      ),
+      Text.rich(TextSpan(children: [
+        const WidgetSpan(
+          child: Icon(
+            Icons.local_fire_department,
+            size: 16,
+            color: Colors.grey,
+          ),
+        ),
+        TextSpan(
+          text: comic.popular.toString(),
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+      ])),
+    ];
   }
 }
 

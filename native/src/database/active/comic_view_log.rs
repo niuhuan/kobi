@@ -1,5 +1,6 @@
 use crate::database::active::ACTIVE_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
+use anyhow::anyhow;
 use sea_orm::entity::prelude::*;
 use sea_orm::QueryOrder;
 use sea_orm::QuerySelect;
@@ -86,14 +87,20 @@ pub(crate) async fn view_page(model: Model) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub(crate) async fn load_view_logs(page: i64) -> anyhow::Result<Vec<Model>> {
+pub(crate) async fn load_view_logs(offset: u64, limit: u64) -> anyhow::Result<Vec<Model>> {
     let db = ACTIVE_DATABASE.get().unwrap().lock().await;
     Ok(Entity::find()
         .order_by_desc(Column::ViewTime)
-        .offset(page as u64 * 20)
-        .limit(20)
+        .offset(offset)
+        .limit(limit)
         .all(db.deref())
         .await?)
+}
+
+pub(crate) async fn count() -> anyhow::Result<u64> {
+    let db = ACTIVE_DATABASE.get().unwrap().lock().await;
+    let count = Entity::find().count(db.deref()).await?;
+    Ok(count)
 }
 
 pub(crate) async fn view_log_by_comic_path_word(

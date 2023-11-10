@@ -9,7 +9,7 @@ use std::convert::TryInto;
 use std::ops::Deref;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "download_comic_chapter")]
+#[sea_orm(table_name = "download_comic_group")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub comic_path_word: String,

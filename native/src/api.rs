@@ -4,7 +4,7 @@ use crate::database::cache::{image_cache, web_cache};
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicInExplore, UIComicQuery, UIPageComicChapter,
-    UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UITags, UIViewLog,
+    UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{get_image_cache_dir, CLIENT, RUNTIME};
@@ -221,6 +221,19 @@ pub fn find_comic_view_log(path_word: String) -> Result<Option<UIViewLog>> {
                 None
             },
         )
+    })
+}
+
+pub fn list_comic_view_logs(offset: i64, limit: i64) -> Result<UIPageUIViewLog> {
+    block_on(async move {
+        let count = comic_view_log::count().await?;
+        let list = comic_view_log::load_view_logs(offset as u64, limit as u64).await?;
+        Ok(UIPageUIViewLog {
+            total: count as i64,
+            limit,
+            offset,
+            list: list.into_iter().map(UIViewLog::from).collect(),
+        })
     })
 }
 
