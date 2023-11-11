@@ -93,8 +93,8 @@ impl Client {
         &self,
         q_type: &str,
         q: &str,
-        limit: u64,
         offset: u64,
+        limit: u64,
     ) -> Result<Page<ComicInSearch>> {
         self.request(
             reqwest::Method::GET,

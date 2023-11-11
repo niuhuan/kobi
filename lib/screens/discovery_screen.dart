@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/bridge_generated.dart';
+import 'package:kobi/screens/comic_search_screen.dart';
 import 'package:kobi/screens/components/content_error.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart' as sb;
 import '../ffi.io.dart';
@@ -43,12 +44,12 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
     setState: setState,
     onSubmitted: (value) {
       if (value.isNotEmpty) {
-        // Navigator.push(
-        //   context,
-        //   mixRoute(
-        //     builder: (context) => SearchScreen(keyword: value),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ComicSearchScreen(initialQuery: value),
+          ),
+        );
       }
     },
     buildDefaultAppBar: _buildNormalAppBar,

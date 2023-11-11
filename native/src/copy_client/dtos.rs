@@ -101,6 +101,7 @@ pub struct Comic {
     pub author: Vec<Author>,
     pub b_404: bool,
     pub b_hidden: bool,
+    #[serde(default)]
     pub ban: i64,
     pub brief: String,
     pub close_comment: bool,

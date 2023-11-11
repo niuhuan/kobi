@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'bridge_generated.dart';
 
-const base = 'rust';
+const base = 'native';
 // final path = Platform.isWindows ? '$base.dll' : Platform.isMacOS ? "lib$base.dylib" : 'lib$base.so';
 // late final dylib = loadLibForFlutter(path);
 final dylib = Platform.isWindows

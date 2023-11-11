@@ -32,6 +32,13 @@ async fn test_request() -> Result<()> {
 }
 
 #[tokio::test]
+async fn test_comic() -> Result<()> {
+    let value = client().comic("dokunidakareteoboreteitai").await?;
+    println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
+
+#[tokio::test]
 async fn test_chapters() -> Result<()> {
     let value = client()
         .comic_chapter("fxzhanshijiuliumei", "default", 100, 0)
