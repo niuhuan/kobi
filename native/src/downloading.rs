@@ -71,6 +71,12 @@ async fn down_next_comic() -> anyhow::Result<()> {
         .await
         .expect("next_comic")
     {
+        if comic.cover_download_status == download_comic::STATUS_INIT {
+            down_cover(&comic).await;
+        }
+        if need_restart().await {
+            return Ok(());
+        }
         let chapters = download_comic_chapter::all_chapter(
             comic.path_word.as_str(),
             download_comic_chapter::STATUS_INIT,
@@ -84,8 +90,47 @@ async fn down_next_comic() -> anyhow::Result<()> {
             let _ = fetch_chapter(&chapter).await;
         }
         download_images(comic.path_word.clone()).await;
+        if need_restart().await {
+            return Ok(());
+        }
     }
     Ok(())
+}
+
+async fn down_cover(comic: &download_comic::Model) {
+    if let Ok(data) = CLIENT.download_image(comic.cover.as_str()).await {
+        if let Ok(format) = image::guess_format(&data) {
+            let format = if let Some(format) = format.extensions_str().first() {
+                format.to_string()
+            } else {
+                "".to_string()
+            };
+            if let Ok(image_) = image::load_from_memory(&data) {
+                let width = image_.width();
+                let height = image_.height();
+                let path = join_paths(vec![
+                    get_download_dir().as_str(),
+                    comic.path_word.as_str(),
+                    "cover",
+                ]);
+                tokio::fs::write(path.as_str(), data)
+                    .await
+                    .expect("write image");
+                download_comic::download_cover_success(
+                    comic.path_word.as_str(),
+                    width,
+                    height,
+                    format.as_str(),
+                )
+                .await
+                .expect("download_cover_success");
+                return;
+            }
+        }
+    }
+    download_comic::download_cover_failed(comic.path_word.as_str())
+        .await
+        .expect("download_cover_failed");
 }
 
 async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Result<()> {

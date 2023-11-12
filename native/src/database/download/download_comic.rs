@@ -98,3 +98,33 @@ pub(crate) async fn success_image_count(
         .exec(db)
         .await
 }
+
+pub(crate) async fn download_cover_success(
+    path_word: &str,
+    width: u32,
+    height: u32,
+    format: &str,
+) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .filter(Column::PathWord.eq(path_word))
+        .col_expr(
+            Column::CoverDownloadStatus,
+            Expr::value(STATUS_DOWNLOAD_SUCCESS),
+        )
+        .col_expr(Column::CoverWidth, Expr::value(width))
+        .col_expr(Column::CoverHeight, Expr::value(height))
+        .col_expr(Column::CoverFormat, Expr::value(format))
+        .exec(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await
+}
+
+pub(crate) async fn download_cover_failed(path_word: &str) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .filter(Column::PathWord.eq(path_word))
+        .col_expr(
+            Column::CoverDownloadStatus,
+            Expr::value(STATUS_DOWNLOAD_FAILED),
+        )
+        .exec(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await
+}
