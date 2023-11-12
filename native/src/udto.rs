@@ -4,8 +4,9 @@ use crate::copy_client::{
     RankItem, RecommendItem, SexualOrientation, Tag,
 };
 use crate::database::active::comic_view_log;
-use crate::get_image_cache_dir;
+use crate::database::download::download_comic_page::Model;
 use crate::utils::join_paths;
+use crate::{downloading, get_image_cache_dir};
 use serde_derive::{Deserialize, Serialize};
 
 //////////////////////////////////////
@@ -251,6 +252,25 @@ impl From<crate::database::cache::image_cache::Model> for UICacheImage {
             image_format: model.image_format,
             image_width: model.image_width,
             image_height: model.image_height,
+        }
+    }
+}
+
+impl From<crate::database::download::download_comic_page::Model> for UICacheImage {
+    fn from(model: Model) -> Self {
+        Self {
+            abs_path: downloading::get_image_path(&model),
+            cache_key: model.cache_key,
+            cache_time: 0,
+            url: model.url,
+            useful: "".to_string(),
+            extends_field_first: None,
+            extends_field_second: None,
+            extends_field_third: None,
+            local_path: "".to_string(),
+            image_format: model.format,
+            image_width: model.width,
+            image_height: model.height,
         }
     }
 }
@@ -560,4 +580,64 @@ pub struct UIPageUIViewLog {
     pub total: i64,
     pub limit: i64,
     pub offset: i64,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIQueryDownloadComic {
+    pub path_word: String,
+    pub alias: Option<String>,
+    pub author: String,
+    pub b_404: bool,
+    pub b_hidden: bool,
+    pub ban: i64,
+    pub brief: String,
+    pub close_comment: bool,
+    pub close_roast: bool,
+    pub cover: String,
+    pub datetime_updated: String,
+    pub females: String,
+    pub free_type: String,
+    pub img_type: i64,
+    pub males: String,
+    pub name: String,
+    pub popular: i64,
+    pub reclass: String,
+    pub region: String,
+    pub restrict: String,
+    pub seo_baidu: String,
+    pub status: String,
+    pub theme: String,
+    pub uuid: String,
+    pub groups: Vec<UIQueryDownloadComicGroup>,
+    pub chapters: Vec<UIQueryDownloadComicChapter>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIQueryDownloadComicGroup {
+    pub comic_path_word: String,
+    pub group_path_word: String,
+    pub count: i64,
+    pub name: String,
+    pub group_rank: i64,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIQueryDownloadComicChapter {
+    pub comic_path_word: String,
+    pub uuid: String,
+    pub comic_id: String,
+    pub count: i64,
+    pub datetime_created: String,
+    pub group_path_word: String,
+    pub img_type: i64,
+    pub index: i64,
+    pub is_long: bool,
+    pub name: String,
+    pub news: String,
+    pub next: Option<String>,
+    pub ordered: i64,
+    pub prev: Option<String>,
+    pub size: i64,
+    #[serde(rename = "type")]
+    pub type_field: i64,
 }

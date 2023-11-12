@@ -1,12 +1,15 @@
 use crate::database::download::{download_comic, DOWNLOAD_DATABASE};
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
-use sea_orm::sea_query::{Expr, IntoColumnRef, SimpleExpr};
-use sea_orm::EntityTrait;
 use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
+use sea_orm::{EntityTrait, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
+
+pub(crate) const STATUS_INIT: i64 = 0;
+pub(crate) const STATUS_FETCH_SUCCESS: i64 = 1;
+pub(crate) const STATUS_FETCH_FAILED: i64 = 2;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "download_comic_chapter")]
@@ -58,4 +61,29 @@ pub(crate) async fn init() {
         )
         .await;
     }
+}
+
+pub(crate) async fn all_chapter(
+    comic_path_word: &str,
+    status: impl Into<Option<i64>>,
+) -> anyhow::Result<Vec<Model>> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    let mut f = Entity::find().filter(Column::ComicPathWord.eq(comic_path_word));
+    if let Some(status) = status.into() {
+        f = f.filter(Column::DownloadStatus.eq(status));
+    }
+    let list = f.all(db.deref()).await?;
+    Ok(list)
+}
+
+pub(crate) async fn update_status(
+    db: &impl ConnectionTrait,
+    uuid: &str,
+    status: i64,
+) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .col_expr(Column::DownloadStatus, Expr::value(status))
+        .filter(Column::Uuid.eq(uuid))
+        .exec(db)
+        .await
 }

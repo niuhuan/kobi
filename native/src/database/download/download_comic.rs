@@ -8,6 +8,10 @@ use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
 
+pub(crate) const STATUS_INIT: i64 = 0;
+pub(crate) const STATUS_DOWNLOAD_SUCCESS: i64 = 1;
+pub(crate) const STATUS_DOWNLOAD_FAILED: i64 = 2;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "download_comic")]
 pub struct Model {
@@ -56,4 +60,12 @@ impl ActiveModelBehavior for ActiveModel {}
 pub(crate) async fn init() {
     let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
     create_table_if_not_exists(db.deref(), Entity).await;
+}
+
+pub(crate) async fn next_comic(status: i64) -> anyhow::Result<Option<Model>> {
+    Ok(Entity::find()
+        .filter(Column::DownloadStatus.eq(status))
+        .limit(1)
+        .one(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await?)
 }

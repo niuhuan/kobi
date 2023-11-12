@@ -1,6 +1,7 @@
 use crate::copy_client::{Author, ComicQuery, Tags};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
+use crate::database::download::download_comic_page;
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicInExplore, UIComicQuery, UIPageComicChapter,
@@ -39,8 +40,6 @@ pub fn get_proxy() -> Result<String> {
 pub fn set_proxy(proxy: String) -> Result<()> {
     block_on(async move {
         CLIENT
-            .read()
-            .await
             .set_agent(
                 if proxy.is_empty() {
                     reqwest::Client::builder()
@@ -60,13 +59,7 @@ pub fn rank(date_type: String, offset: u64, limit: u64) -> Result<UIPageRankItem
     block_on(web_cache::cache_first_map(
         key,
         Duration::from_secs(60 * 60 * 2),
-        Box::pin(async move {
-            CLIENT
-                .read()
-                .await
-                .comic_rank(date_type.as_str(), offset, limit)
-                .await
-        }),
+        Box::pin(async move { CLIENT.comic_rank(date_type.as_str(), offset, limit).await }),
     ))
 }
 
@@ -75,7 +68,7 @@ pub fn recommends(offset: u64, limit: u64) -> Result<UIPageUIComicInList> {
     block_on(web_cache::cache_first_map(
         key,
         Duration::from_secs(60 * 60 * 2),
-        Box::pin(async move { CLIENT.read().await.recommends(offset, limit).await }),
+        Box::pin(async move { CLIENT.recommends(offset, limit).await }),
     ))
 }
 
@@ -84,7 +77,7 @@ pub fn comic(path_word: String) -> Result<UIComicData> {
     block_on(web_cache::cache_first_map(
         key,
         Duration::from_secs(60 * 60 * 2),
-        Box::pin(async move { CLIENT.read().await.comic(path_word.as_str()).await }),
+        Box::pin(async move { CLIENT.comic(path_word.as_str()).await }),
     ))
 }
 
@@ -100,8 +93,6 @@ pub fn comic_chapters(
         Duration::from_secs(60 * 60 * 2),
         Box::pin(async move {
             CLIENT
-                .read()
-                .await
                 .comic_chapter(
                     comic_path_word.as_str(),
                     group_path_word.as_str(),
@@ -118,7 +109,7 @@ pub fn comic_query(path_word: String) -> Result<UIComicQuery> {
     block_on(web_cache::cache_first_map(
         key,
         Duration::from_secs(60 * 60 * 2),
-        Box::pin(async move { CLIENT.read().await.comic_query(path_word.as_str()).await }),
+        Box::pin(async move { CLIENT.comic_query(path_word.as_str()).await }),
     ))
 }
 
@@ -129,8 +120,6 @@ pub fn comic_chapter_data(comic_path_word: String, chapter_uuid: String) -> Resu
         Duration::from_secs(60 * 60 * 2),
         Box::pin(async move {
             CLIENT
-                .read()
-                .await
                 .comic_chapter_data(comic_path_word.as_str(), chapter_uuid.as_str())
                 .await
         }),
@@ -142,7 +131,7 @@ pub fn tags() -> Result<UITags> {
     block_on(web_cache::cache_first_map(
         key,
         Duration::from_secs(60 * 60 * 15),
-        Box::pin(async move { CLIENT.read().await.tags().await }),
+        Box::pin(async move { CLIENT.tags().await }),
     ))
 }
 
@@ -162,8 +151,6 @@ pub fn explorer(
         Duration::from_secs(60 * 60 * 2),
         Box::pin(async move {
             CLIENT
-                .read()
-                .await
                 .explore(
                     ordering.as_deref(),
                     top.as_deref(),
@@ -188,8 +175,6 @@ pub fn comic_search(
         Duration::from_secs(60 * 60 * 2),
         Box::pin(async move {
             CLIENT
-                .read()
-                .await
                 .comic_search(q_type.as_str(), q.as_str(), offset, limit)
                 .await
         }),
@@ -270,19 +255,14 @@ pub fn cache_image(
         if let Some(model) = image_cache::load_image_by_cache_key(cache_key.as_str()).await? {
             image_cache::update_cache_time(cache_key.as_str()).await?;
             Ok(UICacheImage::from(model))
-            // todo check downloads images has the same key
-            // } else if let Some((model, path)) = download_thread::download_ok_pic(url.clone()).await {
-            //     Ok(LocalImage {
-            //         abs_path: path,
-            //         local_path: hex::encode(md5::compute(&url).as_slice()),
-            //         image_format: model.format,
-            //         image_width: model.width as u32,
-            //         image_height: model.height as u32,
-            //     })
+        } else if let Some(model) = download_comic_page::has_download_pic(cache_key.clone()).await?
+        {
+            // check downloads images has the same key
+            Ok(UICacheImage::from(model))
         } else {
             let local_path = hex::encode(md5::compute(&url).as_slice());
             let abs_path = join_paths(vec![get_image_cache_dir().as_str(), &local_path]);
-            let bytes = CLIENT.read().await.download_image(url.as_str()).await?;
+            let bytes = CLIENT.download_image(url.as_str()).await?;
             let format = image::guess_format(bytes.as_bytes())?;
             let format = if let Some(format) = format.extensions_str().first() {
                 format.to_string()

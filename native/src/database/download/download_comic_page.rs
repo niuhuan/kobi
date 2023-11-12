@@ -2,17 +2,16 @@ use crate::database::download::{download_comic_chapter, DOWNLOAD_DATABASE};
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::Expr;
-use sea_orm::{ConnectionTrait, DeleteResult, QueryOrder};
-use sea_orm::{EntityTrait, QuerySelect};
+use sea_orm::{EntityTrait, IntoActiveModel, QuerySelect};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, Default)]
 #[sea_orm(table_name = "download_comic_page")]
 pub struct Model {
     pub comic_path_word: String,
     #[sea_orm(primary_key, auto_increment = false)]
-    pub chapter_uuid: i32,
+    pub chapter_uuid: String,
     #[sea_orm(primary_key, auto_increment = false)]
     pub image_index: i32,
     pub url: String,
@@ -91,4 +90,17 @@ pub(crate) async fn init() {
         )
         .await;
     }
+}
+
+pub(crate) async fn save(db: &impl ConnectionTrait, model: Model) -> Result<ActiveModel, DbErr> {
+    model.into_active_model().save(db).await
+}
+
+pub(crate) async fn has_download_pic(cache_key: String) -> anyhow::Result<Option<Model>> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    Ok(Entity::find()
+        .filter(Expr::col(Column::CacheKey).eq(cache_key))
+        .limit(1)
+        .one(db.deref())
+        .await?)
 }

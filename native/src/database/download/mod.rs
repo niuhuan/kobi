@@ -19,3 +19,26 @@ pub(crate) async fn init() {
     download_comic_chapter::init().await;
     download_comic_page::init().await;
 }
+
+pub(crate) async fn save_chapter_images(
+    chapter_uuid: String,
+    images: Vec<download_comic_page::Model>,
+) -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    db.transaction(|db| {
+        Box::pin(async move {
+            for image in images {
+                download_comic_page::save(db, image).await?;
+            }
+            download_comic_chapter::update_status(
+                db,
+                chapter_uuid.as_str(),
+                download_comic_chapter::STATUS_FETCH_SUCCESS,
+            )
+            .await?;
+            Ok::<(), DbErr>(())
+        })
+    })
+    .await?;
+    Ok(())
+}

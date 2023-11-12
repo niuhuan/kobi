@@ -14,6 +14,7 @@ pub mod api;
 mod bridge_generated;
 mod copy_client;
 mod database;
+mod downloading;
 mod udto;
 mod utils;
 
@@ -31,8 +32,8 @@ lazy_static! {
         .max_blocking_threads(30)
         .build()
         .unwrap();
-    pub(crate) static ref CLIENT: Arc<RwLock<Client>> =
-        Arc::new(RwLock::new(Client::new(reqwest::Client::new(), api_url(),)));
+    pub(crate) static ref CLIENT: Arc<Client> =
+        Arc::new(Client::new(reqwest::Client::new(), api_url()));
     static ref INIT_ED: Mutex<bool> = Mutex::new(false);
 }
 
@@ -63,13 +64,13 @@ pub fn init_root(path: &str) {
     create_dir_if_not_exists(DATABASE_DIR.get().unwrap());
     create_dir_if_not_exists(DOWNLOAD_DIR.get().unwrap());
     RUNTIME.block_on(init_database());
-    // RUNTIME.block_on(async {
-    //     *DOWNLOAD_AND_EXPORT_TO.lock().await =
-    //         property::load_property("download_and_export_to".to_owned())
-    //             .await
-    //             .unwrap()
-    // });
-    // RUNTIME.spawn(download_thread::start_download());
+    RUNTIME.block_on(async {
+        *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
+            database::properties::property::load_property("download_and_export_to".to_owned())
+                .await
+                .unwrap()
+    });
+    RUNTIME.spawn(downloading::start_download());
 }
 
 #[allow(dead_code)]
@@ -83,4 +84,8 @@ pub(crate) fn get_image_cache_dir() -> &'static String {
 
 pub(crate) fn get_database_dir() -> &'static String {
     DATABASE_DIR.get().unwrap()
+}
+
+pub(crate) fn get_download_dir() -> &'static String {
+    DOWNLOAD_DIR.get().unwrap()
 }
