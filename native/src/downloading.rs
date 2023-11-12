@@ -113,7 +113,9 @@ async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Resul
                 .await
                 .expect("save_chapter_images")
         }
-        Err(_) => {}
+        Err(_) => download::chapter_fetch_error(chapter.uuid.clone())
+            .await
+            .expect("chapter_fetch_error"),
     };
     Ok(())
 }

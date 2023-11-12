@@ -1,6 +1,7 @@
 use crate::database::connect_db;
 use once_cell::sync::OnceCell;
 use sea_orm::{DatabaseConnection, DbErr, TransactionTrait};
+use std::ops::Deref;
 use tokio::sync::Mutex;
 
 pub(crate) mod download_comic;
@@ -39,6 +40,17 @@ pub(crate) async fn save_chapter_images(
             Ok::<(), DbErr>(())
         })
     })
+    .await?;
+    Ok(())
+}
+
+pub(crate) async fn chapter_fetch_error(chapter_uuid: String) -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    download_comic_chapter::update_status(
+        db.deref(),
+        chapter_uuid.as_str(),
+        download_comic_chapter::STATUS_FETCH_FAILED,
+    )
     .await?;
     Ok(())
 }
