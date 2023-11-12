@@ -1,7 +1,6 @@
 use linked_hash_map::LinkedHashMap;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
-use std::collections::HashMap;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Response {

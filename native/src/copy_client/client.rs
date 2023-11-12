@@ -3,8 +3,6 @@ use crate::copy_client::{
     ChapterData, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, Page,
     RankItem, RecommendItem, Response, Tags,
 };
-use reqwest::Method;
-use std::str::FromStr;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 

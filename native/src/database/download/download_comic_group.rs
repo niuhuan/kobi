@@ -1,7 +1,6 @@
-use crate::database::download::{download_comic, DOWNLOAD_DATABASE};
+use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
-use sea_orm::sea_query::{Expr, IntoColumnRef, SimpleExpr};
 use sea_orm::EntityTrait;
 use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
 use serde_derive::{Deserialize, Serialize};

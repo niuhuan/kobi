@@ -1,10 +1,10 @@
-use crate::copy_client::{Author, ComicQuery, Tags};
+use crate::copy_client::Author;
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::download::download_comic_page;
 use crate::database::properties::property;
 use crate::udto::{
-    UICacheImage, UIChapterData, UIComicData, UIComicInExplore, UIComicQuery, UIPageComicChapter,
+    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter,
     UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
@@ -14,7 +14,6 @@ use image::EncodableLayout;
 use reqwest::Proxy;
 use std::future::Future;
 use std::time::Duration;
-use tokio::io::AsyncReadExt;
 
 pub fn init(root: String) {
     crate::init_root(&root);

@@ -93,7 +93,7 @@ pub async fn download_page_failed(chapter_uuid: String, idx: i32) -> anyhow::Res
         db.deref(),
         chapter_uuid.as_str(),
         idx,
-        download_comic_page::STATUS_DOWNLOAD_SUCCESS,
+        download_comic_page::STATUS_DOWNLOAD_FAILED,
         0,
         0,
         "".to_string(),

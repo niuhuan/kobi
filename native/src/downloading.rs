@@ -1,7 +1,7 @@
 use crate::database::download;
 use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
 use crate::utils::{create_dir_if_not_exists, join_paths};
-use crate::{get_download_dir, get_image_cache_dir, CLIENT};
+use crate::{get_download_dir, CLIENT};
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use std::collections::VecDeque;

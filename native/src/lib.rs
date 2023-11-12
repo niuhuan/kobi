@@ -6,7 +6,6 @@ use once_cell::sync::OnceCell;
 use std::sync::Arc;
 use std::sync::Mutex;
 use tokio::runtime;
-use tokio::sync::RwLock;
 use utils::create_dir_if_not_exists;
 use utils::join_paths;
 

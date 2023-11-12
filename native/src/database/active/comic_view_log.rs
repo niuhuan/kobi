@@ -1,6 +1,5 @@
 use crate::database::active::ACTIVE_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
-use anyhow::anyhow;
 use sea_orm::entity::prelude::*;
 use sea_orm::QueryOrder;
 use sea_orm::QuerySelect;

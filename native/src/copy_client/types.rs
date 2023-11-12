@@ -1,4 +1,3 @@
-use serde_derive::{Deserialize, Serialize};
 use std::backtrace::Backtrace;
 use std::fmt::{Display, Formatter};
 

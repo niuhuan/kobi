@@ -46,7 +46,7 @@ pub(crate) async fn init() {
 }
 
 pub(crate) async fn load_image_by_cache_key(cache_key: &str) -> anyhow::Result<Option<Model>> {
-    Ok(Entity::find_by_id(cache_key.clone())
+    Ok(Entity::find_by_id(cache_key)
         .one(CACHE_DATABASE.get().unwrap().lock().await.deref())
         .await?)
 }

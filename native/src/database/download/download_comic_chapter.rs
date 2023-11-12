@@ -1,4 +1,4 @@
-use crate::database::download::{download_comic, DOWNLOAD_DATABASE};
+use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
