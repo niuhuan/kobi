@@ -2,7 +2,7 @@ use crate::database::download::{download_comic_chapter, DOWNLOAD_DATABASE};
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::Expr;
-use sea_orm::{EntityTrait, IntoActiveModel, QuerySelect, UpdateResult};
+use sea_orm::{DeleteResult, EntityTrait, IntoActiveModel, QuerySelect, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
@@ -151,4 +151,14 @@ pub(crate) async fn is_all_page_downloaded(comic_path_word: &str) -> anyhow::Res
         .count(db.deref())
         .await?;
     Ok(count == 0)
+}
+
+pub(crate) async fn delete_by_comic_path_word(
+    db: &impl ConnectionTrait,
+    comic_path_word: &str,
+) -> Result<DeleteResult, DbErr> {
+    Entity::delete_many()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .exec(db)
+        .await
 }

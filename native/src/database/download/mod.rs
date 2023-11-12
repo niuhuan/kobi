@@ -101,3 +101,18 @@ pub async fn download_page_failed(chapter_uuid: String, idx: i32) -> anyhow::Res
     .await?;
     Ok(())
 }
+
+pub(crate) async fn remove_all(comic_path_word: String) -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    db.transaction(|db| {
+        Box::pin(async move {
+            download_comic::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
+            download_comic_group::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
+            download_comic_chapter::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
+            download_comic_page::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
+            Ok::<(), DbErr>(())
+        })
+    })
+    .await?;
+    Ok(())
+}

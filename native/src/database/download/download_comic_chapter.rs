@@ -97,3 +97,13 @@ pub(crate) async fn is_all_chapter_fetched(comic_path_word: &str) -> anyhow::Res
         .await?;
     Ok(count == 0)
 }
+
+pub(crate) async fn delete_by_comic_path_word(
+    db: &impl ConnectionTrait,
+    comic_path_word: &str,
+) -> Result<DeleteResult, DbErr> {
+    Entity::delete_many()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .exec(db)
+        .await
+}

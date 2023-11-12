@@ -45,3 +45,13 @@ pub(crate) async fn init() {
         .await;
     }
 }
+
+pub(crate) async fn delete_by_comic_path_word(
+    db: &impl ConnectionTrait,
+    comic_path_word: &str,
+) -> Result<DeleteResult, DbErr> {
+    Entity::delete_many()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .exec(db)
+        .await
+}

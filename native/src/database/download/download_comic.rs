@@ -11,6 +11,7 @@ use std::ops::Deref;
 pub(crate) const STATUS_INIT: i64 = 0;
 pub(crate) const STATUS_DOWNLOAD_SUCCESS: i64 = 1;
 pub(crate) const STATUS_DOWNLOAD_FAILED: i64 = 2;
+pub(crate) const STATUS_DOWNLOAD_DELETING: i64 = 3;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "download_comic")]
@@ -145,5 +146,23 @@ pub(crate) async fn update_status(path_word: &str, status: i64) -> Result<Update
         .filter(Column::PathWord.eq(path_word))
         .col_expr(Column::DownloadStatus, Expr::value(status))
         .exec(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await
+}
+
+pub(crate) async fn next_deleting_comic() -> anyhow::Result<Option<Model>> {
+    Ok(Entity::find()
+        .filter(Column::DownloadStatus.eq(STATUS_DOWNLOAD_DELETING))
+        .limit(1)
+        .one(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await?)
+}
+
+pub(crate) async fn delete_by_comic_path_word(
+    db: &impl ConnectionTrait,
+    path_word: &str,
+) -> Result<DeleteResult, DbErr> {
+    Entity::delete_many()
+        .filter(Column::PathWord.eq(path_word))
+        .exec(db)
         .await
 }

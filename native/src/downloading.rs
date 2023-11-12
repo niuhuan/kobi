@@ -48,6 +48,7 @@ async fn download_pause() -> bool {
 
 pub(crate) async fn start_download() {
     loop {
+        process_deleting().await;
         tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
         // 检测是否暂停
         while download_pause().await {}
@@ -58,6 +59,19 @@ pub(crate) async fn start_download() {
         if need_restart().await {
             continue;
         }
+    }
+}
+
+async fn process_deleting() {
+    while let Some(comic) = download_comic::next_deleting_comic()
+        .await
+        .expect("next_deleting_comic")
+    {
+        let comic_dir = join_paths(vec![get_download_dir().as_str(), comic.path_word.as_str()]);
+        let _ = tokio::fs::remove_dir_all(comic_dir.as_str()).await;
+        download::remove_all(comic.path_word)
+            .await
+            .expect("remove_all");
     }
 }
 
