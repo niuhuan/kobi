@@ -2,10 +2,14 @@ use crate::database::download::{download_comic_chapter, DOWNLOAD_DATABASE};
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::Expr;
-use sea_orm::{EntityTrait, IntoActiveModel, QuerySelect};
+use sea_orm::{EntityTrait, IntoActiveModel, QuerySelect, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
+
+pub(crate) const STATUS_DOWNLOAD_SUCCESS: i64 = 1;
+pub(crate) const STATUS_DOWNLOAD_FAILED: i64 = 2;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, Default)]
 #[sea_orm(table_name = "download_comic_page")]
 pub struct Model {
@@ -103,4 +107,38 @@ pub(crate) async fn has_download_pic(cache_key: String) -> anyhow::Result<Option
         .limit(1)
         .one(db.deref())
         .await?)
+}
+
+pub(crate) async fn fetch(
+    comic_path_word: &str,
+    status: i64,
+    limit: u64,
+) -> anyhow::Result<Vec<Model>> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    Ok(Entity::find()
+        .filter(Expr::col(Column::ComicPathWord).eq(comic_path_word))
+        .filter(Column::DownloadStatus.eq(status))
+        .limit(limit)
+        .all(db.deref())
+        .await?)
+}
+
+pub(crate) async fn update_status(
+    db: &impl ConnectionTrait,
+    chapter_uuid: &str,
+    image_index: i32,
+    status: i64,
+    width: u32,
+    height: u32,
+    format: String,
+) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .col_expr(Column::DownloadStatus, Expr::value(status))
+        .col_expr(Column::Width, Expr::value(width))
+        .col_expr(Column::Height, Expr::value(height))
+        .col_expr(Column::Format, Expr::value(format))
+        .filter(Column::ChapterUuid.eq(chapter_uuid))
+        .filter(Column::ImageIndex.eq(image_index))
+        .exec(db)
+        .await
 }

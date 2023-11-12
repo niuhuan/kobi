@@ -1,9 +1,12 @@
 use crate::database::download;
 use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
-use crate::utils::join_paths;
+use crate::utils::{create_dir_if_not_exists, join_paths};
 use crate::{get_download_dir, get_image_cache_dir, CLIENT};
+use itertools::Itertools;
 use lazy_static::lazy_static;
+use std::collections::VecDeque;
 use std::ops::Deref;
+use std::sync::Arc;
 use tokio::sync::Mutex;
 
 pub(crate) fn get_image_path(model: &download_comic_page::Model) -> String {
@@ -79,10 +82,8 @@ async fn down_next_comic() -> anyhow::Result<()> {
                 return Ok(());
             }
             let _ = fetch_chapter(&chapter).await;
-            if need_restart().await {
-                return Ok(());
-            }
         }
+        download_images(comic.path_word.clone()).await;
     }
     Ok(())
 }
@@ -109,15 +110,116 @@ async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Resul
                     ..Default::default()
                 });
             }
-            download::save_chapter_images(chapter.uuid.clone(), images)
-                .await
-                .expect("save_chapter_images")
+            download::save_chapter_images(
+                chapter.comic_path_word.clone(),
+                chapter.uuid.clone(),
+                images,
+            )
+            .await
+            .expect("save_chapter_images")
         }
         Err(_) => download::chapter_fetch_error(chapter.uuid.clone())
             .await
             .expect("chapter_fetch_error"),
     };
     Ok(())
+}
+
+async fn download_images(comic_path_word: String) {
+    let comic_dir = join_paths(vec![get_download_dir().as_str(), comic_path_word.as_str()]);
+    create_dir_if_not_exists(comic_dir.as_str());
+    loop {
+        if need_restart().await {
+            break;
+        }
+        // 拉取
+        let pages = download_comic_page::fetch(
+            comic_path_word.as_str(),
+            download_comic_chapter::STATUS_INIT,
+            100,
+        )
+        .await
+        .expect("pages");
+        if pages.is_empty() {
+            break;
+        }
+        //
+        let mut chapters = vec![];
+        for page in &pages {
+            if !chapters.contains(&page.chapter_uuid) {
+                chapters.push(page.chapter_uuid.clone());
+            }
+        }
+        for x in chapters {
+            let chapter_dir = join_paths(vec![comic_dir.as_str(), x.as_str()]);
+            create_dir_if_not_exists(&chapter_dir);
+        }
+        // 获得线程数
+        let dtl = DOWNLOAD_THREAD.lock().await;
+        let d = *dtl;
+        drop(dtl);
+        // 多线程下载
+        let pages = Arc::new(Mutex::new(VecDeque::from(pages)));
+        let _ = futures_util::future::join_all(
+            num_iter::range(0, d)
+                .map(|_| download_line(pages.clone()))
+                .collect_vec(),
+        )
+        .await;
+    }
+}
+
+async fn download_line(
+    deque: Arc<Mutex<VecDeque<download_comic_page::Model>>>,
+) -> anyhow::Result<()> {
+    loop {
+        if need_restart().await {
+            break;
+        }
+        let mut model_stream = deque.lock().await;
+        let model = model_stream.pop_back();
+        drop(model_stream);
+        if let Some(image) = model {
+            let _ = download_image(image).await;
+        } else {
+            break;
+        }
+    }
+    Ok(())
+}
+
+async fn download_image(image: download_comic_page::Model) {
+    if let Ok(data) = CLIENT.download_image(image.url.as_str()).await {
+        if let Ok(format) = image::guess_format(&data) {
+            let format = if let Some(format) = format.extensions_str().first() {
+                format.to_string()
+            } else {
+                "".to_string()
+            };
+            if let Ok(image_) = image::load_from_memory(&data) {
+                let width = image_.width();
+                let height = image_.height();
+                let path = get_image_path(&image);
+                tokio::fs::write(path.as_str(), data)
+                    .await
+                    .expect("write image");
+                download::download_page_success(
+                    image.comic_path_word,
+                    image.chapter_uuid,
+                    image.image_index,
+                    width,
+                    height,
+                    format,
+                )
+                .await
+                .expect("download_page_success");
+                return;
+            }
+        }
+    }
+    download::download_page_failed(image.chapter_uuid.clone(), image.image_index)
+        .await
+        .expect("download_page_failed");
 }
 
 fn url_to_cache_key(url_str: &str) -> String {

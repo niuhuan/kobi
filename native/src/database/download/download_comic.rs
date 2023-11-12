@@ -2,8 +2,8 @@ use crate::database::download::{download_comic, DOWNLOAD_DATABASE};
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::{Expr, IntoColumnRef, SimpleExpr};
-use sea_orm::EntityTrait;
 use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
+use sea_orm::{EntityTrait, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
@@ -68,4 +68,33 @@ pub(crate) async fn next_comic(status: i64) -> anyhow::Result<Option<Model>> {
         .limit(1)
         .one(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
         .await?)
+}
+
+pub(crate) async fn add_image_count(
+    db: &impl ConnectionTrait,
+    path_word: &str,
+    count: i64,
+) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .filter(Column::PathWord.eq(path_word))
+        .col_expr(
+            Column::ImageCount,
+            Expr::add(Expr::col(Column::ImageCount), count),
+        )
+        .exec(db)
+        .await
+}
+
+pub(crate) async fn success_image_count(
+    db: &impl ConnectionTrait,
+    path_word: &str,
+) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .filter(Column::PathWord.eq(path_word))
+        .col_expr(
+            Column::ImageCountSuccess,
+            Expr::add(Expr::col(Column::ImageCountSuccess), 1),
+        )
+        .exec(db)
+        .await
 }

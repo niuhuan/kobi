@@ -22,12 +22,15 @@ pub(crate) async fn init() {
 }
 
 pub(crate) async fn save_chapter_images(
+    comic_path_word: String,
     chapter_uuid: String,
     images: Vec<download_comic_page::Model>,
 ) -> anyhow::Result<()> {
     let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
     db.transaction(|db| {
         Box::pin(async move {
+            download_comic::add_image_count(db, comic_path_word.as_str(), images.len() as i64)
+                .await?;
             for image in images {
                 download_comic_page::save(db, image).await?;
             }
@@ -50,6 +53,50 @@ pub(crate) async fn chapter_fetch_error(chapter_uuid: String) -> anyhow::Result<
         db.deref(),
         chapter_uuid.as_str(),
         download_comic_chapter::STATUS_FETCH_FAILED,
+    )
+    .await?;
+    Ok(())
+}
+
+pub(crate) async fn download_page_success(
+    comic_path_word: String,
+    chapter_uuid: String,
+    idx: i32,
+    width: u32,
+    height: u32,
+    format: String,
+) -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    db.transaction(|db| {
+        Box::pin(async move {
+            download_comic_page::update_status(
+                db,
+                chapter_uuid.as_str(),
+                idx,
+                download_comic_page::STATUS_DOWNLOAD_SUCCESS,
+                width,
+                height,
+                format,
+            )
+            .await?;
+            download_comic::success_image_count(db, comic_path_word.as_str()).await?;
+            Ok::<(), DbErr>(())
+        })
+    })
+    .await?;
+    Ok(())
+}
+
+pub async fn download_page_failed(chapter_uuid: String, idx: i32) -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    download_comic_page::update_status(
+        db.deref(),
+        chapter_uuid.as_str(),
+        idx,
+        download_comic_page::STATUS_DOWNLOAD_SUCCESS,
+        0,
+        0,
+        "".to_string(),
     )
     .await?;
     Ok(())

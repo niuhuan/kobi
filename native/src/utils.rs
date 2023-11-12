@@ -18,7 +18,7 @@ pub(crate) fn join_paths<P: AsRef<Path>>(paths: Vec<P>) -> String {
     }
 }
 
-pub(crate) fn create_dir_if_not_exists(path: &String) {
+pub(crate) fn create_dir_if_not_exists(path: &str) {
     if !Path::new(path).exists() {
         std::fs::create_dir_all(path).unwrap();
     }
