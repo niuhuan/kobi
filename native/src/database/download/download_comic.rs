@@ -128,3 +128,22 @@ pub(crate) async fn download_cover_failed(path_word: &str) -> Result<UpdateResul
         .exec(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
         .await
 }
+
+pub(crate) async fn is_cover_download_success(path_word: &str) -> anyhow::Result<bool> {
+    let model = Entity::find()
+        .filter(Column::PathWord.eq(path_word))
+        .one(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await?;
+    Ok(model
+        .expect("is_cover_download_success none")
+        .cover_download_status
+        == STATUS_DOWNLOAD_SUCCESS)
+}
+
+pub(crate) async fn update_status(path_word: &str, status: i64) -> Result<UpdateResult, DbErr> {
+    Entity::update_many()
+        .filter(Column::PathWord.eq(path_word))
+        .col_expr(Column::DownloadStatus, Expr::value(status))
+        .exec(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await
+}

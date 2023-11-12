@@ -87,3 +87,13 @@ pub(crate) async fn update_status(
         .exec(db)
         .await
 }
+
+pub(crate) async fn is_all_chapter_fetched(comic_path_word: &str) -> anyhow::Result<bool> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    let count = Entity::find()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .filter(Column::DownloadStatus.ne(STATUS_FETCH_SUCCESS))
+        .count(db.deref())
+        .await?;
+    Ok(count == 0)
+}

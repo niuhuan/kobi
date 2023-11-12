@@ -93,6 +93,8 @@ async fn down_next_comic() -> anyhow::Result<()> {
         if need_restart().await {
             return Ok(());
         }
+        // sum
+        setup_download_status(comic.path_word).await;
     }
     Ok(())
 }
@@ -265,6 +267,26 @@ async fn download_image(image: download_comic_page::Model) {
     download::download_page_failed(image.chapter_uuid.clone(), image.image_index)
         .await
         .expect("download_page_failed");
+}
+
+async fn setup_download_status(comic_path_word: String) {
+    let comic_status = if download_comic::is_cover_download_success(comic_path_word.as_str())
+        .await
+        .expect("is_cover_download_success")
+        && download_comic_chapter::is_all_chapter_fetched(comic_path_word.as_str())
+            .await
+            .expect("is_all_chapter_fetched")
+        && download_comic_page::is_all_page_downloaded(comic_path_word.as_str())
+            .await
+            .expect("is_all_page_downloaded")
+    {
+        download_comic::STATUS_DOWNLOAD_SUCCESS
+    } else {
+        download_comic::STATUS_DOWNLOAD_FAILED
+    };
+    download_comic::update_status(comic_path_word.as_str(), comic_status)
+        .await
+        .expect("update_status");
 }
 
 fn url_to_cache_key(url_str: &str) -> String {
