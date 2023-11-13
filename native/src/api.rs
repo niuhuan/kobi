@@ -8,7 +8,7 @@ use crate::udto::{
     UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
-use crate::{get_image_cache_dir, CLIENT, RUNTIME};
+use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
 use anyhow::Result;
 use image::EncodableLayout;
 use reqwest::Proxy;
@@ -317,6 +317,10 @@ async fn clean_image(time: i64) -> Result<()> {
         }
     }
     Ok(())
+}
+
+async fn delete_download_comic(comic_path_word: String) -> Result<()> {
+    block_on(downloading::delete_download_comic(comic_path_word))
 }
 
 pub fn desktop_root() -> Result<String> {

@@ -311,3 +311,14 @@ fn url_to_cache_key(url_str: &str) -> String {
         "".to_string()
     }
 }
+
+pub(crate) async fn delete_download_comic(comic_path_word: String) -> anyhow::Result<()> {
+    download_comic::update_status(
+        comic_path_word.as_str(),
+        download_comic::STATUS_DOWNLOAD_DELETING,
+    )
+    .await
+    .expect("update_status");
+    set_restart().await;
+    Ok(())
+}
