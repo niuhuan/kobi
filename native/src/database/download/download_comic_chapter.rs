@@ -2,7 +2,9 @@ use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::OnConflict;
-use sea_orm::{ConnectionTrait, DeleteResult, InsertResult, IntoActiveModel, QuerySelect};
+use sea_orm::{
+    ConnectionTrait, DeleteResult, InsertResult, IntoActiveModel, QuerySelect, SelectColumns,
+};
 use sea_orm::{EntityTrait, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -143,4 +145,16 @@ pub(crate) async fn insert_or_update_info(
         Err(DbErr::RecordNotInserted) => Ok(()),
         Err(err) => Err(err),
     }
+}
+
+pub async fn in_download_chapter_uuid(comic_path_word: String) -> anyhow::Result<Vec<String>> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    let list = Entity::find()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .all(db.deref())
+        .await?
+        .into_iter()
+        .map(|v| v.uuid)
+        .collect::<Vec<_>>();
+    Ok(list)
 }

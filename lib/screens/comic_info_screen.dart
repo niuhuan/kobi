@@ -5,6 +5,7 @@ import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/components/comic_list.dart';
 
+import 'comic_download_screen.dart';
 import 'comic_reader_screen.dart';
 import 'components/images.dart';
 import 'components/router.dart';
@@ -277,7 +278,16 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
               ) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return IconButton(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ComicDownloadScreen(
+                            comic: _comic.comic,
+                            groupChaptersMap: _gcMap,
+                          ),
+                        ),
+                      );
+                    },
                     icon: Icon(
                       Icons.download,
                       color: theme.textTheme.bodyMedium?.color,

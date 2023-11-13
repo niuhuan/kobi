@@ -1,7 +1,7 @@
 use crate::copy_client::Author;
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
-use crate::database::download::download_comic_page;
+use crate::database::download::{download_comic_chapter, download_comic_page};
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter,
@@ -326,6 +326,12 @@ pub fn delete_download_comic(comic_path_word: String) -> Result<()> {
 
 pub fn append_download(data: UIQueryDownloadComic) -> Result<()> {
     block_on(downloading::append_download(data))
+}
+
+pub fn in_download_chapter_uuid(comic_path_word: String) -> Result<Vec<String>> {
+    block_on(download_comic_chapter::in_download_chapter_uuid(
+        comic_path_word,
+    ))
 }
 
 pub fn desktop_root() -> Result<String> {
