@@ -120,8 +120,8 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       body: Stack(children: [
         ..._background(),
         _comicInfo(),
-        _appbar(),
-        _floatBackButton(),
+        _titleBar(),
+        _floatButtons(),
       ]),
     );
   }
@@ -216,7 +216,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
     );
   }
 
-  Widget _appbar() {
+  Widget _titleBar() {
     final theme = Theme.of(context);
     return Opacity(
       opacity: _appbarOpacity,
@@ -244,7 +244,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
     );
   }
 
-  Widget _floatBackButton() {
+  Widget _floatButtons() {
     final theme = Theme.of(context);
     return Column(
       children: [
@@ -254,6 +254,13 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
             icon: Icon(
               Icons.arrow_back,
               color: theme.textTheme.bodyMedium?.color,
+              shadows: [
+                Shadow(
+                  color: Colors.white.withOpacity(1 - _appbarOpacity),
+                  offset: const Offset(0, 0),
+                  blurRadius: 5,
+                ),
+              ],
             ),
             onPressed: () {
               Navigator.of(context).pop();
@@ -261,7 +268,33 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           ),
           backgroundColor: Colors.transparent,
           elevation: .0,
-          actions: const [],
+          actions: [
+            FutureBuilder(
+              future: _fetchFuture,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<dynamic> snapshot,
+              ) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return IconButton(
+                    onPressed: () async {},
+                    icon: Icon(
+                      Icons.download,
+                      color: theme.textTheme.bodyMedium?.color,
+                      shadows: [
+                        Shadow(
+                          color: Colors.white.withOpacity(1 - _appbarOpacity),
+                          offset: const Offset(0, 0),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -342,14 +375,12 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   List<Widget> _groupTitle(Group key) {
     return [
       Center(
-        child: Text(
-          "----  ${key.name}  ----",
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-            height: 2,
-          )
-        ),
+        child: Text("----  ${key.name}  ----",
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+              height: 2,
+            )),
       ),
     ];
   }

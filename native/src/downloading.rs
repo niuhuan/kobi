@@ -325,5 +325,6 @@ pub(crate) async fn delete_download_comic(comic_path_word: String) -> anyhow::Re
 }
 
 pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
+    download::append_download(data.clone()).await?;
     Ok(())
 }

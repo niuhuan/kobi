@@ -603,7 +603,7 @@ pub struct UIQueryDownloadComic {
     pub popular: i64,
     pub reclass: String,
     pub region: String,
-    pub restrict: String,
+    pub restrict1: String,
     pub seo_baidu: String,
     pub status: String,
     pub theme: String,

@@ -113,6 +113,7 @@ pub(crate) async fn insert_or_update_info(
     db: &impl ConnectionTrait,
     model: Model,
 ) -> Result<(), DbErr> {
+    // 不需要更新downloadStatus
     let result = Entity::insert(model.into_active_model())
         .on_conflict(
             OnConflict::column(Column::Uuid)

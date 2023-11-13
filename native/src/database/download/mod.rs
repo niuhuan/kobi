@@ -1,4 +1,5 @@
 use crate::database::connect_db;
+use crate::udto::UIQueryDownloadComic;
 use once_cell::sync::OnceCell;
 use sea_orm::{DatabaseConnection, DbErr, TransactionTrait};
 use std::ops::Deref;
@@ -110,6 +111,92 @@ pub(crate) async fn remove_all(comic_path_word: String) -> anyhow::Result<()> {
             download_comic_group::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
             download_comic_chapter::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
             download_comic_page::delete_by_comic_path_word(db, comic_path_word.as_str()).await?;
+            Ok::<(), DbErr>(())
+        })
+    })
+    .await?;
+    Ok(())
+}
+
+pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    db.transaction(|db| {
+        Box::pin(async move {
+            download_comic::insert_or_update_info(
+                db,
+                download_comic::Model {
+                    path_word: data.path_word,
+                    alias: data.alias,
+                    author: data.author,
+                    b_404: data.b_404,
+                    b_hidden: data.b_hidden,
+                    ban: data.ban,
+                    brief: data.brief,
+                    close_comment: data.close_comment,
+                    close_roast: data.close_roast,
+                    cover: data.cover,
+                    datetime_updated: data.datetime_updated,
+                    females: data.females,
+                    free_type: data.free_type,
+                    img_type: data.img_type,
+                    males: data.males,
+                    name: data.name,
+                    popular: data.popular,
+                    reclass: data.reclass,
+                    region: data.region,
+                    restrict: data.restrict1,
+                    seo_baidu: data.seo_baidu,
+                    status: data.status,
+                    theme: data.theme,
+                    uuid: data.uuid,
+                    cover_download_status: 0,
+                    cover_format: "".to_string(),
+                    cover_width: 0,
+                    cover_height: 0,
+                    image_count: 0,
+                    image_count_success: 0,
+                    download_status: 0,
+                },
+            )
+            .await?;
+            for g in data.groups {
+                download_comic_group::insert_or_update_info(
+                    db,
+                    download_comic_group::Model {
+                        comic_path_word: g.comic_path_word,
+                        group_path_word: g.group_path_word,
+                        count: g.count,
+                        name: g.name,
+                        group_rank: g.group_rank,
+                    },
+                )
+                .await?;
+            }
+            for c in data.chapters {
+                download_comic_chapter::insert_or_update_info(
+                    db,
+                    download_comic_chapter::Model {
+                        comic_path_word: c.comic_path_word,
+                        uuid: c.uuid,
+                        comic_id: c.comic_id,
+                        count: c.count,
+                        datetime_created: c.datetime_created,
+                        group_path_word: c.group_path_word,
+                        img_type: c.img_type,
+                        index: c.index,
+                        is_long: c.is_long,
+                        name: c.name,
+                        news: c.news,
+                        next: c.next,
+                        ordered: c.ordered,
+                        prev: None,
+                        size: c.size,
+                        type_field: c.type_field,
+                        download_status: 0,
+                    },
+                )
+                .await?;
+            }
             Ok::<(), DbErr>(())
         })
     })
