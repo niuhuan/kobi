@@ -1,7 +1,8 @@
 use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
-use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
+use sea_orm::sea_query::OnConflict;
+use sea_orm::{ConnectionTrait, DeleteResult, InsertResult, IntoActiveModel, QuerySelect};
 use sea_orm::{EntityTrait, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -106,4 +107,39 @@ pub(crate) async fn delete_by_comic_path_word(
         .filter(Column::ComicPathWord.eq(comic_path_word))
         .exec(db)
         .await
+}
+
+pub(crate) async fn insert_or_update_info(
+    db: &impl ConnectionTrait,
+    model: Model,
+) -> Result<(), DbErr> {
+    let result = Entity::insert(model.into_active_model())
+        .on_conflict(
+            OnConflict::column(Column::Uuid)
+                .update_columns(vec![
+                    Column::ComicPathWord,
+                    Column::ComicId,
+                    Column::Count,
+                    Column::DatetimeCreated,
+                    Column::GroupPathWord,
+                    Column::ImgType,
+                    Column::Index,
+                    Column::IsLong,
+                    Column::Name,
+                    Column::News,
+                    Column::Next,
+                    Column::Ordered,
+                    Column::Prev,
+                    Column::Size,
+                    Column::TypeField,
+                ])
+                .to_owned(),
+        )
+        .exec(db)
+        .await;
+    match result {
+        Ok(_) => Ok(()),
+        Err(DbErr::RecordNotInserted) => Ok(()),
+        Err(err) => Err(err),
+    }
 }

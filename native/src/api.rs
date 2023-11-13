@@ -5,7 +5,8 @@ use crate::database::download::download_comic_page;
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter,
-    UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UITags, UIViewLog,
+    UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
+    UIQueryDownloadComic, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
@@ -321,6 +322,10 @@ async fn clean_image(time: i64) -> Result<()> {
 
 pub fn delete_download_comic(comic_path_word: String) -> Result<()> {
     block_on(downloading::delete_download_comic(comic_path_word))
+}
+
+pub fn append_download(data: UIQueryDownloadComic) -> Result<()> {
+    block_on(downloading::append_download(data))
 }
 
 pub fn desktop_root() -> Result<String> {

@@ -1,8 +1,9 @@
 use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
-use sea_orm::EntityTrait;
+use sea_orm::sea_query::OnConflict;
 use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
+use sea_orm::{EntityTrait, IntoActiveModel};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
@@ -53,4 +54,18 @@ pub(crate) async fn delete_by_comic_path_word(
         .filter(Column::ComicPathWord.eq(comic_path_word))
         .exec(db)
         .await
+}
+
+pub(crate) async fn insert_or_update_info(
+    db: &impl ConnectionTrait,
+    model: Model,
+) -> Result<(), DbErr> {
+    // https://www.sea-ql.org/SeaORM/docs/basic-crud/insert/
+    // Performing an upsert statement without inserting or updating any of the row will result in a DbErr::RecordNotInserted error.
+    // If you want RecordNotInserted to be an Ok instead of an error, call .do_nothing():
+    Entity::insert(model.into_active_model())
+        .on_conflict(OnConflict::new().do_nothing().to_owned())
+        .exec(db)
+        .await?;
+    Ok(())
 }

@@ -1,8 +1,8 @@
 use crate::database::create_table_if_not_exists;
 use crate::database::download::DOWNLOAD_DATABASE;
 use sea_orm::entity::prelude::*;
-use sea_orm::sea_query::Expr;
-use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
+use sea_orm::sea_query::{Expr, OnConflict};
+use sea_orm::{ConnectionTrait, DeleteResult, IntoActiveModel, QuerySelect};
 use sea_orm::{EntityTrait, UpdateResult};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -165,4 +165,51 @@ pub(crate) async fn delete_by_comic_path_word(
         .filter(Column::PathWord.eq(path_word))
         .exec(db)
         .await
+}
+
+pub(crate) async fn insert_or_update_info(
+    db: &impl ConnectionTrait,
+    model: Model,
+) -> Result<(), DbErr> {
+    let result = Entity::insert(model.into_active_model())
+        .on_conflict(
+            OnConflict::column(Column::PathWord)
+                .update_columns(vec![
+                    Column::Alias,
+                    Column::Author,
+                    Column::B404,
+                    Column::BHidden,
+                    Column::Ban,
+                    Column::Brief,
+                    Column::CloseComment,
+                    Column::CloseRoast,
+                    Column::Cover,
+                    Column::DatetimeUpdated,
+                    Column::Females,
+                    Column::FreeType,
+                    Column::ImgType,
+                    Column::Males,
+                    Column::Name,
+                    Column::Popular,
+                    Column::Reclass,
+                    Column::Region,
+                    Column::Restrict,
+                    Column::SeoBaidu,
+                    Column::Status,
+                    Column::Theme,
+                    Column::Uuid,
+                    Column::DownloadStatus,
+                ])
+                .to_owned(),
+        )
+        .exec(db)
+        .await;
+    // https://www.sea-ql.org/SeaORM/docs/basic-crud/insert/
+    // Performing an upsert statement without inserting or updating any of the row will result in a DbErr::RecordNotInserted error.
+    // If you want RecordNotInserted to be an Ok instead of an error, call .do_nothing():
+    if let Err(DbErr::RecordNotInserted) = result {
+        return Ok(());
+    }
+    result?;
+    Ok(())
 }
