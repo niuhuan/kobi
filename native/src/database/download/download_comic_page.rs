@@ -2,7 +2,9 @@ use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::Expr;
-use sea_orm::{DeleteResult, EntityTrait, IntoActiveModel, QuerySelect, UpdateResult};
+use sea_orm::{
+    DeleteResult, EntityTrait, InsertResult, IntoActiveModel, QuerySelect, UpdateResult,
+};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
@@ -96,8 +98,11 @@ pub(crate) async fn init() {
     }
 }
 
-pub(crate) async fn save(db: &impl ConnectionTrait, model: Model) -> Result<ActiveModel, DbErr> {
-    model.into_active_model().save(db).await
+pub(crate) async fn save(
+    db: &impl ConnectionTrait,
+    model: Model,
+) -> Result<InsertResult<ActiveModel>, DbErr> {
+    Entity::insert(model.into_active_model()).exec(db).await
 }
 
 pub(crate) async fn has_download_pic(cache_key: String) -> anyhow::Result<Option<Model>> {

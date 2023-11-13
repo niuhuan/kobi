@@ -64,7 +64,11 @@ pub(crate) async fn insert_or_update_info(
     // Performing an upsert statement without inserting or updating any of the row will result in a DbErr::RecordNotInserted error.
     // If you want RecordNotInserted to be an Ok instead of an error, call .do_nothing():
     Entity::insert(model.into_active_model())
-        .on_conflict(OnConflict::new().do_nothing().to_owned())
+        .on_conflict(
+            OnConflict::columns(vec![Column::ComicPathWord, Column::GroupPathWord])
+                .do_nothing()
+                .to_owned(),
+        )
         .exec(db)
         .await?;
     Ok(())

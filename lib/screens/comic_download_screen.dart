@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/comic_info_screen.dart';
 import 'package:kobi/screens/components/comic_list.dart';
+import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/components/content_loading.dart';
 
 class ComicDownloadScreen extends StatefulWidget {
@@ -228,6 +231,121 @@ class _ComicDownloadScreenState extends State<ComicDownloadScreen> {
     }
   }
 
-  _download() {
+  _download() async {
+    if (_selectedChapters.isEmpty) {
+      defaultToast(context, "请选择章节");
+      return;
+    }
+    try {
+      int gr = 0;
+      List<UIComicChapter> chapters = [];
+      for (var cList in widget.groupChaptersMap.values) {
+        for (var value in cList) {
+          if (_selectedChapters.contains(value.uuid)) {
+            chapters.add(value);
+          }
+        }
+      }
+      await api.appendDownload(
+        data: UIQueryDownloadComic(
+          pathWord: widget.comic.pathWord,
+          author: jsonEncode(widget.comic.author
+              .map((e) => {
+                    "path_word": e.pathWord,
+                    "name": e.name,
+                    "alias": e.alias,
+                  })
+              .toList()),
+          b404: widget.comic.b404,
+          bHidden: widget.comic.bHidden,
+          ban: widget.comic.ban,
+          brief: widget.comic.brief,
+          closeComment: widget.comic.closeComment,
+          closeRoast: widget.comic.closeRoast,
+          cover: widget.comic.cover,
+          datetimeUpdated: widget.comic.datetimeUpdated,
+          females: jsonEncode(widget.comic.females
+              .map((e) => {
+                    "name": e.name,
+                    "gender": e.gender,
+                    "path_word": e.pathWord,
+                  })
+              .toList()),
+          freeType: jsonEncode({
+            "value": widget.comic.freeType.value,
+            "display": widget.comic.freeType.display,
+          }),
+          imgType: widget.comic.imgType,
+          males: jsonEncode(widget.comic.males
+              .map((e) => {
+                    "name": e.name,
+                    "gender": e.gender,
+                    "path_word": e.pathWord,
+                  })
+              .toList()),
+          name: widget.comic.name,
+          popular: widget.comic.popular,
+          reclass: jsonEncode({
+            "value": widget.comic.reclass.value,
+            "display": widget.comic.reclass.display,
+          }),
+          region: jsonEncode({
+            "value": widget.comic.region.value,
+            "display": widget.comic.region.display,
+          }),
+          restrict1: jsonEncode({
+            "value": widget.comic.restrict.value,
+            "display": widget.comic.restrict.display,
+          }),
+          seoBaidu: widget.comic.seoBaidu,
+          status: jsonEncode({
+            "value": widget.comic.status.value,
+            "display": widget.comic.status.display,
+          }),
+          theme: jsonEncode(widget.comic.theme
+              .map((e) => {
+                    "path_word": e.pathWord,
+                    "name": e.name,
+                  })
+              .toList()),
+          uuid: widget.comic.uuid,
+          groups: widget.groupChaptersMap.keys
+              .map((e) => UIQueryDownloadComicGroup(
+                    comicPathWord: widget.comic.pathWord,
+                    groupPathWord: e.pathWord,
+                    name: e.name,
+                    count: e.count,
+                    groupRank: gr++,
+                  ))
+              .toList(),
+          chapters: chapters
+              .map((e) => UIQueryDownloadComicChapter(
+                    comicPathWord: e.comicPathWord,
+                    uuid: e.uuid,
+                    comicId: e.comicId,
+                    count: e.count,
+                    datetimeCreated: e.datetimeCreated,
+                    groupPathWord: e.groupPathWord,
+                    imgType: e.imgType,
+                    index: e.index,
+                    isLong: false,
+                    name: e.name,
+                    news: e.news,
+                    next: e.next,
+                    ordered: e.ordered,
+                    prev: e.prev,
+                    size: e.size,
+                    typeField: e.typeField,
+                  ))
+              .toList(),
+        ),
+      );
+      defaultToast(context, "已经添加到下载");
+      Navigator.of(context).pop();
+    } catch (e, s) {
+      print("$e\n$s");
+      defaultToast(context, "下载失败");
+      return;
+    }
   }
 }

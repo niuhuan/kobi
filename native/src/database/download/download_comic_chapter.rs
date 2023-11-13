@@ -118,9 +118,8 @@ pub(crate) async fn insert_or_update_info(
     // 不需要更新downloadStatus
     let result = Entity::insert(model.into_active_model())
         .on_conflict(
-            OnConflict::column(Column::Uuid)
+            OnConflict::columns(vec![Column::ComicPathWord, Column::Uuid])
                 .update_columns(vec![
-                    Column::ComicPathWord,
                     Column::ComicId,
                     Column::Count,
                     Column::DatetimeCreated,

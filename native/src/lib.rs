@@ -13,7 +13,7 @@ pub mod api;
 mod bridge_generated;
 mod copy_client;
 mod database;
-mod downloading;
+pub mod downloading;
 mod udto;
 mod utils;
 

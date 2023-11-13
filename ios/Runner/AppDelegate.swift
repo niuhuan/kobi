@@ -15,7 +15,7 @@ import Flutter
           Thread {
               if call.method == "root" {
                   
-                  let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                  let documentsPath = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)[0]
                   
                   result(documentsPath)
                   

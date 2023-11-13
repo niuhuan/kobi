@@ -15,6 +15,7 @@ pub(crate) fn get_image_path(model: &download_comic_page::Model) -> String {
         get_download_dir().as_str(),
         model.comic_path_word.as_str(),
         model.chapter_uuid.as_str(),
+        model.image_index.to_string().as_str(),
     ])
 }
 
@@ -47,7 +48,7 @@ async fn download_pause() -> bool {
     pausing
 }
 
-pub(crate) async fn start_download() {
+pub async fn start_download() {
     loop {
         process_deleting().await;
         tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
@@ -86,6 +87,8 @@ async fn down_next_comic() -> anyhow::Result<()> {
         .await
         .expect("next_comic")
     {
+        let comic_dir = join_paths(vec![get_download_dir().as_str(), comic.path_word.as_str()]);
+        create_dir_if_not_exists(comic_dir.as_str());
         if comic.cover_download_status == download_comic::STATUS_INIT {
             down_cover(&comic).await;
         }
@@ -160,7 +163,7 @@ async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Resul
             let mut images = vec![];
             for x in data.chapter.contents {
                 images.push(download_comic_page::Model {
-                    comic_path_word: chapter.group_path_word.clone(),
+                    comic_path_word: chapter.comic_path_word.clone(),
                     chapter_uuid: chapter.uuid.clone(),
                     image_index: {
                         let tmp = idx;
@@ -189,7 +192,6 @@ async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Resul
 
 async fn download_images(comic_path_word: String) {
     let comic_dir = join_paths(vec![get_download_dir().as_str(), comic_path_word.as_str()]);
-    create_dir_if_not_exists(comic_dir.as_str());
     loop {
         if need_restart().await {
             break;
@@ -222,12 +224,18 @@ async fn download_images(comic_path_word: String) {
         drop(dtl);
         // 多线程下载
         let pages = Arc::new(Mutex::new(VecDeque::from(pages)));
-        let _ = futures_util::future::join_all(
+        let results = futures_util::future::join_all(
             num_iter::range(0, d)
                 .map(|_| download_line(pages.clone()))
                 .collect_vec(),
         )
         .await;
+        //
+        for x in results {
+            if let Err(e) = x {
+                println!("download_line error: {:?}", e);
+            }
+        }
     }
 }
 
