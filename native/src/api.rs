@@ -319,7 +319,7 @@ async fn clean_image(time: i64) -> Result<()> {
     Ok(())
 }
 
-async fn delete_download_comic(comic_path_word: String) -> Result<()> {
+pub fn delete_download_comic(comic_path_word: String) -> Result<()> {
     block_on(downloading::delete_download_comic(comic_path_word))
 }
 
