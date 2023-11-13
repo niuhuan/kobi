@@ -206,7 +206,28 @@ class _ComicDownloadScreenState extends State<ComicDownloadScreen> {
     );
   }
 
-  _selectAll() {}
+  _selectAll() {
+    List<String> uuidList = [];
+    for (var cList in widget.groupChaptersMap.values) {
+      for (var value in cList) {
+        uuidList.add(value.uuid);
+      }
+    }
+    for (var value in _inDownloadedChapters) {
+      uuidList.remove(value);
+    }
+    if (uuidList.length == _selectedChapters.length) {
+      setState(() {
+        _selectedChapters.clear();
+      });
+    } else {
+      setState(() {
+        _selectedChapters.clear();
+        _selectedChapters.addAll(uuidList);
+      });
+    }
+  }
 
-  _download() {}
+  _download() {
+  }
 }
