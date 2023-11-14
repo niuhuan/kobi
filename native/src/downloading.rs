@@ -316,7 +316,7 @@ async fn setup_download_status(comic_path_word: String) {
         .expect("update_status");
 }
 
-fn url_to_cache_key(url_str: &str) -> String {
+pub(crate) fn url_to_cache_key(url_str: &str) -> String {
     let u = url::Url::parse(url_str);
     if let Ok(u) = u {
         u.path().to_string()

@@ -125,6 +125,7 @@ pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
             download_comic::insert_or_update_info(
                 db,
                 download_comic::Model {
+                    cover_cache_key: crate::downloading::url_to_cache_key(data.cover.as_str()),
                     path_word: data.path_word,
                     alias: data.alias,
                     author: data.author,

@@ -4,7 +4,7 @@ use crate::database::cache::{image_cache, web_cache};
 use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
 use crate::database::properties::property;
 use crate::udto::{
-    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter,
+    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UIPageComicChapter,
     UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
     UIQueryDownloadComic, UITags, UIViewLog,
 };
@@ -339,6 +339,13 @@ pub fn in_download_chapter_uuid(comic_path_word: String) -> Result<Vec<String>> 
 
 pub fn reset_fail_downloads() -> Result<()> {
     block_on(downloading::reset_fail_downloads())
+}
+
+pub fn download_comics() -> Result<Vec<UIDownloadComic>> {
+    Ok(block_on(download_comic::all())?
+        .into_iter()
+        .map(UIDownloadComic::from)
+        .collect())
 }
 
 pub fn desktop_root() -> Result<String> {

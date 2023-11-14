@@ -233,3 +233,10 @@ pub(crate) async fn has_download_cover(cache_key: String) -> anyhow::Result<Opti
         .await?;
     Ok(model)
 }
+
+pub(crate) async fn all() -> anyhow::Result<Vec<Model>> {
+    let models = Entity::find()
+        .all(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await?;
+    Ok(models)
+}
