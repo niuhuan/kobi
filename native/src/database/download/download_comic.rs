@@ -42,6 +42,7 @@ pub struct Model {
     pub theme: String,
     pub uuid: String,
     //
+    pub cover_cache_key: String,
     pub cover_download_status: i64,
     pub cover_format: String,
     pub cover_width: u32,
@@ -221,4 +222,14 @@ pub(crate) async fn reset_failed(db: &impl ConnectionTrait) -> Result<(), DbErr>
         .exec(db)
         .await?;
     Ok(())
+}
+
+pub(crate) async fn has_download_cover(cache_key: String) -> anyhow::Result<Option<Model>> {
+    let model = Entity::find()
+        .filter(Column::CoverCacheKey.eq(cache_key))
+        .filter(Column::CoverDownloadStatus.eq(STATUS_DOWNLOAD_SUCCESS))
+        .limit(1)
+        .one(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await?;
+    Ok(model)
 }

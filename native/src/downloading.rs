@@ -19,6 +19,14 @@ pub(crate) fn get_image_path(model: &download_comic_page::Model) -> String {
     ])
 }
 
+pub(crate) fn get_cover_path(model: &download_comic::Model) -> String {
+    join_paths(vec![
+        get_download_dir().as_str(),
+        model.path_word.as_str(),
+        "cover",
+    ])
+}
+
 lazy_static! {
     pub(crate) static ref RESTART_FLAG: Mutex<bool> = Mutex::new(false);
     pub(crate) static ref DOWNLOAD_AND_EXPORT_TO: Mutex<String> = Mutex::new("".to_owned());
@@ -128,11 +136,7 @@ async fn down_cover(comic: &download_comic::Model) {
             if let Ok(image_) = image::load_from_memory(&data) {
                 let width = image_.width();
                 let height = image_.height();
-                let path = join_paths(vec![
-                    get_download_dir().as_str(),
-                    comic.path_word.as_str(),
-                    "cover",
-                ]);
+                let path = get_cover_path(comic);
                 tokio::fs::write(path.as_str(), data)
                     .await
                     .expect("write image");

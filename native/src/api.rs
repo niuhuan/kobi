@@ -1,7 +1,7 @@
 use crate::copy_client::Author;
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
-use crate::database::download::{download_comic_chapter, download_comic_page};
+use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
 use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIPageComicChapter,
@@ -254,6 +254,9 @@ pub fn cache_image(
         let _ = hash_lock(&url).await;
         if let Some(model) = image_cache::load_image_by_cache_key(cache_key.as_str()).await? {
             image_cache::update_cache_time(cache_key.as_str()).await?;
+            Ok(UICacheImage::from(model))
+        } else if let Some(model) = download_comic::has_download_cover(cache_key.clone()).await? {
+            // check downloads images has the same key
             Ok(UICacheImage::from(model))
         } else if let Some(model) = download_comic_page::has_download_pic(cache_key.clone()).await?
         {

@@ -275,6 +275,26 @@ impl From<crate::database::download::download_comic_page::Model> for UICacheImag
     }
 }
 
+// form cover
+impl From<crate::database::download::download_comic::Model> for UICacheImage {
+    fn from(model: crate::database::download::download_comic::Model) -> Self {
+        Self {
+            abs_path: downloading::get_cover_path(&model),
+            cache_key: model.cover_cache_key,
+            cache_time: 0,
+            url: model.cover,
+            useful: "COMIC_COVER".to_string(),
+            extends_field_first: None,
+            extends_field_second: None,
+            extends_field_third: None,
+            local_path: "cover".to_string(),
+            image_format: model.cover_format,
+            image_width: model.cover_width,
+            image_height: model.cover_height,
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UIPageComicChapter {
     pub list: Vec<UIComicChapter>,
