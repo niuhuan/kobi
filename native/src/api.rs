@@ -348,6 +348,14 @@ pub fn download_comics() -> Result<Vec<UIDownloadComic>> {
         .collect())
 }
 
+pub fn download_is_pause() -> Result<bool> {
+    Ok(block_on(downloading::download_is_pause()))
+}
+
+pub fn download_set_pause(pause: bool) -> Result<()> {
+    Ok(block_on(downloading::download_set_pause(pause)))
+}
+
 pub fn desktop_root() -> Result<String> {
     #[cfg(target_os = "windows")]
     {

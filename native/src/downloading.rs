@@ -56,6 +56,18 @@ async fn download_pause() -> bool {
     pausing
 }
 
+pub(crate) async fn download_is_pause() -> bool {
+    let pause_flag = PAUSE_FLAG.lock().await;
+    return *pause_flag;
+}
+
+pub(crate) async fn download_set_pause(pause: bool) {
+    let mut pause_flag = PAUSE_FLAG.lock().await;
+    *pause_flag = pause;
+    drop(pause_flag);
+    set_restart().await;
+}
+
 pub async fn start_download() {
     loop {
         process_deleting().await;

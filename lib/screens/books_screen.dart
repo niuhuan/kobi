@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:kobi/screens/components/commons.dart';
 import '../bridge_generated.dart';
 import '../ffi.io.dart';
 import 'components/comic_list.dart';
@@ -11,7 +12,6 @@ class BooksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     ThemeData theme = Theme.of(context);
     return DefaultTabController(
       length: 2,
@@ -54,18 +54,16 @@ class HistoryScreen extends StatelessWidget {
       final result = await api.listComicViewLogs(offset: offset, limit: limit);
       return CommonPage<CommonComicInfo>(
         list: result.list
-            .map((e) =>
-            CommonComicInfo(
-              author:
-              _stringAuthors(e.comicAuthors),
-              cover: e.comicCover,
-              imgType: 1,
-              name: e.comicName,
-              pathWord: e.comicPathWord,
-              popular: 0,
-              males: [],
-              females: [],
-            ))
+            .map((e) => CommonComicInfo(
+                  author: _stringAuthors(e.comicAuthors),
+                  cover: e.comicCover,
+                  imgType: 1,
+                  name: e.comicName,
+                  pathWord: e.comicPathWord,
+                  popular: 0,
+                  males: [],
+                  females: [],
+                ))
             .toList(),
         total: result.total,
         limit: result.limit,
@@ -83,10 +81,13 @@ class DownloadsScreen extends StatefulWidget {
 }
 
 class _DownloadsScreenState extends State<DownloadsScreen> {
+
   List<UIDownloadComic> list = [];
+  bool paused = false;
 
   _init() async {
     list = await api.downloadComics();
+    paused = await api.downloadIsPause();
     setState(() {});
   }
 
@@ -98,9 +99,51 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Column(
       children: [
-        ...list.map((e) => DownloadComicCard(e)),
+        Container(
+          padding: const EdgeInsets.only(
+            left: 10,
+            right: 10,
+          ),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.shade400,
+                width: .5,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(child: Container()),
+              Text(paused ? "暂停中" : "下载中"),
+              IconButton(
+                onPressed: () async {
+                  await api.downloadSetPause(pause: !paused);
+                  await _init();
+                },
+                icon: Icon(paused ? Icons.play_arrow : Icons.pause),
+              ),
+              IconButton(
+                onPressed: () async {
+                  await api.resetFailDownloads();
+                  defaultToast(context, "失败的任务已经重置");
+                  await _init();
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              ...list.map((e) => DownloadComicCard(e)),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -161,12 +204,59 @@ class DownloadComicCard extends StatelessWidget {
                     color: Colors.red.shade300,
                   ),
                 ),
+                Container(
+                  height: 5,
+                ),
+                Row(children: [
+                  Icon(
+                    Icons.download,
+                    size: 15,
+                    color: Colors.grey.shade400,
+                  ),
+                  Text(
+                    "${comic.imageCountSuccess}/${comic.imageCount}",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  Expanded(child: Container()),
+                  _flag(),
+                ]),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _flag() {
+    if (comic.downloadStatus == 0) {
+      return Text(
+        "下载中",
+        style: TextStyle(
+          color: Colors.blue,
+        ),
+      );
+    }
+    if (comic.downloadStatus == 1) {
+      return Text(
+        "完成",
+        style: TextStyle(
+          color: Colors.green,
+        ),
+      );
+    }
+    if (comic.downloadStatus == 2) {
+      return Text(
+        "失败",
+        style: TextStyle(
+          color: Colors.red,
+        ),
+      );
+    }
+    return Container();
   }
 }
 
