@@ -213,3 +213,12 @@ pub(crate) async fn insert_or_update_info(
     result?;
     Ok(())
 }
+
+pub(crate) async fn reset_failed(db: &impl ConnectionTrait) -> Result<(), DbErr> {
+    Entity::update_many()
+        .col_expr(Column::DownloadStatus, Expr::value(STATUS_INIT))
+        .filter(Column::DownloadStatus.eq(STATUS_DOWNLOAD_FAILED))
+        .exec(db)
+        .await?;
+    Ok(())
+}

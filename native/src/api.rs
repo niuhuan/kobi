@@ -334,6 +334,10 @@ pub fn in_download_chapter_uuid(comic_path_word: String) -> Result<Vec<String>> 
     ))
 }
 
+pub fn reset_fail_downloads() -> Result<()> {
+    block_on(downloading::reset_fail_downloads())
+}
+
 pub fn desktop_root() -> Result<String> {
     #[cfg(target_os = "windows")]
     {

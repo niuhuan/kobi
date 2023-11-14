@@ -336,3 +336,9 @@ pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
     download::append_download(data.clone()).await?;
     Ok(())
 }
+
+pub async fn reset_fail_downloads() -> anyhow::Result<()> {
+    download::reset_fail_downloads().await?;
+    set_restart().await;
+    Ok(())
+}

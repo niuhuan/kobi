@@ -203,3 +203,17 @@ pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
     .await?;
     Ok(())
 }
+
+pub async fn reset_fail_downloads() -> anyhow::Result<()> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    db.transaction(|db| {
+        Box::pin(async move {
+            download_comic::reset_failed(db).await?;
+            download_comic_chapter::reset_failed(db).await?;
+            download_comic_page::reset_failed(db).await?;
+            Ok::<(), DbErr>(())
+        })
+    })
+    .await?;
+    Ok(())
+}

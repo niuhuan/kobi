@@ -9,6 +9,7 @@ use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::ops::Deref;
 
+pub(crate) const STATUS_INIT: i64 = 0;
 pub(crate) const STATUS_DOWNLOAD_SUCCESS: i64 = 1;
 pub(crate) const STATUS_DOWNLOAD_FAILED: i64 = 2;
 
@@ -166,4 +167,13 @@ pub(crate) async fn delete_by_comic_path_word(
         .filter(Column::ComicPathWord.eq(comic_path_word))
         .exec(db)
         .await
+}
+
+pub(crate) async fn reset_failed(db: &impl ConnectionTrait) -> Result<(), DbErr> {
+    Entity::update_many()
+        .col_expr(Column::DownloadStatus, Expr::value(STATUS_INIT))
+        .filter(Column::DownloadStatus.eq(STATUS_DOWNLOAD_FAILED))
+        .exec(db)
+        .await?;
+    Ok(())
 }

@@ -157,3 +157,12 @@ pub async fn in_download_chapter_uuid(comic_path_word: String) -> anyhow::Result
         .collect::<Vec<_>>();
     Ok(list)
 }
+
+pub(crate) async fn reset_failed(db: &impl ConnectionTrait) -> Result<(), DbErr> {
+    Entity::update_many()
+        .col_expr(Column::DownloadStatus, Expr::value(STATUS_INIT))
+        .filter(Column::DownloadStatus.eq(STATUS_FETCH_FAILED))
+        .exec(db)
+        .await?;
+    Ok(())
+}
