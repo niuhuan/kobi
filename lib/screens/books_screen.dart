@@ -12,33 +12,41 @@ class BooksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pager = ComicPager(fetcher: (offset, limit) async {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("历史记录"),
+      ),
+      body: const HistoryScreen(),
+    );
+  }
+}
+
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ComicPager(fetcher: (offset, limit) async {
       final result = await api.listComicViewLogs(offset: offset, limit: limit);
       return CommonPage<CommonComicInfo>(
         list: result.list
-            .map((e) =>
-            CommonComicInfo(
-              author: _mapAuthor(List.of(jsonDecode(e.comicAuthors)).cast()),
-              cover: e.comicCover,
-              imgType: 1,
-              name: e.comicName,
-              pathWord: e.comicPathWord,
-              popular: 0,
-              males: [],
-              females: [],
-            ))
+            .map((e) => CommonComicInfo(
+                  author:
+                      _mapAuthor(List.of(jsonDecode(e.comicAuthors)).cast()),
+                  cover: e.comicCover,
+                  imgType: 1,
+                  name: e.comicName,
+                  pathWord: e.comicPathWord,
+                  popular: 0,
+                  males: [],
+                  females: [],
+                ))
             .toList(),
         total: result.total,
         limit: result.limit,
         offset: result.offset,
       );
     });
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("历史记录"),
-      ),
-      body: pager,
-    );
   }
 }
 
