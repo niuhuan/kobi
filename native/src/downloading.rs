@@ -66,6 +66,12 @@ pub(crate) async fn download_set_pause(pause: bool) {
     *pause_flag = pause;
     drop(pause_flag);
     set_restart().await;
+    crate::database::properties::property::save_property(
+        "download_pause".to_owned(),
+        pause.to_string(),
+    )
+    .await
+    .expect("save download_pause");
 }
 
 pub async fn start_download() {

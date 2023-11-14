@@ -69,6 +69,13 @@ pub fn init_root(path: &str) {
                 .await
                 .unwrap()
     });
+    RUNTIME.block_on(async {
+        *downloading::PAUSE_FLAG.lock().await =
+            database::properties::property::load_property("download_pause".to_owned())
+                .await
+                .unwrap()
+                == "true"
+    });
     RUNTIME.spawn(downloading::start_download());
 }
 
