@@ -1,14 +1,16 @@
 pub use super::types::*;
 use crate::copy_client::{
-    ChapterData, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, Page,
-    RankItem, RecommendItem, Response, Tags,
+    ChapterData, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, LoginResult,
+    MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response, Tags,
 };
+use libc::passwd;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
 pub struct Client {
     agent: Mutex<Arc<reqwest::Client>>,
     api_host: Mutex<Arc<String>>,
+    token: Mutex<Arc<String>>,
 }
 
 impl Client {
@@ -16,6 +18,7 @@ impl Client {
         Self {
             agent: Mutex::new(agent.into()),
             api_host: Mutex::new(Arc::new(api_host.into())),
+            token: Mutex::new(Arc::new(String::new())),
         }
     }
 
@@ -34,6 +37,16 @@ impl Client {
         api_host.clone()
     }
 
+    pub async fn set_token(&self, token: impl Into<String>) {
+        let mut lock = self.token.lock().await;
+        *lock = Arc::new(token.into());
+    }
+
+    pub async fn get_token(&self) -> Arc<String> {
+        let token = self.token.lock().await;
+        token.clone()
+    }
+
     pub async fn request<T: for<'de> serde::Deserialize<'de>>(
         &self,
         method: reqwest::Method,
@@ -49,7 +62,10 @@ impl Client {
             format!("{}{}", &self.api_host_string().await.as_str(), path),
         );
         let request = request
-            .header("authorization", "Token")
+            .header(
+                "authorization",
+                format!("Token {}", self.get_token().await.as_str()),
+            )
             .header("referer", "com.copymanga.app-2.0.7")
             .header("User-Agent", "COPY/2.0.7")
             .header("source", "copyApp")
@@ -74,6 +90,50 @@ impl Client {
             return Err(Error::message(response.message));
         }
         Ok(serde_json::from_value(response.results)?)
+    }
+
+    pub async fn register(&self, username: &str, password: &str) -> Result<RegisterResult> {
+        self.request(
+            reqwest::Method::POST,
+            "/api/v3/register",
+            serde_json::json!({
+                "username": username,
+                "password": password,
+                "source": "freeSite",
+                "version": "2023.08.14",
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn login(&self, username: &str, password: &str) -> Result<LoginResult> {
+        let salt = chrono::Local::now().timestamp_millis() % (u16::MAX as i64);
+        let password_b64 = base64::encode(format!("{}-{}", password, salt).as_bytes());
+        self.request(
+            reqwest::Method::POST,
+            "/api/v3/login",
+            serde_json::json!({
+                "username": username,
+                "password": password_b64,
+                "salt": salt,
+                "source": "freeSite",
+                "version": "2023.08.14",
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn member_info(&self) -> Result<MemberInfo> {
+        self.request(
+            reqwest::Method::GET,
+            "/api/v3/member/info",
+            serde_json::json!({
+                "platform": 3,
+            }),
+        )
+        .await
     }
 
     pub async fn tags(&self) -> Result<Tags> {

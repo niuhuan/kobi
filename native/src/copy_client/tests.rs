@@ -1,6 +1,7 @@
 use super::client::Client;
 use anyhow::Result;
 use base64::Engine;
+use reqwest::Method;
 use serde_json::json;
 
 const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
