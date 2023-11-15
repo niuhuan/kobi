@@ -6,7 +6,7 @@ use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UILoginState,
     UIPageComicChapter, UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
-    UIQueryDownloadComic, UITags, UIViewLog,
+    UIQueryDownloadComic, UIRegisterResult, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
@@ -179,6 +179,41 @@ fn member_from_result(result: LoginResult) -> MemberInfo {
         day_downloads_refresh: "".to_owned(),
         day_downloads: 0,
     }
+}
+
+pub fn register(username: String, password: String) -> Result<UIRegisterResult> {
+    block_on(async {
+        match CLIENT.register(username.as_str(), password.as_str()).await {
+            Ok(data) => Ok(UIRegisterResult {
+                state: 1,
+                message: "".to_string(),
+                member: Some(data),
+            }),
+
+            Err(err) => match err.info {
+                ErrorInfo::Network(err) => Ok(UIRegisterResult {
+                    state: 2,
+                    message: err.to_string(),
+                    member: None,
+                }),
+                ErrorInfo::Message(err) => Ok(UIRegisterResult {
+                    state: 2,
+                    message: err,
+                    member: None,
+                }),
+                ErrorInfo::Convert(err) => Ok(UIRegisterResult {
+                    state: 2,
+                    message: err.to_string(),
+                    member: None,
+                }),
+                ErrorInfo::Other(err) => Ok(UIRegisterResult {
+                    state: 2,
+                    message: err.to_string(),
+                    member: None,
+                }),
+            },
+        }
+    })
 }
 
 pub fn rank(date_type: String, offset: u64, limit: u64) -> Result<UIPageRankItem> {

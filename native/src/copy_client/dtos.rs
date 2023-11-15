@@ -257,10 +257,10 @@ pub struct RegisterResult {
     pub user_id: String,
     pub uuid: String,
     pub datetime_created: String,
-    pub token: Value,
+    pub token: Option<String>,
     pub nickname: String,
     pub avatar: String,
-    pub invite_code: Value,
+    pub invite_code: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

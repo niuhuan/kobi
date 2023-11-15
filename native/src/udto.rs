@@ -1,7 +1,7 @@
 use crate::copy_client::{
     Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
     ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch, Group, LastChapter,
-    MemberInfo, Page, RankItem, RecommendItem, SexualOrientation, Tag,
+    MemberInfo, Page, RankItem, RecommendItem, RegisterResult, SexualOrientation, Tag,
 };
 use crate::database::active::comic_view_log;
 use crate::database::download::download_comic_page::Model;
@@ -742,4 +742,11 @@ pub struct UILoginState {
     pub state: i64, // 0:NO_SET , 1:LOGIN_SUCCESS , 2:LOGIN_FAIL
     pub message: String,
     pub member: Option<MemberInfo>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIRegisterResult {
+    pub state: i64, //, 1:SUCCESS , 2:FAIL
+    pub message: String,
+    pub member: Option<RegisterResult>,
 }
