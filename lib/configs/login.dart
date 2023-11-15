@@ -1,4 +1,6 @@
 import 'package:event/event.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:kobi/screens/components/commons.dart';
 import '../bridge_generated.dart';
 import '../ffi.io.dart';
 
@@ -17,7 +19,30 @@ UILoginState _loginState = const UILoginState(
 UILoginState get loginState => _loginState;
 
 Future initLogin() async {
+  _logging = true;
+  loginEvent.broadcast();
   _loginState = await api.initLoginState();
+  _logging = false;
+  loginEvent.broadcast();
+}
+
+Future login(String username, String password) async {
+  _logging = true;
+  loginEvent.broadcast();
+  _loginState = await api.login(username: username, password: password);
+  _logging = false;
+  loginEvent.broadcast();
+}
+
+Future register(BuildContext context, String username, String password) async {
+  _logging = true;
+  loginEvent.broadcast();
+  final result = await api.register(username: username, password: password);
+  if (result.state == 1) {
+    defaultToast(context, "注册成功, 请登录", seconds: 10);
+  } else {
+    defaultToast(context, result.message, seconds: 10);
+  }
   _logging = false;
   loginEvent.broadcast();
 }

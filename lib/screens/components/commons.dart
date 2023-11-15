@@ -8,14 +8,14 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../cross.dart';
 
 /// 显示一个toast
-void defaultToast(BuildContext context, String title) {
+void defaultToast(BuildContext context, String title, {int seconds = 2}) {
   showToast(
     title,
     context: context,
     position: StyledToastPosition.center,
     animation: StyledToastAnimation.scale,
     reverseAnimation: StyledToastAnimation.fade,
-    duration: const Duration(seconds: 2),
+    duration: Duration(seconds: seconds),
     animDuration: const Duration(seconds: 0, milliseconds: 800),
     curve: Curves.elasticOut,
     reverseCurve: Curves.linear,
