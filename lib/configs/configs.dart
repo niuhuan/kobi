@@ -1,4 +1,5 @@
 
+import 'package:kobi/configs/login.dart';
 import 'package:kobi/configs/proxy.dart';
 import 'package:kobi/configs/reader_controller_type.dart';
 import 'package:kobi/configs/reader_direction.dart';
@@ -14,4 +15,5 @@ Future initConfigs() async {
   await initReaderDirection();
   await initReaderSliderPosition();
   await initReaderType();
+  await initLogin();
 }

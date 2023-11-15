@@ -1,11 +1,11 @@
-use crate::copy_client::Author;
+use crate::copy_client::{Author, ErrorInfo};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
 use crate::database::properties::property;
 use crate::udto::{
-    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UIPageComicChapter,
-    UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
+    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UILoginState,
+    UIPageComicChapter, UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
     UIQueryDownloadComic, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
@@ -51,6 +51,59 @@ pub fn set_proxy(proxy: String) -> Result<()> {
             .await;
         property::save_property("proxy".to_owned(), proxy).await?;
         Ok(())
+    })
+}
+
+pub fn init_login_state() -> Result<UILoginState> {
+    block_on(async {
+        let token = property::load_property("token".to_owned()).await?;
+        if token.is_empty() {
+            Ok(UILoginState {
+                state: 0,
+                message: "".to_string(),
+                member: Default::default(),
+            })
+        } else {
+            CLIENT.set_token(token).await;
+            match CLIENT.member_info().await {
+                Ok(member) => Ok(UILoginState {
+                    state: 1,
+                    message: "".to_string(),
+                    member: Some(member),
+                }),
+                Err(err) => {
+                    match err.info {
+                        ErrorInfo::Network(e) => Ok(UILoginState {
+                            state: 2,
+                            message: e.to_string(),
+                            member: Default::default(),
+                        }),
+                        ErrorInfo::Message(_) => {
+                            // token 已经失效
+                            // todo : 用来token过期重新登录
+                            // property::load_property("username".to_owned()).await?;
+                            // property::load_property("password".to_owned()).await?;
+                            property::save_property("token".to_owned(), "".to_owned()).await?;
+                            Ok(UILoginState {
+                                state: 0,
+                                message: "".to_string(),
+                                member: None,
+                            })
+                        }
+                        ErrorInfo::Convert(e) => Ok(UILoginState {
+                            state: 2,
+                            message: e.to_string(),
+                            member: None,
+                        }),
+                        ErrorInfo::Other(e) => Ok(UILoginState {
+                            state: 2,
+                            message: e.to_string(),
+                            member: None,
+                        }),
+                    }
+                }
+            }
+        }
     })
 }
 
