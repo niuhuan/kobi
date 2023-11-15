@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
+import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/settings_screen.dart';
+
+import 'login_screen.dart';
 
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
@@ -9,7 +12,7 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('UserScreen'),
+        title: const Text('偏好'),
       ),
       body: ListView(
         children: [
@@ -56,17 +59,21 @@ class _UserInfoCardState extends State<UserInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 140,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 0.5,
-          color: Colors.grey.withOpacity(.5),
-          style: BorderStyle.solid,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _onTap,
+      child: Container(
+        height: 140,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 0.5,
+            color: Colors.grey.withOpacity(.5),
+            style: BorderStyle.solid,
+          ),
         ),
+        child: _buildCard(),
       ),
-      child: _buildCard(),
     );
   }
 
@@ -115,5 +122,18 @@ class _UserInfoCardState extends State<UserInfoCard> {
       throw Exception('Unknown loginState.state: ${loginState.state}');
     }
     return Text(name);
+  }
+
+  _onTap() async {
+    if (logging) {
+      defaultToast(context, "登录中，请稍后");
+      return;
+    }
+    if (loginState.state == 0 || loginState.state == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 }

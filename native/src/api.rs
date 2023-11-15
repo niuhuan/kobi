@@ -1,4 +1,4 @@
-use crate::copy_client::{Author, ErrorInfo};
+use crate::copy_client::{Author, ErrorInfo, LoginResult, MemberInfo};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
@@ -105,6 +105,80 @@ pub fn init_login_state() -> Result<UILoginState> {
             }
         }
     })
+}
+
+pub fn login(username: String, password: String) -> Result<UILoginState> {
+    block_on(async {
+        let result = CLIENT.login(username.as_str(), password.as_str()).await;
+        match result {
+            Ok(ok) => {
+                CLIENT.set_token(ok.token.clone()).await;
+                property::save_property("token".to_owned(), ok.token.clone()).await?;
+                property::save_property("username".to_owned(), username).await?;
+                property::save_property("password".to_owned(), password).await?;
+                Ok(UILoginState {
+                    state: 1,
+                    message: "".to_string(),
+                    member: Some(member_from_result(ok)),
+                })
+            }
+            Err(err) => match err.info {
+                ErrorInfo::Network(err) => Ok(UILoginState {
+                    state: 2,
+                    message: err.to_string(),
+                    member: None,
+                }),
+                ErrorInfo::Message(err) => Ok(UILoginState {
+                    state: 2,
+                    message: err,
+                    member: None,
+                }),
+                ErrorInfo::Convert(err) => Ok(UILoginState {
+                    state: 2,
+                    message: err.to_string(),
+                    member: None,
+                }),
+                ErrorInfo::Other(err) => Ok(UILoginState {
+                    state: 2,
+                    message: err.to_string(),
+                    member: None,
+                }),
+            },
+        }
+    })
+}
+
+fn member_from_result(result: LoginResult) -> MemberInfo {
+    MemberInfo {
+        user_id: result.user_id,
+        username: result.username,
+        nickname: result.nickname,
+        avatar: result.avatar,
+        is_authenticated: result.is_authenticated,
+        datetime_created: result.datetime_created,
+        b_verify_email: result.b_verify_email,
+        email: result.email,
+        mobile: result.mobile,
+        mobile_region: result.mobile_region,
+        point: result.point,
+        comic_vip: result.comic_vip,
+        comic_vip_end: result.comic_vip_end,
+        comic_vip_start: result.comic_vip_start,
+        cartoon_vip: result.cartoon_vip,
+        cartoon_vip_end: result.cartoon_vip_end,
+        cartoon_vip_start: result.cartoon_vip_start,
+        ads_vip_end: result.ads_vip_end,
+        close_report: result.close_report,
+        downloads: result.downloads,
+        vip_downloads: result.vip_downloads,
+        reward_downloads: result.reward_downloads,
+        invite_code: result.invite_code,
+        invited: result.invited,
+        b_sstv: result.b_sstv,
+        scy_answer: result.scy_answer,
+        day_downloads_refresh: "".to_owned(),
+        day_downloads: 0,
+    }
 }
 
 pub fn rank(date_type: String, offset: u64, limit: u64) -> Result<UIPageRankItem> {
