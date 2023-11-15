@@ -59,9 +59,27 @@ class _LoginScreenState extends State<LoginScreen> {
       return const ContentLoading(label: "处理中");
     }
     if (loginState.state == 1) {
-        return const Text("登录成功");
+      return const Text("登录成功");
     }
     return Column(children: [
+      const Center(
+        child: Text(
+          "启动时登录失败可使用之前的token重新登录 账号和密码的输入框被注册和登录按钮共用",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+      Container(height: 50),
+      ...(_token.isNotEmpty
+          ? <Widget>[
+              MaterialButton(
+                onPressed: () async {
+                  await initLogin();
+                },
+                child: const Text("使用之前的Token登录"),
+              ),
+              Container(height: 50),
+            ]
+          : []),
       ListTile(
         title: const Text("用户名"),
         subtitle: Text(_username),
@@ -108,17 +126,6 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         child: const Text("使用账号密码登录"),
       ),
-      ...(_token.isNotEmpty
-          ? <Widget>[
-              Container(height: 50),
-              MaterialButton(
-                onPressed: () async {
-                  await initLogin();
-                },
-                child: const Text("使用之前的Token登录"),
-              ),
-            ]
-          : []),
     ]);
   }
 

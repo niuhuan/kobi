@@ -750,3 +750,32 @@ pub struct UIRegisterResult {
     pub message: String,
     pub member: Option<RegisterResult>,
 }
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UILocalCollect {
+    pub path_word: String,
+    pub alias: Option<String>,
+    pub author: String,
+    pub b_404: bool,
+    pub b_hidden: bool,
+    pub ban: i64,
+    pub brief: String,
+    pub close_comment: bool,
+    pub close_roast: bool,
+    pub cover: String,
+    pub datetime_updated: String,
+    pub females: String,
+    pub free_type: String,
+    pub img_type: i64,
+    pub males: String,
+    pub name: String,
+    pub popular: i64,
+    pub reclass: String,
+    pub region: String,
+    pub restrict: String,
+    pub seo_baidu: String,
+    pub status: String,
+    pub theme: String,
+    pub uuid: String,
+    pub append_time: i64,
+}

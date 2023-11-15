@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/components/comic_pager.dart';
+import 'package:kobi/screens/recommends_screen.dart';
 
 import 'components/comic_list.dart';
 
@@ -16,7 +17,7 @@ class _RankScreenState extends State<RankScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Column(
         children: [
           SafeArea(
@@ -28,6 +29,7 @@ class _RankScreenState extends State<RankScreen> {
             color: theme.colorScheme.secondary.withOpacity(.025),
             child: const TabBar(
               tabs: [
+                Tab(text: '推荐'),
                 Tab(text: '天'),
                 Tab(text: '周'),
                 Tab(text: '月'),
@@ -38,6 +40,7 @@ class _RankScreenState extends State<RankScreen> {
           const Expanded(
             child: TabBarView(
               children: [
+                RecommendsScreen(),
                 RankTypeScreen(dateType: "day"),
                 RankTypeScreen(dateType: "week"),
                 RankTypeScreen(dateType: "month"),

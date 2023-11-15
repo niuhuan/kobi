@@ -9,7 +9,7 @@ use std::convert::TryInto;
 use std::ops::Deref;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "local_bookmark")]
+#[sea_orm(table_name = "local_collect")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub path_word: String,

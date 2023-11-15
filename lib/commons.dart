@@ -1,0 +1,21 @@
+
+import 'dart:convert';
+
+import 'bridge_generated.dart';
+
+List<Author> stringAuthors(String data) {
+  return mapAuthor(List.of(jsonDecode(data)).cast());
+}
+
+List<Author> mapAuthor(List<Map> list) {
+  List<Author> result = [];
+  for (var value in list) {
+    if (value['name'] != null && value['path_word'] != null) {
+      result.add(Author(
+        name: value['name'],
+        pathWord: value['path_word'],
+      ));
+    }
+  }
+  return result;
+}

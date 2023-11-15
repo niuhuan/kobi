@@ -29,12 +29,6 @@ class RecommendsScreen extends StatelessWidget {
         offset: result.offset,
       );
     });
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(0),
-        child: Container(),
-      ),
-      body: pager,
-    );
+    return pager;
   }
 }

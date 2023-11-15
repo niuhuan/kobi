@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/commons.dart';
+import 'package:kobi/screens/downloads_screen.dart';
+import 'package:kobi/screens/histories_screen.dart';
 import 'package:kobi/screens/settings_screen.dart';
 
+import 'local_collect_screen.dart';
 import 'login_screen.dart';
 
 class UserScreen extends StatelessWidget {
@@ -13,17 +16,50 @@ class UserScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('偏好'),
-      ),
-      body: ListView(
-        children: [
-          const UserInfoCard(),
-          ListTile(
-            title: const Text('设置'),
-            onTap: () {
+        actions: [
+          IconButton(
+            onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return const SettingsScreen();
               }));
             },
+            icon: const Icon(Icons.settings),
+          )
+        ],
+      ),
+      body: ListView(
+        children:  [
+          UserInfoCard(),
+          Container(height: 50,),
+          Divider(),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoriesScreen()),
+              );
+            },
+            title: const Text('历史记录(本地)'),
+          ),
+          Divider(),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DownloadsScreen()),
+              );
+            },
+            title: const Text('下载列表(本地)'),
+          ),
+          Divider(),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LocalCollectScreen()),
+              );
+            },
+            title: const Text('收藏列表(本地)'),
           ),
         ],
       ),

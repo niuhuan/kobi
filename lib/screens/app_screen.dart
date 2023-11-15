@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kobi/screens/books_screen.dart';
 import 'rank_screen.dart';
-import 'recommends_screen.dart';
 import 'user_screen.dart';
 import 'discovery_screen.dart';
 
@@ -13,7 +11,7 @@ class AppScreen extends StatefulWidget {
 }
 
 class _AppScreenState extends State<AppScreen> {
-  var _pageIndex = 2;
+  var _pageIndex = 1;
   late final _pageController = PageController(initialPage: _pageIndex);
 
   @override
@@ -77,19 +75,9 @@ class _AppScreenState extends State<AppScreen> {
       Icons.local_fire_department_outlined,
     ),
     AppScreenData(
-      RecommendsScreen(),
-      '推荐',
-      Icons.stars_outlined,
-    ),
-    AppScreenData(
       DiscoveryScreen(),
       '发现',
       Icons.filter_list_sharp,
-    ),
-    AppScreenData(
-      BooksScreen(),
-      '书架',
-      Icons.book_outlined,
     ),
     AppScreenData(
       UserScreen(),
