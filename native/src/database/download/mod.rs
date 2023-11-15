@@ -150,6 +150,7 @@ pub async fn append_download(data: UIQueryDownloadComic) -> anyhow::Result<()> {
                     status: data.status,
                     theme: data.theme,
                     uuid: data.uuid,
+                    append_time: chrono::Local::now().timestamp(),
                     cover_download_status: 0,
                     cover_format: "".to_string(),
                     cover_width: 0,

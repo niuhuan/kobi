@@ -42,6 +42,8 @@ pub struct Model {
     pub theme: String,
     pub uuid: String,
     //
+    pub append_time: i64,
+    //
     pub cover_cache_key: String,
     pub cover_download_status: i64,
     pub cover_format: String,
@@ -200,6 +202,7 @@ pub(crate) async fn insert_or_update_info(
                     Column::Theme,
                     Column::Uuid,
                     Column::DownloadStatus,
+                    Column::AppendTime,
                 ])
                 .to_owned(),
         )
