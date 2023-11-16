@@ -1047,6 +1047,7 @@ class _ComicReaderWebToonState extends _ComicReaderState {
   }
 
   Widget _buildList() {
+    List<String> urls = genUrls(widget.chapter);
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         // reload _images size
@@ -1093,7 +1094,7 @@ class _ComicReaderWebToonState extends _ComicReaderState {
 
           _images.add(
             LoadingCacheImage(
-              url: widget.chapter.contents[index].url,
+              url: urls[index],
               useful: 'comic_reader',
               extendsFieldFirst: widget.comic.pathWord,
               extendsFieldSecond: widget.chapter.groupPathWord,
@@ -1167,6 +1168,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
 
   @override
   void initState() {
+    List<String> urls = genUrls(widget.chapter);
     _pageController = PageController(initialPage: widget.startIndex);
     _gallery = PhotoViewGallery.builder(
       scrollDirection: widget.readerDirection == ReaderDirection.topToBottom
@@ -1187,7 +1189,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
         return PhotoViewGalleryPageOptions(
           filterQuality: FilterQuality.high,
           imageProvider: ImageCacheProvider(
-            url: widget.chapter.contents[index].url,
+            url: urls[index],
             useful: 'comic_reader',
             extendsFieldFirst: widget.comic.pathWord,
             extendsFieldSecond: widget.chapter.groupPathWord,
@@ -1321,6 +1323,7 @@ class _ListViewReaderState extends _ComicReaderState
   }
 
   Widget _buildList() {
+    List<String> urls = genUrls(widget.chapter);
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         // reload _images size
@@ -1367,7 +1370,7 @@ class _ListViewReaderState extends _ComicReaderState
 
           _images.add(
             LoadingCacheImage(
-              url: widget.chapter.contents[index].url,
+              url: urls[index],
               useful: 'comic_reader',
               extendsFieldFirst: widget.comic.pathWord,
               extendsFieldSecond: widget.chapter.groupPathWord,
@@ -1463,4 +1466,12 @@ class _ListViewReaderState extends _ComicReaderState
       _animationController.forward(from: 0);
     }
   }
+}
+
+List<String> genUrls(UIChapterAndContents chapter) {
+  final urls = List.generate(chapter.contents.length, (index) => "");
+  for (int i = 0; i < chapter.words.length; i++) {
+    urls[chapter.words[i].toInt()] = chapter.contents[i].url;
+  }
+  return urls;
 }
