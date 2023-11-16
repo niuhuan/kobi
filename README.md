@@ -12,6 +12,11 @@ kobi
 
 仓库地址 https://github.com/niuhuan/kobi
 
+## 预览
+
+![G01](images/G01.png)
+![G02](images/G02.png)
+
 ## 其他
 
 ### 数据保存位置
@@ -19,6 +24,10 @@ kobi
 - macos: `~/Library/Application Support/opensource/kobi`
 - windows: `%CURRENT_DIR%\data`
 - linux: `$HOME/.opensource/kobi`
+
+### 本地构建
+
+参考 Github Actions 的构建脚本
 
 ## 技术架构
 
