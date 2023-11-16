@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../bridge_generated.dart';
@@ -112,7 +111,14 @@ class DownloadComicCard extends StatelessWidget {
         ),
       );
     }
+    if (comic.downloadStatus == 3) {
+      return Text(
+        "删除",
+        style: TextStyle(
+          color: Colors.red,
+        ),
+      );
+    }
     return Container();
   }
 }
-

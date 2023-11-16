@@ -82,6 +82,35 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                         ),
                       );
                     },
+                    onLongPress: () async {
+                      // confirm delete
+                      final ok = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("确认删除"),
+                          content: const Text("删除后将无法恢复"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: const Text("取消"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              child: const Text("确认"),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (ok == true) {
+                        await api.deleteDownloadComic(
+                            comicPathWord: e.pathWord);
+                        await _init();
+                      }
+                    },
                     child: DownloadComicCard(e),
                   )),
             ],
