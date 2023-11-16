@@ -8,6 +8,8 @@ import 'package:kobi/screens/components/comic_list.dart';
 import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/components/content_loading.dart';
 
+import 'components/comic_card.dart';
+
 class ComicDownloadScreen extends StatefulWidget {
   final UIComic comic;
   final Map<Group, List<UIComicChapter>> groupChaptersMap;

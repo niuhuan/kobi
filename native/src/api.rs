@@ -1,10 +1,13 @@
 use crate::copy_client::{Author, ErrorInfo, LoginResult, MemberInfo};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
-use crate::database::download::{download_comic, download_comic_chapter, download_comic_page};
+use crate::database::download::{
+    download_comic, download_comic_chapter, download_comic_group, download_comic_page,
+};
 use crate::database::properties::property;
 use crate::udto::{
-    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UILoginState,
+    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
+    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
     UIPageComicChapter, UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
     UIQueryDownloadComic, UIRegisterResult, UITags, UIViewLog,
 };
@@ -508,6 +511,39 @@ pub fn download_comics() -> Result<Vec<UIDownloadComic>> {
         .into_iter()
         .map(UIDownloadComic::from)
         .collect())
+}
+
+pub fn download_comic_groups(comic_path_word: String) -> Result<Vec<UIDownloadComicGroup>> {
+    Ok(block_on(download_comic_group::find_by_comic_path_word(
+        comic_path_word.as_str(),
+    ))?
+    .into_iter()
+    .map(UIDownloadComicGroup::from)
+    .collect())
+}
+
+pub fn download_comic_chapters(comic_path_word: String) -> Result<Vec<UIDownloadComicChapter>> {
+    Ok(block_on(download_comic_chapter::find_by_comic_path_word(
+        comic_path_word.as_str(),
+    ))?
+    .into_iter()
+    .map(UIDownloadComicChapter::from)
+    .collect())
+}
+
+pub fn download_comic_pages(
+    comic_path_word: String,
+    chapter_uuid: String,
+) -> Result<Vec<UIDownloadComicPage>> {
+    Ok(block_on(
+        download_comic_page::find_by_comic_path_word_and_chapter_uuid(
+            comic_path_word.as_str(),
+            chapter_uuid.as_str(),
+        ),
+    )?
+    .into_iter()
+    .map(UIDownloadComicPage::from)
+    .collect())
 }
 
 pub fn download_is_pause() -> Result<bool> {

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/components/comic_pager.dart';
 import 'package:kobi/screens/recommends_screen.dart';
-
-import 'components/comic_list.dart';
+import 'components/comic_card.dart';
 
 class RankScreen extends StatefulWidget {
   const RankScreen({Key? key}) : super(key: key);

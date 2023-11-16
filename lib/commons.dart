@@ -19,3 +19,14 @@ List<Author> mapAuthor(List<Map> list) {
   }
   return result;
 }
+
+ClassifyItem stringClassifyItem(String data) {
+  return mapClassifyItem(jsonDecode(data));
+}
+
+ClassifyItem mapClassifyItem(Map map) {
+  return ClassifyItem(
+    display: map['display'],
+    value: map['value'],
+  );
+}

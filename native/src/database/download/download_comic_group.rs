@@ -2,7 +2,7 @@ use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::OnConflict;
-use sea_orm::{ConnectionTrait, DeleteResult, QuerySelect};
+use sea_orm::{ConnectionTrait, DeleteResult, Order, QueryOrder, QuerySelect};
 use sea_orm::{EntityTrait, IntoActiveModel};
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -72,4 +72,15 @@ pub(crate) async fn insert_or_update_info(
         .exec(db)
         .await?;
     Ok(())
+}
+
+// find_by_comic_path_word order by rank
+pub(crate) async fn find_by_comic_path_word(comic_path_word: &str) -> anyhow::Result<Vec<Model>> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    let result = Entity::find()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .order_by(Column::GroupRank, Order::Asc)
+        .all(db.deref())
+        .await?;
+    Ok(result)
 }

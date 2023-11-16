@@ -1,11 +1,8 @@
-
-
-
 import 'package:flutter/material.dart';
 
 import '../commons.dart';
 import '../ffi.io.dart';
-import 'components/comic_list.dart';
+import 'components/comic_card.dart';
 import 'components/comic_pager.dart';
 
 class HistoriesScreen extends StatelessWidget {

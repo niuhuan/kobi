@@ -3,6 +3,7 @@ use crate::database::download::{download_comic, download_comic_chapter, download
 use crate::udto::UIQueryDownloadComic;
 use crate::utils::{create_dir_if_not_exists, join_paths};
 use crate::{get_download_dir, CLIENT};
+use anyhow::Context;
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use std::collections::VecDeque;
@@ -181,19 +182,28 @@ async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Resul
         .await
     {
         Ok(data) => {
+            let mut urls = Vec::with_capacity(data.chapter.contents.len());
+            for i in 0..data.chapter.contents.len() {
+                urls.push("".to_owned());
+            }
+            for i in 0..data.chapter.contents.len() {
+                let idx = *data.chapter.words.get(i).with_context(|| "words")? as usize;
+                let url = data.chapter.contents.get(idx).with_context(|| "contents")?;
+                urls[i] = url.url.clone();
+            }
             let mut idx = 0;
             let mut images = vec![];
-            for x in data.chapter.contents {
+            for _ in data.chapter.contents {
                 images.push(download_comic_page::Model {
                     comic_path_word: chapter.comic_path_word.clone(),
                     chapter_uuid: chapter.uuid.clone(),
+                    cache_key: url_to_cache_key(urls[idx].as_str()),
+                    url: urls[idx].clone(),
                     image_index: {
                         let tmp = idx;
                         idx += 1;
                         tmp
-                    },
-                    cache_key: url_to_cache_key(x.url.as_str()),
-                    url: x.url,
+                    } as i32,
                     ..Default::default()
                 });
             }

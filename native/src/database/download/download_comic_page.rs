@@ -3,7 +3,8 @@ use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::Expr;
 use sea_orm::{
-    DeleteResult, EntityTrait, InsertResult, IntoActiveModel, QuerySelect, UpdateResult,
+    DeleteResult, EntityTrait, InsertResult, IntoActiveModel, Order, QueryOrder, QuerySelect,
+    UpdateResult,
 };
 use serde_derive::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -176,4 +177,18 @@ pub(crate) async fn reset_failed(db: &impl ConnectionTrait) -> Result<(), DbErr>
         .exec(db)
         .await?;
     Ok(())
+}
+
+// find_by_comic_path_word_and_chapter_uuid sort by image_index
+pub(crate) async fn find_by_comic_path_word_and_chapter_uuid(
+    comic_path_word: &str,
+    chapter_uuid: &str,
+) -> anyhow::Result<Vec<Model>> {
+    let db = DOWNLOAD_DATABASE.get().unwrap().lock().await;
+    Ok(Entity::find()
+        .filter(Column::ComicPathWord.eq(comic_path_word))
+        .filter(Column::ChapterUuid.eq(chapter_uuid))
+        .order_by(Column::ImageIndex, Order::Asc)
+        .all(db.deref())
+        .await?)
 }

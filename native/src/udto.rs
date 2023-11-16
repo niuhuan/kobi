@@ -779,3 +779,99 @@ pub struct UILocalCollect {
     pub uuid: String,
     pub append_time: i64,
 }
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIDownloadComicGroup {
+    pub comic_path_word: String,
+    pub group_path_word: String,
+    pub count: i64,
+    pub name: String,
+    pub group_rank: i64,
+}
+
+impl From<crate::database::download::download_comic_group::Model> for UIDownloadComicGroup {
+    fn from(model: crate::database::download::download_comic_group::Model) -> Self {
+        Self {
+            comic_path_word: model.comic_path_word,
+            group_path_word: model.group_path_word,
+            count: model.count,
+            name: model.name,
+            group_rank: model.group_rank,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIDownloadComicChapter {
+    pub comic_path_word: String,
+    pub uuid: String,
+    pub comic_id: String,
+    pub count: i64,
+    pub datetime_created: String,
+    pub group_path_word: String,
+    pub img_type: i64,
+    pub index: i64,
+    pub is_long: bool,
+    pub name: String,
+    pub news: String,
+    pub next: Option<String>,
+    pub ordered: i64,
+    pub prev: Option<String>,
+    pub size: i64,
+    #[serde(rename = "type")]
+    pub type_field: i64,
+    pub download_status: i64,
+}
+
+impl From<crate::database::download::download_comic_chapter::Model> for UIDownloadComicChapter {
+    fn from(model: crate::database::download::download_comic_chapter::Model) -> Self {
+        Self {
+            comic_path_word: model.comic_path_word,
+            uuid: model.uuid,
+            comic_id: model.comic_id,
+            count: model.count,
+            datetime_created: model.datetime_created,
+            group_path_word: model.group_path_word,
+            img_type: model.img_type,
+            index: model.index,
+            is_long: model.is_long,
+            name: model.name,
+            news: model.news,
+            next: model.next,
+            ordered: model.ordered,
+            prev: model.prev,
+            size: model.size,
+            type_field: model.type_field,
+            download_status: model.download_status,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIDownloadComicPage {
+    pub comic_path_word: String,
+    pub chapter_uuid: String,
+    pub image_index: i32,
+    pub url: String,
+    pub cache_key: String,
+    pub download_status: i64,
+    pub width: u32,
+    pub height: u32,
+    pub format: String,
+}
+
+impl From<crate::database::download::download_comic_page::Model> for UIDownloadComicPage {
+    fn from(model: crate::database::download::download_comic_page::Model) -> Self {
+        Self {
+            comic_path_word: model.comic_path_word,
+            chapter_uuid: model.chapter_uuid,
+            image_index: model.image_index,
+            url: model.url,
+            cache_key: model.cache_key,
+            download_status: model.download_status,
+            width: model.width,
+            height: model.height,
+            format: model.format,
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import 'comic_card.dart';
 import 'comic_list.dart';
 import 'commons.dart';
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart' as sb;
 
 import '../ffi.io.dart';
+import 'components/comic_card.dart';
 import 'components/comic_list.dart';
 import 'components/comic_pager.dart';
 

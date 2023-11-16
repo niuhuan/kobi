@@ -1,30 +1,31 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:kobi/bridge_generated.dart';
-import 'package:kobi/ffi.io.dart';
-import 'package:kobi/screens/components/comic_list.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:kobi/commons.dart';
+import 'package:kobi/screens/components/download_comic_card.dart';
 
-import 'comic_download_screen.dart';
+import '../bridge_generated.dart';
+import '../ffi.io.dart';
 import 'comic_reader_screen.dart';
-import 'components/comic_card.dart';
 import 'components/images.dart';
 import 'components/router.dart';
 
-class ComicInfoScreen extends StatefulWidget {
-  final CommonComicInfo comicInfo;
+class DownloadComicInfoScreen extends StatefulWidget {
+  final UIDownloadComic comic;
 
-  const ComicInfoScreen({Key? key, required this.comicInfo}) : super(key: key);
+  const DownloadComicInfoScreen(this.comic, {Key? key}) : super(key: key);
 
   @override
-  _ComicInfoScreenState createState() => _ComicInfoScreenState();
+  _DownloadComicInfoScreenState createState() =>
+      _DownloadComicInfoScreenState();
 }
 
-class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
+class _DownloadComicInfoScreenState extends State<DownloadComicInfoScreen>
+    with RouteAware {
   final _scrollController = ScrollController();
   double _scrollOffset = 0;
   late Future _fetchFuture = fetch();
-  late UIComicData _comic;
   late Map<Group, List<UIComicChapter>> _gcMap;
   late UIComicQuery _query;
   late UIViewLog? _viewLog;
@@ -55,47 +56,71 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   }
 
   static const _chapterLimit = 100;
+  List<UIDownloadComicChapter> _dcs = [];
 
   Future fetch() async {
-    final comic = await api.comic(pathWord: widget.comicInfo.pathWord);
     final Map<Group, List<UIComicChapter>> gcMap = {};
-    for (var group in comic.groups) {
-      var offset = 0;
-      List<UIComicChapter> cList = [];
-      while (true) {
-        final response = await api.comicChapters(
-          comicPathWord: widget.comicInfo.pathWord,
-          groupPathWord: group.pathWord,
-          offset: offset,
-          limit: _chapterLimit,
-        );
-        cList.addAll(response.list);
-        offset += _chapterLimit;
-        if (response.total <= offset) {
+    final groups =
+        await api.downloadComicGroups(comicPathWord: widget.comic.pathWord);
+    final chapters =
+        await api.downloadComicChapters(comicPathWord: widget.comic.pathWord);
+    _dcs = chapters;
+    List<GC> gcs = [];
+    for (var group in groups) {
+      gcs.add(GC(
+        group.groupPathWord,
+        Group(
+            count: group.count,
+            name: group.name,
+            pathWord: group.groupPathWord),
+        [],
+      ));
+    }
+    for (var chapter in chapters) {
+      for (var gc in gcs) {
+        if (gc.gid == chapter.groupPathWord) {
+          gc.chapters.add(UIComicChapter(
+            comicId: chapter.comicId,
+            comicPathWord: chapter.comicPathWord,
+            count: chapter.count,
+            datetimeCreated: chapter.datetimeCreated,
+            groupPathWord: chapter.groupPathWord,
+            imgType: chapter.imgType,
+            index: chapter.index,
+            name: chapter.name,
+            news: chapter.news,
+            next: chapter.next,
+            ordered: chapter.ordered,
+            prev: chapter.prev,
+            size: chapter.size,
+            typeField: chapter.typeField,
+            uuid: chapter.uuid,
+          ));
           break;
         }
       }
-      gcMap[group] = cList;
     }
-    final query = await api.comicQuery(pathWord: widget.comicInfo.pathWord);
-    final viewLog =
-        await api.findComicViewLog(pathWord: widget.comicInfo.pathWord);
-    _comic = comic;
+    for (var gc in gcs) {
+      gc.chapters.sort((a, b) => a.ordered.compareTo(b.ordered));
+      gcMap[gc.group] = gc.chapters;
+    }
+    final query = UIComicQuery(
+        isLock: false, isLogin: false, isMobileBind: false, isVip: false);
+    final viewLog = await api.findComicViewLog(pathWord: widget.comic.pathWord);
     _gcMap = gcMap;
     _query = query;
     _viewLog = viewLog;
     // async
     api.viewComicInfo(
-      comicPathWord: comic.comic.pathWord,
-      comicName: comic.comic.name,
-      comicAuthors: comic.comic.author,
-      comicCover: comic.comic.cover,
+      comicPathWord: widget.comic.pathWord,
+      comicName: widget.comic.name,
+      comicAuthors: stringAuthors(widget.comic.author),
+      comicCover: widget.comic.cover,
     );
   }
 
   _loadViewLog() async {
-    final viewLog =
-        await api.findComicViewLog(pathWord: widget.comicInfo.pathWord);
+    final viewLog = await api.findComicViewLog(pathWord: widget.comic.pathWord);
     setState(() {
       _viewLog = viewLog;
     });
@@ -152,11 +177,11 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
               },
               blendMode: BlendMode.dstIn,
               child: LoadingCacheImage(
-                url: widget.comicInfo.cover,
+                url: widget.comic.cover,
                 width: constraints.maxWidth,
                 height: constraints.maxHeight / 3,
                 useful: 'COMIC_COVER',
-                extendsFieldFirst: widget.comicInfo.pathWord,
+                extendsFieldFirst: widget.comic.pathWord,
                 fit: BoxFit.fill,
               ),
             );
@@ -204,10 +229,10 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
-        ComicInfoCard(_comic.comic),
+        DownloadComicCard(widget.comic),
         Container(
           padding: const EdgeInsets.all(10),
-          child: _brief(_comic.comic.brief),
+          child: _brief(widget.comic.brief),
         ),
         const Divider(),
         ..._continueAndRestart(),
@@ -234,7 +259,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
               onPressed: () {},
             ),
             title: Text(
-              widget.comicInfo.name,
+              widget.comic.name,
             ),
             foregroundColor: theme.textTheme.bodyMedium?.color,
             backgroundColor: Colors.transparent,
@@ -270,42 +295,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           ),
           backgroundColor: Colors.transparent,
           elevation: .0,
-          actions: [
-            FutureBuilder(
-              future: _fetchFuture,
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<dynamic> snapshot,
-              ) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return IconButton(
-                    onPressed: () async {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ComicDownloadScreen(
-                            comic: _comic.comic,
-                            groupChaptersMap: _gcMap,
-                          ),
-                        ),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.download,
-                      color: theme.textTheme.bodyMedium?.color,
-                      shadows: [
-                        Shadow(
-                          color: Colors.white.withOpacity(1 - _appbarOpacity),
-                          offset: const Offset(0, 0),
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return Container();
-              },
-            ),
-          ],
+          actions: [],
         ),
       ],
     );
@@ -437,15 +427,66 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ComicReaderScreen(
-          comic: _comic.comic,
+          comic: UIComic(
+            author: [],
+            b404: widget.comic.b404,
+            bHidden: widget.comic.bHidden,
+            ban: widget.comic.ban,
+            brief: widget.comic.brief,
+            closeComment: widget.comic.closeComment,
+            closeRoast: widget.comic.closeRoast,
+            cover: widget.comic.cover,
+            datetimeUpdated: widget.comic.datetimeUpdated,
+            freeType: stringClassifyItem(widget.comic.freeType),
+            imgType: widget.comic.imgType,
+            lastChapter: const LastChapter(name: "", uuid: ""),
+            name: widget.comic.name,
+            pathWord: widget.comic.pathWord,
+            popular: widget.comic.popular,
+            reclass: stringClassifyItem(widget.comic.reclass),
+            region: stringClassifyItem(widget.comic.region),
+            restrict: stringClassifyItem(widget.comic.restrict),
+            seoBaidu: widget.comic.seoBaidu,
+            status: stringClassifyItem(widget.comic.status),
+            theme: [],
+            uuid: widget.comic.uuid,
+            females: [],
+            males: [],
+          ),
           chapterUuid: c.uuid,
           initRank: initRank,
           loadChapter: (String comicPathWord, String chapterUuid) async {
-            final response = await api.comicChapterData(
+            late UIDownloadComicChapter dc;
+            for (var c in _dcs) {
+              if (c.comicPathWord == comicPathWord && c.uuid == chapterUuid) {
+                dc = c;
+                break;
+              }
+            }
+            final pages = await api.downloadComicPages(
               comicPathWord: comicPathWord,
               chapterUuid: chapterUuid,
             );
-            return response.chapter;
+            return UIChapterAndContents(
+              comicId: c.comicId,
+              comicPathWord: c.comicPathWord,
+              contents: pages.map((e) => ChapterImage(url: e.url)).toList(),
+              count: c.count,
+              datetimeCreated: c.datetimeCreated,
+              groupPathWord: c.groupPathWord,
+              imgType: c.imgType,
+              index: c.index,
+              isLong: false,
+              name: c.name,
+              news: c.news,
+              ordered: c.ordered,
+              size: c.size,
+              typeField: c.typeField,
+              uuid: c.uuid,
+              words: Int64List.fromList(
+                List<int>.generate(pages.length, (index) => index),
+              ),
+            );
           },
           groupChaptersMap: _gcMap,
         ),
@@ -483,127 +524,10 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   }
 }
 
-class ComicInfoCard extends StatelessWidget {
-  final UIComic comic;
+class GC {
+  String gid;
+  Group group;
+  List<UIComicChapter> chapters;
 
-  const ComicInfoCard(this.comic, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.shade400,
-            width: .5,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(5)),
-            child: LoadingCacheImage(
-              url: comic.cover,
-              width: 328 / 3,
-              height: 422 / 3,
-              useful: 'COMIC_COVER',
-              extendsFieldFirst: comic.pathWord,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Container(
-            width: 10,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  comic.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                Container(
-                  height: 5,
-                ),
-                Text(
-                  comic.author.map((e) => e.name).join(','),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.red.shade300,
-                  ),
-                ),
-                Container(
-                  height: 5,
-                ),
-                Text.rich(TextSpan(children: [
-                  const WidgetSpan(
-                    child: Icon(
-                      Icons.local_fire_department,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: comic.popular.toString(),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ])),
-                Container(
-                  height: 6,
-                ),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  direction: Axis.horizontal,
-                  spacing: 10.0,
-                  runSpacing: 5.0,
-                  children: [
-                    _ci(comic.status),
-                    _ci(comic.reclass),
-                    _ci(comic.region),
-                    _ci(comic.restrict),
-                    _ci(comic.freeType),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _ci(ClassifyItem ci) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 7,
-        top: 2,
-        right: 7,
-        bottom: 2,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.withAlpha(220),
-          style: BorderStyle.solid,
-          width: .5,
-        ),
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Text(
-        ci.display,
-        style: TextStyle(
-          fontSize: 13,
-          color: Colors.grey.withAlpha(220),
-        ),
-      ),
-    );
-  }
+  GC(this.gid, this.group, this.chapters);
 }
