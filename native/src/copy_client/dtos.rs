@@ -325,3 +325,31 @@ pub struct MemberInfo {
     pub day_downloads_refresh: String,
     pub day_downloads: i64,
 }
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CollectedComic {
+    pub uuid: i64,
+    pub name: Option<String>,
+    pub b_folder: bool,
+    pub folder_id: Option<String>,
+    pub last_browse: Option<String>,
+    pub comic: CollectedComicInfo,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CollectedComicInfo {
+    pub uuid: String,
+    pub b_display: bool,
+    pub name: String,
+    pub path_word: String,
+    pub females: Vec<SexualOrientation>,
+    pub males: Vec<SexualOrientation>,
+    pub author: Vec<Author>,
+    pub theme: Vec<Tag>,
+    pub cover: String,
+    pub status: i64,
+    pub popular: i64,
+    pub datetime_updated: String,
+    pub last_chapter_id: String,
+    pub last_chapter_name: String,
+}

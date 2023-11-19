@@ -1,7 +1,8 @@
 pub use super::types::*;
 use crate::copy_client::{
-    ChapterData, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, LoginResult,
-    MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response, Tags,
+    ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch,
+    ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
+    Tags,
 };
 use libc::passwd;
 use std::sync::Arc;
@@ -282,6 +283,41 @@ impl Client {
         }
         self.request(reqwest::Method::GET, "/api/v3/comics", params)
             .await
+    }
+
+    pub async fn collect(&self, comic_id: &str, is_collect: bool) -> Result<()> {
+        self.request(
+            reqwest::Method::POST,
+            format!("/api/v3/member/collect/comic").as_str(),
+            serde_json::json!({
+                "comic_id": comic_id,
+                "is_collect": if is_collect { 1 } else { 0 },
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn collected_comics(
+        &self,
+        free_type: i64,
+        offset: u64,
+        limit: u64,
+        ordering: &str,
+    ) -> Result<Page<CollectedComic>> {
+        self.request(
+            reqwest::Method::GET,
+            "/api/v3/member/collect/comics",
+            serde_json::json!({
+                "free_type": free_type,
+                "limit": limit,
+                "offset": offset,
+                "_update": true,
+                "ordering": ordering,
+                "platform": 3,
+            }),
+        )
+        .await
     }
 
     pub async fn download_image(&self, url: &str) -> Result<bytes::Bytes> {

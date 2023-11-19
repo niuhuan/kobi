@@ -63,3 +63,25 @@ async fn test_explore() -> Result<()> {
     println!("{}", serde_json::to_string(&value).unwrap());
     Ok(())
 }
+
+#[tokio::test]
+async fn test_collect() -> Result<()> {
+    let client = client();
+    client.set_token("token").await;
+    let value = client
+        .collect("9581bff2-3892-11ec-8e8b-024352452ce0", true)
+        .await?;
+    println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_collected_comics() -> Result<()> {
+    let client = client();
+    client.set_token("token").await;
+    let value = client
+        .collected_comics(1, 0, 21, "-datetime_modifier")
+        .await?;
+    println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
