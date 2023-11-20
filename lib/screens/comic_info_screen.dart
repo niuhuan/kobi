@@ -244,7 +244,18 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
             foregroundColor: theme.textTheme.bodyMedium?.color,
             backgroundColor: Colors.transparent,
             elevation: .0,
-            actions: const [],
+            actions: [
+              IconButton(
+                onPressed: () async {},
+                icon: Icon(Icons.add),
+                color: Colors.transparent,
+              ),
+              IconButton(
+                onPressed: () async {},
+                icon: Icon(Icons.add),
+                color: Colors.transparent,
+              ),
+            ],
           ),
         ],
       ),
