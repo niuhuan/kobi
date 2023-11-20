@@ -597,6 +597,22 @@ pub fn download_set_pause(pause: bool) -> Result<()> {
     Ok(block_on(downloading::download_set_pause(pause)))
 }
 
+pub fn http_get(url: String) -> Result<String> {
+    block_on(http_get_inner(url))
+}
+
+async fn http_get_inner(url: String) -> Result<String> {
+    Ok(reqwest::ClientBuilder::new()
+        .user_agent("kobi")
+        .build()?
+        .get(url)
+        .send()
+        .await?
+        .error_for_status()?
+        .text()
+        .await?)
+}
+
 pub fn desktop_root() -> Result<String> {
     #[cfg(target_os = "windows")]
     {

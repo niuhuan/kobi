@@ -16,7 +16,8 @@ async fn main() -> Result<()> {
 
     let target = std::env::var("TARGET")?;
 
-    let vs_code_txt = tokio::fs::read_to_string("version.code.txt").await?;
+    let vs_code_txt =
+        tokio::fs::read_to_string("../../../lib/version.txt/version.code.txt").await?;
 
     let code = vs_code_txt.trim();
 

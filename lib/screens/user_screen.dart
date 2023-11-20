@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
+import 'package:kobi/screens/about_screen.dart';
 import 'package:kobi/screens/collected_comics_account_screen.dart';
+import 'package:kobi/screens/components/badged.dart';
 import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/downloads_screen.dart';
 import 'package:kobi/screens/histories_screen.dart';
@@ -18,14 +20,30 @@ class UserScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('偏好'),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return const SettingsScreen();
-              }));
-            },
-            icon: const Icon(Icons.settings),
-          )
+          VersionBadged(
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const AboutScreen();
+                }));
+              },
+              icon: const Icon(Icons.info_outline),
+            ),
+          ),
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const SettingsScreen();
+                  }));
+                },
+                icon: const Icon(Icons.settings),
+              ),
+            ],
+          ),
         ],
       ),
       body: ListView(
@@ -45,7 +63,7 @@ class UserScreen extends StatelessWidget {
             },
             title: const Text('历史记录(本地)'),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             onTap: () {
               Navigator.push(
@@ -56,7 +74,7 @@ class UserScreen extends StatelessWidget {
             },
             title: const Text('下载列表(本地)'),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             onTap: () {
               Navigator.push(

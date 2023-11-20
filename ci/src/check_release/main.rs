@@ -21,7 +21,8 @@ async fn main() -> Result<()> {
         panic!("Can't got repo branch");
     }
 
-    let vs_code_txt = tokio::fs::read_to_string("version.code.txt").await?;
+    let vs_code_txt =
+        tokio::fs::read_to_string("../../../lib/version.txt/version.code.txt").await?;
     let vs_info_txt = tokio::fs::read_to_string("version.info.txt").await?;
 
     let code = vs_code_txt.trim();
