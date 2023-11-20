@@ -183,7 +183,7 @@ async fn fetch_chapter(chapter: &download_comic_chapter::Model) -> anyhow::Resul
     {
         Ok(data) => {
             let mut urls = Vec::with_capacity(data.chapter.contents.len());
-            for i in 0..data.chapter.contents.len() {
+            for _ in 0..data.chapter.contents.len() {
                 urls.push("".to_owned());
             }
             for i in 0..data.chapter.contents.len() {

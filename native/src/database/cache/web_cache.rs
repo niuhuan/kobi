@@ -91,3 +91,11 @@ pub(crate) async fn clean_web_cache_by_time(time: i64) -> anyhow::Result<()> {
         .await?;
     Ok(())
 }
+
+pub(crate) async fn clean_web_cache_by_like(like: &str) -> anyhow::Result<()> {
+    Entity::delete_many()
+        .filter(Column::CacheKey.like(like))
+        .exec(CACHE_DATABASE.get().unwrap().lock().await.deref())
+        .await?;
+    Ok(())
+}

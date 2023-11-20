@@ -1,7 +1,8 @@
 use crate::copy_client::{
-    Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem, Comic,
-    ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch, Group, LastChapter,
-    MemberInfo, Page, RankItem, RecommendItem, RegisterResult, SexualOrientation, Tag,
+    Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem,
+    CollectedComic, Comic, ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch,
+    Group, LastChapter, MemberInfo, Page, RankItem, RecommendItem, RegisterResult,
+    SexualOrientation, Tag,
 };
 use crate::database::active::comic_view_log;
 use crate::database::download::download_comic_page::Model;
@@ -872,6 +873,25 @@ impl From<crate::database::download::download_comic_page::Model> for UIDownloadC
             width: model.width,
             height: model.height,
             format: model.format,
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageCollectedComic {
+    pub list: Vec<CollectedComic>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+impl From<Page<CollectedComic>> for UIPageCollectedComic {
+    fn from(page: Page<CollectedComic>) -> Self {
+        Self {
+            list: page.list,
+            total: page.total,
+            limit: page.limit,
+            offset: page.offset,
         }
     }
 }

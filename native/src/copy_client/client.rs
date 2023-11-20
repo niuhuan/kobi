@@ -4,7 +4,6 @@ use crate::copy_client::{
     ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
     Tags,
 };
-use libc::passwd;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -301,9 +300,9 @@ impl Client {
     pub async fn collected_comics(
         &self,
         free_type: i64,
+        ordering: &str,
         offset: u64,
         limit: u64,
-        ordering: &str,
     ) -> Result<Page<CollectedComic>> {
         self.request(
             reqwest::Method::GET,

@@ -8,8 +8,9 @@ use crate::database::properties::property;
 use crate::udto::{
     UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
     UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
-    UIPageComicChapter, UIPageComicInExplore, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog,
-    UIQueryDownloadComic, UIRegisterResult, UITags, UIViewLog,
+    UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageRankItem,
+    UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags,
+    UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
@@ -405,6 +406,47 @@ pub fn list_comic_view_logs(offset: i64, limit: i64) -> Result<UIPageUIViewLog> 
             list: list.into_iter().map(UIViewLog::from).collect(),
         })
     })
+}
+
+pub fn collect_to_account(
+    comic_id: String,
+    is_collect: bool,
+    comic_path_word: String,
+) -> Result<()> {
+    Ok(block_on(collect_to_account_move(
+        comic_id,
+        is_collect,
+        comic_path_word,
+    ))?)
+}
+
+async fn collect_to_account_move(
+    comic_id: String,
+    is_collect: bool,
+    comic_path_word: String,
+) -> Result<()> {
+    CLIENT.collect(comic_id.as_str(), is_collect).await?;
+    web_cache::clean_web_cache_by_like("COMIC_COLLECT%").await?;
+    web_cache::clean_web_cache_by_like(format!("COMIC${comic_path_word}").as_str()).await?;
+    Ok(())
+}
+
+pub fn collect_from_account(
+    free_type: i64,
+    ordering: String,
+    offset: u64,
+    limit: u64,
+) -> Result<UIPageCollectedComic> {
+    let key = format!("COMIC_COLLECT${free_type}${ordering}${offset}${limit}$");
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move {
+            CLIENT
+                .collected_comics(free_type, ordering.as_str(), offset, limit)
+                .await
+        }),
+    ))
 }
 
 pub fn cache_image(
