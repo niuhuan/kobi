@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/content_loading.dart';
@@ -120,12 +122,18 @@ class _LoginScreenState extends State<LoginScreen> {
       Container(height: 50),
       MaterialButton(
         onPressed: () async {
-          await login(_username, _password);
-          _token = await api.loadProperty(k: "token");
+          try {
+            await login(_username, _password);
+            _token = await api.loadProperty(k: "token");
+          } catch (e, s) {
+            log("$e\n$s");
+          }
           setState(() {});
         },
         child: const Text("使用账号密码登录"),
       ),
+      Container(height: 50),
+      Text(loginState.message, style: const TextStyle(color: Colors.red)),
     ]);
   }
 

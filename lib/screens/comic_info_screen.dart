@@ -1,9 +1,12 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:kobi/bridge_generated.dart';
+import 'package:kobi/configs/login.dart';
 import 'package:kobi/ffi.io.dart';
 import 'package:kobi/screens/components/comic_list.dart';
+import 'package:kobi/screens/components/commons.dart';
 
 import 'comic_download_screen.dart';
 import 'comic_reader_screen.dart';
@@ -115,6 +118,8 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       : _scrollOffset > _appHiddenEnd
           ? 0.0
           : (_appHiddenEnd - _scrollOffset) / (_appHiddenEnd - _appHiddenStart);
+
+  bool _collecting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -271,6 +276,71 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           backgroundColor: Colors.transparent,
           elevation: .0,
           actions: [
+            FutureBuilder(
+              future: _fetchFuture,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<dynamic> snapshot,
+              ) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (loginState.state != 1) {
+                    return Container();
+                  }
+                  if (_collecting) {
+                    return IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.refresh),
+                    );
+                  }
+                  return IconButton(
+                    onPressed: () async {
+                      if (_collecting) {
+                        return;
+                      }
+                      setState(() {});
+                      final collected = (_query.collect ?? 0) > 0;
+                      try {
+                        _collecting = true;
+                        await api.collectToAccount(
+                          comicId: _comic.comic.uuid,
+                          isCollect: !collected,
+                          comicPathWord: _comic.comic.pathWord,
+                        );
+                        final result = collected ? 0 : 1;
+                        _query = UIComicQuery(
+                          collect: result,
+                          isLock: _query.isLock,
+                          isLogin: _query.isLogin,
+                          isMobileBind: _query.isMobileBind,
+                          isVip: _query.isVip,
+                        );
+                        defaultToast(context, "${collected ? "取消" : ""}收藏成功");
+                      } catch (e, s) {
+                        log("$e\n$s");
+                        defaultToast(context, "操作失败:$e");
+                      } finally {
+                        _collecting = false;
+                      }
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      ((_query.collect ?? 0) > 0)
+                          ? Icons.book
+                          : Icons.book_outlined,
+                      color: theme.textTheme.bodyMedium?.color,
+                      shadows: [
+                        Shadow(
+                          color: Colors.white.withOpacity(1 - _appbarOpacity),
+                          offset: const Offset(0, 0),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
             FutureBuilder(
               future: _fetchFuture,
               builder: (

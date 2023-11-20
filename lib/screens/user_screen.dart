@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
+import 'package:kobi/screens/collected_comics_account_screen.dart';
 import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/downloads_screen.dart';
 import 'package:kobi/screens/histories_screen.dart';
@@ -28,15 +29,18 @@ class UserScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
-        children:  [
+        children: [
           UserInfoCard(),
-          Container(height: 50,),
+          Container(
+            height: 50,
+          ),
           Divider(),
           ListTile(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HistoriesScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const HistoriesScreen()),
               );
             },
             title: const Text('历史记录(本地)'),
@@ -46,7 +50,8 @@ class UserScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DownloadsScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const DownloadsScreen()),
               );
             },
             title: const Text('下载列表(本地)'),
@@ -56,10 +61,11 @@ class UserScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const LocalCollectScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const CollectedComicsAccountScreen()),
               );
             },
-            title: const Text('收藏列表(本地)'),
+            title: const Text('收藏列表(账户)'),
           ),
         ],
       ),

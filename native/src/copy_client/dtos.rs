@@ -168,12 +168,22 @@ pub struct ComicChapter {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ComicQuery {
-    pub browse: Value,
-    pub collect: Value,
+    pub browse: Option<Browse>,
+    pub collect: Option<i64>,
     pub is_lock: bool,
     pub is_login: bool,
     pub is_mobile_bind: bool,
     pub is_vip: bool,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Browse {
+    pub chapter_id: String,
+    pub chapter_name: String,
+    pub chapter_uuid: String,
+    pub comic_id: String,
+    pub comic_uuid: String,
+    pub path_word: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

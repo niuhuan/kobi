@@ -120,6 +120,7 @@ pub fn login(username: String, password: String) -> Result<UILoginState> {
                 property::save_property("token".to_owned(), ok.token.clone()).await?;
                 property::save_property("username".to_owned(), username).await?;
                 property::save_property("password".to_owned(), password).await?;
+                let _ = web_cache::clean_web_cache_by_like(format!("COMIC_QUERY$%").as_str()).await;
                 Ok(UILoginState {
                     state: 1,
                     message: "".to_string(),
@@ -427,7 +428,7 @@ async fn collect_to_account_move(
 ) -> Result<()> {
     CLIENT.collect(comic_id.as_str(), is_collect).await?;
     web_cache::clean_web_cache_by_like("COMIC_COLLECT%").await?;
-    web_cache::clean_web_cache_by_like(format!("COMIC${comic_path_word}").as_str()).await?;
+    web_cache::clean_web_cache_by_like(format!("COMIC_QUERY${comic_path_word}").as_str()).await?;
     Ok(())
 }
 

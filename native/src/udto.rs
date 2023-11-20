@@ -1,5 +1,5 @@
 use crate::copy_client::{
-    Author, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem,
+    Author, Browse, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem,
     CollectedComic, Comic, ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch,
     Group, LastChapter, MemberInfo, Page, RankItem, RecommendItem, RegisterResult,
     SexualOrientation, Tag,
@@ -363,6 +363,8 @@ impl From<ComicChapter> for UIComicChapter {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UIComicQuery {
+    pub browse: Option<Browse>,
+    pub collect: Option<i64>,
     pub is_lock: bool,
     pub is_login: bool,
     pub is_mobile_bind: bool,
@@ -372,6 +374,8 @@ pub struct UIComicQuery {
 impl From<crate::copy_client::ComicQuery> for UIComicQuery {
     fn from(query: crate::copy_client::ComicQuery) -> Self {
         Self {
+            browse: query.browse,
+            collect: query.collect,
             is_lock: query.is_lock,
             is_login: query.is_login,
             is_mobile_bind: query.is_mobile_bind,
