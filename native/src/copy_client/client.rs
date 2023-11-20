@@ -4,6 +4,7 @@ use crate::copy_client::{
     ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
     Tags,
 };
+use base64::Engine;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -109,7 +110,8 @@ impl Client {
 
     pub async fn login(&self, username: &str, password: &str) -> Result<LoginResult> {
         let salt = chrono::Local::now().timestamp_millis() % (u16::MAX as i64);
-        let password_b64 = base64::encode(format!("{}-{}", password, salt).as_bytes());
+        let password_b64 =
+            base64::prelude::BASE64_STANDARD.encode(format!("{}-{}", password, salt).as_bytes());
         self.request(
             reqwest::Method::POST,
             "/api/v3/login",

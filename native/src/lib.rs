@@ -11,7 +11,7 @@ use utils::join_paths;
 
 pub mod api;
 mod bridge_generated;
-mod copy_client;
+pub mod copy_client;
 mod database;
 pub mod downloading;
 mod udto;

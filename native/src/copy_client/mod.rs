@@ -4,7 +4,7 @@ pub mod types;
 
 pub use client::*;
 pub use dtos::*;
-#[allow(dead_code)]
+#[allow(unused_imports)]
 pub use types::*;
 
 #[cfg(test)]
