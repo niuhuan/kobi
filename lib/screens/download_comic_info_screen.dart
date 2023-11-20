@@ -101,7 +101,7 @@ class _DownloadComicInfoScreenState extends State<DownloadComicInfoScreen>
       }
     }
     for (var gc in gcs) {
-      gc.chapters.sort((a, b) => a.ordered.compareTo(b.ordered));
+      gc.chapters.sort((a, b) => a.index.compareTo(b.index));
       gcMap[gc.group] = gc.chapters;
     }
     final query = UIComicQuery(

@@ -805,10 +805,12 @@ abstract class _ComicReaderState extends State<_ComicReader> {
     // 确定分卷
     UIComicChapter? nextEp;
     bool current = false;
-    for (var en in widget.groupChaptersMap.entries) {
+    X: for (var en in widget.groupChaptersMap.entries) {
+      en.value.sort((a, b) => a.index.compareTo(b.index));
       for (var c in en.value) {
         if (current) {
           nextEp = c;
+          break X;
         } else {
           current = c.uuid == widget.chapter.uuid;
         }
@@ -821,10 +823,12 @@ abstract class _ComicReaderState extends State<_ComicReader> {
     if (_hasNextEp()) {
       UIComicChapter? nextEp;
       bool current = false;
-      for (var en in widget.groupChaptersMap.entries) {
+      X: for (var en in widget.groupChaptersMap.entries) {
+        en.value.sort((a, b) => a.index.compareTo(b.index));
         for (var c in en.value) {
           if (current) {
             nextEp = c;
+            break X;
           } else {
             current = c.uuid == widget.chapter.uuid;
           }
