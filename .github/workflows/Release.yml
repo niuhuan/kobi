@@ -9,7 +9,7 @@ env:
   NDK_VERSION: 25.2.9519653
   FLUTTER_VERSION: '3.13.9'
   FLUTTER_CHANNEL: 'stable'
-  FRB_VERSION: 'v1.82.3'
+  FRB_VERSION: 'v1.82.4'
 
 jobs:
 

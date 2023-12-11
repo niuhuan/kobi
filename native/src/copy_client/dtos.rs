@@ -342,8 +342,14 @@ pub struct CollectedComic {
     pub name: Option<String>,
     pub b_folder: bool,
     pub folder_id: Option<String>,
-    pub last_browse: Option<String>,
+    pub last_browse: Option<LastBrowse>,
     pub comic: CollectedComicInfo,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LastBrowse {
+    pub last_browse_id: String,
+    pub last_browse_name: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
