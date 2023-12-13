@@ -17,7 +17,8 @@ pub mod downloading;
 mod udto;
 mod utils;
 
-const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
+const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
+// const API_URL_ORIGIN: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
 
 fn api_url() -> String {
     String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
