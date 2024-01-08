@@ -437,7 +437,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 elevation: 0,
                 color: Colors.grey.shade500.withOpacity(.3),
                 textColor: Theme.of(context).textTheme.bodyMedium?.color,
-                child: const Text("从头开始"),
+                child: const Text("从orde头开始"),
                 onPressed: _startRead,
               ),
             ),
