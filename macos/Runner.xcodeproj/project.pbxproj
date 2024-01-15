@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -28,6 +28,7 @@
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		39DF1FD8C6BB292AEF60BABA /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A75F10C7796C538CDBB2D3B6 /* Pods_Runner.framework */; };
 		A3E7048127BD3F8900838FBB /* native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7047A27BD3F4D00838FBB /* native.dylib */; };
+		DDBDA93D2B54E3A50015F619 /* native.dylib in Bundle Framework */ = {isa = PBXBuildFile; fileRef = A3E7047A27BD3F4D00838FBB /* native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				DDBDA93D2B54E3A50015F619 /* native.dylib in Bundle Framework */,
 			);
 			name = "Bundle Framework";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -186,7 +188,6 @@
 				A4E109539B1A5155136EFF51 /* Pods-Runner.release.xcconfig */,
 				374667F87D968847B0F999D3 /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

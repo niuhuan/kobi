@@ -341,14 +341,11 @@ jobs:
               --class-name Native
           rustup target install x86_64-apple-darwin
           rustup target install aarch64-apple-darwin
-          cargo build --manifest-path native/Cargo.toml --release --target x86_64-apple-darwin
-          cargo build --manifest-path native/Cargo.toml --release --target aarch64-apple-darwin
           flutter config --enable-macos-desktop
           flutter build macos
           cd build
           mkdir appimage
           mv macos/Build/Products/Release/kobi.app appimage/
-          lipo -create -output appimage/kobi.app/Contents/Frameworks/libnative.dylib ../native/target/x86_64-apple-darwin/release/libnative.dylib ../native/target/aarch64-apple-darwin/release/libnative.dylib
           ln -sf /Applications appimage/
           hdiutil create -volname kobi -srcfolder appimage -ov -format UDBZ macos.dmg
           cd ..
