@@ -347,6 +347,9 @@ jobs:
           mkdir appimage
           mv macos/Build/Products/Release/kobi.app appimage/
           ln -sf /Applications appimage/
+          cargo build --manifest-path native/Cargo.toml --release --target x86_64-apple-darwin
+          cargo build --manifest-path native/Cargo.toml --release --target aarch64-apple-darwin
+          lipo -create -output appimage/kobi.app/Contents/Frameworks/libnative.dylib ../native/target/x86_64-apple-darwin/release/libnative.dylib ../native/target/aarch64-apple-darwin/release/libnative.dylib
           hdiutil create -volname kobi -srcfolder appimage -ov -format UDBZ macos.dmg
           cd ..
 
