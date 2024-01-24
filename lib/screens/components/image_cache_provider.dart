@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui show Codec;
-import '../../ffi.io.dart';
-import 'images.dart';
+import 'package:kobi/ffi.io.dart';
+import 'package:kobi/screens/components/images.dart';
 
 class ImageCacheProvider extends ImageProvider<ImageCacheProvider> {
   final String url;
@@ -24,7 +23,8 @@ class ImageCacheProvider extends ImageProvider<ImageCacheProvider> {
   });
 
   @override
-  ImageStreamCompleter load(ImageCacheProvider key, DecoderCallback decode) {
+  ImageStreamCompleter loadImage(
+      ImageCacheProvider key, ImageDecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key),
       scale: key.scale,
@@ -38,16 +38,17 @@ class ImageCacheProvider extends ImageProvider<ImageCacheProvider> {
 
   Future<ui.Codec> _loadAsync(ImageCacheProvider key) async {
     assert(key == this);
-    return PaintingBinding.instance!.instantiateImageCodec(
-      await _loadImageFile((await api.cacheImage(
-        cacheKey: imageUrlToCacheKey(url),
-        url: url,
-        useful: useful,
-        extendsFieldFirst: extendsFieldFirst,
-        extendsFieldSecond: extendsFieldSecond,
-        extendsFieldThird: extendsFieldThird,
-      ))
-          .absPath),
+    final path = (await api.cacheImage(
+      cacheKey: imageUrlToCacheKey(url),
+      url: url,
+      useful: useful,
+      extendsFieldFirst: extendsFieldFirst,
+      extendsFieldSecond: extendsFieldSecond,
+      extendsFieldThird: extendsFieldThird,
+    ))
+        .absPath;
+    return ui.instantiateImageCodec(
+      await _loadImageFile(path),
     );
   }
 

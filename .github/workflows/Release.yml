@@ -5,9 +5,9 @@ on:
 
 env:
   LLVM_VERSION: '10.0'
-  RUST_TOOLCHAIN: nightly-2023-10-31
+  RUST_TOOLCHAIN: nightly-2024-01-23
   NDK_VERSION: 25.2.9519653
-  FLUTTER_VERSION: '3.13.9'
+  FLUTTER_VERSION: '3.16.7'
   FLUTTER_CHANNEL: 'stable'
   FRB_VERSION: 'v1.82.4'
 
@@ -241,6 +241,27 @@ jobs:
           sh ../scripts/thin-payload.sh Payload
           zip -r -9 nosign.ipa Payload
           cd ..
+
+      - name: Run (ios-sim)
+        if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'ios-sim')
+        run: |
+          rustup target install aarch64-apple-ios
+          cd kobi
+          flutter pub get
+          echo > lib/bridge_generated.dart
+          echo > ios/Runner/bridge_generated.h
+          echo > native/src/bridge_generated.rs
+          echo > native/src/bridge_generated.io.rs
+          flutter_rust_bridge_codegen \
+            --rust-input native/src/api.rs \
+            --dart-output lib/bridge_generated.dart \
+            --c-output ios/Runner/bridge_generated.h \
+            --rust-crate-dir native \
+            --class-name Native
+          cargo build --manifest-path native/Cargo.toml --features= --lib --release --target=aarch64-apple-ios-sim
+          cargo build --manifest-path native/Cargo.toml --features= --lib --release --target=x86_64-apple-ios
+          lipo -create -output ios/Runner/libnative.a native/target/aarch64-apple-ios-sim/release/libnative.a native/target/x86_64-apple-ios/release/libnative.a
+          flutter run
 
       - name: Install LLVM and Clang (Linux/Android)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' ) && !startsWith(matrix.config.flutter_version, '2')
