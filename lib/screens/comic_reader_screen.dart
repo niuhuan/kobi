@@ -1300,7 +1300,7 @@ class _ListViewReaderState extends _ComicReaderState
 
   @override
   void initState() {
-    for (var e in widget.chapter.contents) {
+    for (var _e in widget.chapter.contents) {
       _trueSizes.add(null);
     }
     super.initState();

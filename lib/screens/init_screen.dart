@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:kobi/configs/configs.dart';
 import '../cross.dart';
 import '../ffi.io.dart';
@@ -10,7 +9,6 @@ class InitScreen extends StatefulWidget {
 
   @override
   _InitScreenState createState() => _InitScreenState();
-
 }
 
 class _InitScreenState extends State<InitScreen> {
@@ -23,7 +21,8 @@ class _InitScreenState extends State<InitScreen> {
   Future<void> init() async {
     await api.init(root: await cross.root());
     await initConfigs();
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const AppScreen()));
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (_) => const AppScreen()));
   }
 
   @override

@@ -30,7 +30,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
       setState(() {
         _tagsLoadStatus = 1;
       });
-    } catch (e, s) {
+    } catch (_e, _s) {
       setState(() {
         _tagsLoadStatus = 2;
       });

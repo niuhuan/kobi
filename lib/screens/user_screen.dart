@@ -7,8 +7,6 @@ import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/downloads_screen.dart';
 import 'package:kobi/screens/histories_screen.dart';
 import 'package:kobi/screens/settings_screen.dart';
-
-import 'local_collect_screen.dart';
 import 'login_screen.dart';
 
 class UserScreen extends StatelessWidget {

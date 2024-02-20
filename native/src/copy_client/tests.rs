@@ -1,7 +1,6 @@
 use super::client::Client;
 use anyhow::Result;
 use base64::Engine;
-use reqwest::Method;
 use serde_json::json;
 
 const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
@@ -18,7 +17,7 @@ fn client() -> Client {
 async fn test_request() -> Result<()> {
     let value = client()
         .request(
-            reqwest::Method::GET,
+            Method::GET,
             "/api/v3/comics",
             json!({
                 "_update": true,

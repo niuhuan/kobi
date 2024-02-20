@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../bridge_generated.dart';
-import '../commons.dart';
 import '../ffi.io.dart';
 import 'components/commons.dart';
 import 'components/download_comic_card.dart';
-import 'components/images.dart';
 import 'download_comic_info_screen.dart';
 
 class DownloadsScreen extends StatefulWidget {

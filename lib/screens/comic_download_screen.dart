@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/ffi.io.dart';
-import 'package:kobi/screens/comic_info_screen.dart';
-import 'package:kobi/screens/components/comic_list.dart';
 import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/components/content_loading.dart';
 

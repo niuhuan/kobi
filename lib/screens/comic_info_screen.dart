@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/ffi.io.dart';
-import 'package:kobi/screens/components/comic_list.dart';
 import 'package:kobi/screens/components/commons.dart';
 
 import 'comic_download_screen.dart';
