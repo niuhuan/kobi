@@ -41,3 +41,4 @@ tracing-subscriber = "0.3"
 tracing = "0.1"
 rand = "0.8"
 async_zip = { version = "0.0.16", features = ["full", "tokio-util", "tokio", "tokio-fs", "async-compression"] }
+async-trait = "0.1.77"
