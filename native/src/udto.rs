@@ -899,3 +899,8 @@ impl From<Page<CollectedComic>> for UIPageCollectedComic {
         }
     }
 }
+
+pub enum ExportsType {
+    Folder,
+    Zip,
+}

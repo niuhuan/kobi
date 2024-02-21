@@ -41,3 +41,20 @@ pub(crate) async fn hash_lock(url: &String) -> MutexGuard<'static, ()> {
         .lock()
         .await
 }
+
+pub(crate) fn allowed_file_name(title: &str) -> String {
+    title
+        .replace("#", "_")
+        .replace("'", "_")
+        .replace("/", "_")
+        .replace("\\", "_")
+        .replace(":", "_")
+        .replace("*", "_")
+        .replace("?", "_")
+        .replace("\"", "_")
+        .replace(">", "_")
+        .replace("<", "_")
+        .replace("|", "_")
+        .replace("&", "_")
+}
+

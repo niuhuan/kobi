@@ -6,7 +6,7 @@ use crate::database::download::{
 };
 use crate::database::properties::property;
 use crate::udto::{
-    UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
+    ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
     UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
     UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageRankItem,
     UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags,
@@ -654,4 +654,16 @@ pub fn desktop_root() -> Result<String> {
     }
     #[cfg(not(any(target_os = "linux", target_os = "windows", target_os = "macos")))]
     panic!("未支持的平台")
+}
+
+pub fn exports(
+    uuid_list: Vec<String>,
+    export_to_folder: String,
+    exports_type: ExportsType,
+) -> Result<()> {
+    block_on(crate::exports::exports(
+        uuid_list,
+        export_to_folder,
+        exports_type,
+    ))
 }

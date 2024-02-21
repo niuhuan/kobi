@@ -243,3 +243,11 @@ pub(crate) async fn all() -> anyhow::Result<Vec<Model>> {
         .await?;
     Ok(models)
 }
+
+pub(crate) async fn find_by_uuid_list(uuid_list: &[String]) -> anyhow::Result<Vec<Model>> {
+    let models = Entity::find()
+        .filter(Column::Uuid.is_in(uuid_list))
+        .all(DOWNLOAD_DATABASE.get().unwrap().lock().await.deref())
+        .await?;
+    Ok(models)
+}
