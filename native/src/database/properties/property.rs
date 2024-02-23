@@ -2,8 +2,7 @@ use crate::database::properties::PROPERTIES_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::IntoActiveModel;
-use sea_orm::{EntityTrait, Set};
-use std::convert::TryInto;
+use sea_orm::Set;
 use std::ops::Deref;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "property")]

@@ -2,10 +2,9 @@ use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::OnConflict;
-use sea_orm::{ConnectionTrait, DeleteResult, IntoActiveModel, Order, QueryOrder};
-use sea_orm::{EntityTrait, UpdateResult};
+use sea_orm::{DeleteResult, IntoActiveModel, Order, QueryOrder};
+use sea_orm::{UpdateResult};
 use serde_derive::{Deserialize, Serialize};
-use std::convert::TryInto;
 use std::ops::Deref;
 
 pub(crate) const STATUS_INIT: i64 = 0;

@@ -1,13 +1,11 @@
 use crate::database::download::DOWNLOAD_DATABASE;
 use crate::database::{create_index, create_table_if_not_exists, index_exists};
 use sea_orm::entity::prelude::*;
-use sea_orm::sea_query::Expr;
 use sea_orm::{
-    DeleteResult, EntityTrait, InsertResult, IntoActiveModel, Order, QueryOrder, QuerySelect,
+    DeleteResult, InsertResult, IntoActiveModel, Order, QueryOrder, QuerySelect,
     UpdateResult,
 };
 use serde_derive::{Deserialize, Serialize};
-use std::convert::TryInto;
 use std::ops::Deref;
 
 pub(crate) const STATUS_INIT: i64 = 0;
