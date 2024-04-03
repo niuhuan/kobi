@@ -67,14 +67,17 @@ impl Client {
                 "authorization",
                 format!("Token {}", self.get_token().await.as_str()),
             )
-            .header("referer", "com.copymanga.app-2.0.7")
-            .header("User-Agent", "COPY/2.0.7")
+            .header("referer", "com.copymanga.app-2.1.7")
+            .header("user-agent", "COPY/2.1.7")
             .header("source", "copyApp")
             .header("webp", "1")
-            .header("version", "2.0.7")
+            .header("version", "2.1.7")
             .header("region", "1")
             .header("platform", "3")
-            .header("Accept", "application/json");
+            .header("accept", "application/json")
+            .header("device","QSR1.210802.001")
+            .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
+            .header("deviceinfo", "Android SDK built for arm64-emulator64_arm64");
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
             _ => request.form(&obj),

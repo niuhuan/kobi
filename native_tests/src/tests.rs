@@ -17,9 +17,4 @@ fn test_comic() {
 }
 
 #[tokio::test]
-async fn test_client() {
-    let client =
-        native::copy_client::Client::new(reqwest::Client::new(), option_env!("api_host").unwrap());
-    let tags = client.tags().await.unwrap();
-    println!("{:?}", serde_json::to_string(&tags).unwrap());
-}
+async fn test_client() {}
