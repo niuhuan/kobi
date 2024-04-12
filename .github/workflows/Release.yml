@@ -341,8 +341,8 @@ jobs:
           flutter config --enable-windows-desktop
           flutter build windows
           cd build/windows/x64/runner/Release
-          Compress-Archive * ../../../../build/windows.zip
-          cd ../../../..
+          Compress-Archive * ../../../../../build/windows.zip
+          cd ../../../../..
 
       - name: Build (macos)
         if: steps.check_asset.outputs.skip_build != 'true' && matrix.config.target == 'macos'
