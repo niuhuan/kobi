@@ -21,47 +21,6 @@ jobs:
     steps:
       - run: exit 0
 
-  check_release:
-    name: Check release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cargo cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-
-
-      - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
-          override: true
-
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.event.inputs.repo }}
-          path: 'kobi'
-
-      - name: Cargo ci build cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            kobi/ci/target/
-          key: ${{ runner.os }}-cargo-ci_target
-
-      - name: Check release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd kobi/ci
-          cargo run --release --bin check-release
-
-
   build_release_assets:
     name: Build release assets
     needs:
