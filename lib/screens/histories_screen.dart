@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../commons.dart';
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'components/comic_card.dart';
 import 'components/comic_pager.dart';
 

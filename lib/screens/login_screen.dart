@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/content_loading.dart';
 
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

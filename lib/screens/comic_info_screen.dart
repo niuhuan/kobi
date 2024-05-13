@@ -2,11 +2,13 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:kobi/bridge_generated.dart';
 import 'package:kobi/configs/login.dart';
-import 'package:kobi/ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'package:kobi/screens/components/commons.dart';
 
+import '../src/rust/copy_client/dtos.dart';
+import '../src/rust/udto.dart';
 import 'comic_download_screen.dart';
 import 'comic_reader_screen.dart';
 import 'components/comic_card.dart';

@@ -1,22 +1,28 @@
 PODS:
   - FlutterMacOS (1.0.0)
+  - rust_lib_kobi (0.0.1):
+    - FlutterMacOS
   - url_launcher_macos (0.0.1):
     - FlutterMacOS
 
 DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - rust_lib_kobi (from `Flutter/ephemeral/.symlinks/plugins/rust_lib_kobi/macos`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
 
 EXTERNAL SOURCES:
   FlutterMacOS:
     :path: Flutter/ephemeral
+  rust_lib_kobi:
+    :path: Flutter/ephemeral/.symlinks/plugins/rust_lib_kobi/macos
   url_launcher_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
 
 SPEC CHECKSUMS:
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  url_launcher_macos: 5335912b679c073563f29d89d33d10d459f95451
+  rust_lib_kobi: 90bc2fa4f2021821ee631492f76d70b002309cec
+  url_launcher_macos: 5f437abeda8c85500ceb03f5c1938a8c5a705399
 
-PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
+PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
 
 COCOAPODS: 1.12.1

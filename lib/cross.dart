@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:kobi/ffi.io.dart';
+import 'src/rust/api/api.dart' as api;
 import 'package:url_launcher/url_launcher.dart';
 
 const cross = Cross._();

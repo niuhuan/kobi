@@ -1,7 +1,8 @@
 
 import 'dart:convert';
 
-import 'bridge_generated.dart';
+import 'package:kobi/src/rust/copy_client/dtos.dart';
+
 
 List<Author> stringAuthors(String data) {
   return mapAuthor(List.of(jsonDecode(data)).cast());

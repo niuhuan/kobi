@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kobi/ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'package:kobi/screens/components/comic_pager.dart';
 import 'package:kobi/screens/recommends_screen.dart';
 import 'components/comic_card.dart';

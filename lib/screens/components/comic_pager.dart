@@ -77,10 +77,10 @@ class _ComicPagerState extends State<ComicPager> {
     } catch (e, s) {
       if (e is PanicException) {
         PanicException e1 = e as PanicException;
-        print("$e\n${e1.error}\n\n$s");
-      } else if (e is FrbAnyhowException) {
-        FrbAnyhowException e1 = e as FrbAnyhowException;
-        print("$e\n${e1.anyhow}\n\n$s");
+        print("$e\n${e1}\n\n$s");
+      } else if (e is Exception) {
+        Exception e1 = e as Exception;
+        print("$e\n${e1}\n\n$s");
       }
       setState(() {
         error = true;

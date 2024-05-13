@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../bridge_generated.dart';
 import '../../commons.dart';
+import '../../src/rust/udto.dart';
 import 'images.dart';
 
 class DownloadComicCard extends StatelessWidget {

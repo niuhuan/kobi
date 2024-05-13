@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import '../ffi.io.dart';
+import '../../src/rust/api/api.dart' as api;
+import '../../src/rust/udto.dart';
 import '../screens/components/commons.dart';
 
 const _versionUrl =

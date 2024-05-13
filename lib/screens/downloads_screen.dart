@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../bridge_generated.dart';
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'components/commons.dart';
 import 'components/download_comic_card.dart';
 import 'download_comic_info_screen.dart';

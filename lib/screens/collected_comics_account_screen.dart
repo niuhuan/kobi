@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kobi/screens/components/comic_pager.dart';
 
 import '../configs/login.dart';
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'components/comic_card.dart';
 
 class CollectedComicsAccountScreen extends StatefulWidget {

@@ -5,11 +5,11 @@ on:
 
 env:
   LLVM_VERSION: '10.0'
-  RUST_TOOLCHAIN: nightly-2024-02-04
+  RUST_TOOLCHAIN: nightly-2024-04-15
   NDK_VERSION: 25.2.9519653
-  FLUTTER_VERSION: '3.16.7'
+  FLUTTER_VERSION: '3.19.3'
   FLUTTER_CHANNEL: 'stable'
-  FRB_VERSION: 'v1.82.4'
+  FRB_VERSION: 'v2.0.0-dev.32'
 
 jobs:
 
@@ -127,21 +127,6 @@ jobs:
           cd kobi/ci
           cargo run --release --bin check-asset
 
-      - name: Check bridge
-        if: steps.check_asset.outputs.skip_build != 'true'
-        uses: actions/checkout@v3
-        with:
-          repository: 'fzyzcjy/flutter_rust_bridge'
-          path: 'flutter_rust_bridge'
-          ref: ${{ env.FRB_VERSION }}
-
-      - name: Install flutter_rust_bridge
-        if: steps.check_asset.outputs.skip_build != 'true'
-        run: |
-          cd flutter_rust_bridge/frb_codegen
-          cargo install --path . --force
-          cd ../..
-
       - name: Install cargo-expand
         if: steps.check_asset.outputs.skip_build != 'true'
         run: |
@@ -218,18 +203,6 @@ jobs:
           rustup target install aarch64-apple-ios
           cd kobi
           flutter pub get
-          echo > lib/bridge_generated.dart
-          echo > ios/Runner/bridge_generated.h
-          echo > native/src/bridge_generated.rs
-          echo > native/src/bridge_generated.io.rs
-          flutter_rust_bridge_codegen \
-            --rust-input native/src/api.rs \
-            --dart-output lib/bridge_generated.dart \
-            --c-output ios/Runner/bridge_generated.h \
-            --rust-crate-dir native \
-            --class-name Native
-          cargo build --manifest-path native/Cargo.toml --features= --lib --release --target=aarch64-apple-ios
-          cp native/target/aarch64-apple-ios/release/libnative.a ios/Runner/
           flutter build ios --no-simulator --no-codesign --release
           cd build
           rm -rf Payload
@@ -242,41 +215,11 @@ jobs:
       - name: Run (ios-sim)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'ios-sim')
         run: |
-          rustup target install aarch64-apple-ios
+          rustup target install aarch64-apple-ios-sim
+          rustup target install x86_64-apple-ios
           cd kobi
           flutter pub get
-          echo > lib/bridge_generated.dart
-          echo > ios/Runner/bridge_generated.h
-          echo > native/src/bridge_generated.rs
-          echo > native/src/bridge_generated.io.rs
-          flutter_rust_bridge_codegen \
-            --rust-input native/src/api.rs \
-            --dart-output lib/bridge_generated.dart \
-            --c-output ios/Runner/bridge_generated.h \
-            --rust-crate-dir native \
-            --class-name Native
-          cargo build --manifest-path native/Cargo.toml --features= --lib --release --target=aarch64-apple-ios-sim
-          cargo build --manifest-path native/Cargo.toml --features= --lib --release --target=x86_64-apple-ios
-          lipo -create -output ios/Runner/libnative.a native/target/aarch64-apple-ios-sim/release/libnative.a native/target/x86_64-apple-ios/release/libnative.a
           flutter run
-
-      - name: Install LLVM and Clang (Linux/Android)
-        if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' ) && !startsWith(matrix.config.flutter_version, '2')
-        run: |
-          cd kobi
-          flutter pub get
-          echo > native/src/bridge_generated.rs
-          echo > native/src/bridge_generated.io.rs
-          flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output lib/bridge_generated.dart
-
-      - name: Install LLVM and Clang (Linux/Android)
-        if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' ) && startsWith(matrix.config.flutter_version, '2')
-        run: |
-          cd kobi
-          flutter pub get
-          echo > native/src/bridge_generated.rs
-          echo > native/src/bridge_generated.io.rs
-          flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output lib/bridge_generated.dart --llvm-path=/usr/lib/llvm-13
 
       - name: Install rust target and build (Android-arm64)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm64')
@@ -284,9 +227,6 @@ jobs:
           export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${{ env.NDK_VERSION }}
           rustup target install aarch64-linux-android
           cd kobi
-          cd native
-          cargo ndk -o ../android/app/src/main/jniLibs -t arm64-v8a build --release
-          cd ..
           flutter build apk --target-platform android-arm64
 
       - name: Install rust target and build (Android-arm32)
@@ -295,9 +235,6 @@ jobs:
           export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${{ env.NDK_VERSION }}
           rustup target install armv7-linux-androideabi
           cd kobi
-          cd native
-          cargo ndk -o ../android/app/src/main/jniLibs -t armeabi-v7a build --release
-          cd ..
           flutter build apk --target-platform android-arm
 
       - name: Install rust target and build (Android-x86_64)
@@ -306,9 +243,6 @@ jobs:
           export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${{ env.NDK_VERSION }}
           rustup target install x86_64-linux-android
           cd kobi
-          cd native
-          cargo ndk -o ../android/app/src/main/jniLibs -t x86_64 build --release
-          cd ..
           flutter build apk --target-platform android-x64
 
       - name: Install dependencies and build (Linux)
@@ -321,9 +255,6 @@ jobs:
           mv appimagetool-x86_64.AppImage appimagetool
           cd kobi
           flutter pub get
-          echo > native/src/bridge_generated.rs
-          echo > native/src/bridge_generated.io.rs
-          flutter_rust_bridge_codegen --rust-input native/src/api.rs --dart-output lib/bridge_generated.dart
           flutter config --enable-linux-desktop
           flutter build linux --release
           mv build/linux/x64/release/bundle/{kobi,AppRun}
@@ -336,8 +267,6 @@ jobs:
         run: |
           cd kobi
           flutter pub get
-          echo $null > native/src/bridge_generated.rs
-          flutter_rust_bridge_codegen --rust-crate-dir native --rust-input native/src/api.rs --dart-output lib/bridge_generated.dart --class-name Native
           flutter config --enable-windows-desktop
           flutter build windows
           cd build/windows/x64/runner/Release
@@ -349,14 +278,6 @@ jobs:
         run: |
           cd kobi
           flutter pub get
-          echo > native/src/bridge_generated.rs
-          echo > native/src/bridge_generated.io.rs
-          flutter_rust_bridge_codegen \
-              --rust-input native/src/api.rs \
-              --dart-output lib/bridge_generated.dart \
-              --c-output macos/Runner/bridge_generated.h \
-              --rust-crate-dir native \
-              --class-name Native
           rustup target install x86_64-apple-darwin
           rustup target install aarch64-apple-darwin
           flutter config --enable-macos-desktop

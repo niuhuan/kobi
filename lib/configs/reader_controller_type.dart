@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import '../ffi.io.dart';
+import '../../src/rust/api/api.dart' as api;
+import '../../src/rust/udto.dart';
 import '../screens/components/commons.dart';
 
 enum ReaderControllerType {

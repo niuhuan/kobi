@@ -1,8 +1,8 @@
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:kobi/screens/components/commons.dart';
-import '../bridge_generated.dart';
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 
 bool _logging = true;
 

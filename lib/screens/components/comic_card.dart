@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../src/rust/copy_client/dtos.dart';
 import 'images.dart';
 import '../../bridge_generated.dart';
 

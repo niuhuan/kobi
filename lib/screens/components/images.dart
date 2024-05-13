@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../ffi.io.dart';
+import '../../src/rust/api/api.dart' as api;
+import '../../src/rust/udto.dart';
 import 'commons.dart';
 import 'file_photo_view_screen.dart';
 

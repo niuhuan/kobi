@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart' hide Size;
+import 'package:kobi/src/rust/frb_generated.dart';
 import 'package:kobi/screens/components/router.dart';
 import 'screens/init_screen.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  await RustLib.init();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);

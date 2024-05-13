@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:kobi/bridge_generated.dart';
-import 'package:kobi/ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/components/content_loading.dart';
 
+import '../src/rust/copy_client/dtos.dart';
+import '../src/rust/udto.dart';
 import 'components/comic_card.dart';
 
 class ComicDownloadScreen extends StatefulWidget {

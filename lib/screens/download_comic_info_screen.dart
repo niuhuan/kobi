@@ -5,8 +5,9 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:kobi/commons.dart';
 import 'package:kobi/screens/components/download_comic_card.dart';
 
-import '../bridge_generated.dart';
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/copy_client/dtos.dart';
+import '../src/rust/udto.dart';
 import 'comic_reader_screen.dart';
 import 'components/images.dart';
 import 'components/router.dart';

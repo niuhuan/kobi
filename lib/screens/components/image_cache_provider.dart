@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:kobi/ffi.io.dart';
+import '../../src/rust/api/api.dart' as api;
+import '../../src/rust/udto.dart';
 import 'package:kobi/screens/components/images.dart';
 
 class ImageCacheProvider extends ImageProvider<ImageCacheProvider> {

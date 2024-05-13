@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/configs.dart';
 import '../cross.dart';
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
+import '../src/rust/udto.dart';
 import 'app_screen.dart';
 
 class InitScreen extends StatefulWidget {

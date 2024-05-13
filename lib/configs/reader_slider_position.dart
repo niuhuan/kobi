@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../ffi.io.dart';
+import '../src/rust/api/api.dart' as api;
 import '../screens/components/commons.dart';
 
 enum ReaderSliderPosition {
