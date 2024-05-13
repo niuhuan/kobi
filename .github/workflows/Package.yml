@@ -158,7 +158,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'nosign.ipa'
-          path: 'build/nosign.ipa'
+          path: 'kobi/build/nosign.ipa'
           retention-days: 3
 
       - name: Run (ios-sim)
@@ -194,7 +194,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'app-release.apk'
-          path: 'build/app/outputs/flutter-apk/app-release.apk'
+          path: 'kobi/build/app/outputs/flutter-apk/app-release.apk'
           retention-days: 3
 
       - name: Install dependencies and build (Linux)
@@ -219,7 +219,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'build.AppImage'
-          path: 'build/build.AppImage'
+          path: 'kobi/build/build.AppImage'
           retention-days: 3
 
       - name: build (windows)
@@ -238,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'windows.zip'
-          path: 'build/windows.zip'
+          path: 'kobi/build/windows.zip'
           retention-days: 3
 
       - name: Build (macos)
@@ -262,7 +262,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'macos.dmg'
-          path: 'build/macos.dmg'
+          path: 'kobi/build/macos.dmg'
           retention-days: 3
 
 
