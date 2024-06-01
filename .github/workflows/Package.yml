@@ -27,14 +27,14 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - target: linux
-            host: ubuntu-latest
+          # - target: linux
+            # host: ubuntu-latest
           - target: windows
             host: windows-latest
-          - target: macos
-            host: macos-latest
-          - target: ios
-            host: macos-latest
+          # - target: macos
+            # host: macos-latest
+          # - target: ios
+            # host: macos-latest
           - target: android-arm64
             host: ubuntu-latest
 
