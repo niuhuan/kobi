@@ -67,11 +67,14 @@ impl Client {
                 "authorization",
                 format!("Token {}", self.get_token().await.as_str()),
             )
-            .header("referer", "com.copymanga.app-2.1.7")
-            .header("user-agent", "COPY/2.1.7")
+            // .header("referer", "com.copymanga.app-2.1.7")
+            .header("referer", "com.copymanga.app-2.2.0")
+            // .header("user-agent", "COPY/2.1.7")
+            .header("user-agent", "COPY/2.2.0")
             .header("source", "copyApp")
             .header("webp", "1")
-            .header("version", "2.1.7")
+            // .header("version", "2.1.7")
+            .header("version", "2.2.0")
             .header("region", "1")
             .header("platform", "3")
             .header("accept", "application/json")
