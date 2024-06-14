@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kobi/configs/collect_ordering.dart';
 
 import '../configs/cache_time.dart';
 import '../configs/proxy.dart';
@@ -14,6 +15,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           proxySetting(),
           cacheTimeNameSetting(),
+          collectOrderingSetting.configWidget(context),
         ],
       ),
     );

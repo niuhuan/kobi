@@ -7,6 +7,7 @@ import 'package:kobi/configs/reader_type.dart';
 import 'package:kobi/configs/versions.dart';
 
 import 'cache_time.dart';
+import 'collect_ordering.dart';
 
 Future initConfigs() async {
   await initProxy();
@@ -17,5 +18,6 @@ Future initConfigs() async {
   await initReaderType();
   await initLogin();
   await initVersion();
+  await collectOrderingSetting.initConfig();
   autoCheckNewVersion();
 }

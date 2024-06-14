@@ -1,9 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:kobi/screens/components/comic_pager.dart';
 
+import '../configs/collect_ordering.dart';
 import '../configs/login.dart';
 import '../src/rust/api/api.dart' as api;
-import '../src/rust/udto.dart';
 import 'components/comic_card.dart';
 
 class CollectedComicsAccountScreen extends StatefulWidget {
@@ -20,11 +22,13 @@ class _CollectedComicsAccountScreenState
   void initState() {
     super.initState();
     loginEvent.subscribe(_setState);
+    collectOrderingSetting.changeEvent.subscribe(_setState);
   }
 
   @override
   void dispose() {
     loginEvent.unsubscribe(_setState);
+    collectOrderingSetting.changeEvent.unsubscribe(_setState);
     super.dispose();
   }
 
@@ -52,30 +56,33 @@ class _CollectedComicsAccountScreenState
     if (loginState.state == 2) {
       return const Center(child: Text("登录失败"));
     }
-    return ComicPager(fetcher: (offset, limit) async {
-      final result = await api.collectFromAccount(
-        freeType: 1,
-        ordering: "-datetime_modifier",
-        offset: offset,
-        limit: limit,
-      );
-      return CommonPage<CommonComicInfo>(
-        list: result.list
-            .map((e) => CommonComicInfo(
-                  author: e.comic.author,
-                  cover: e.comic.cover,
-                  imgType: 1,
-                  name: e.comic.name,
-                  pathWord: e.comic.pathWord,
-                  popular: e.comic.popular,
-                  males: e.comic.males,
-                  females: e.comic.females,
-                ))
-            .toList(),
-        total: result.total,
-        limit: result.limit,
-        offset: result.offset,
-      );
-    });
+    return ComicPager(
+      key: Key("collected_comics_account:${collectOrderingSetting.value}"),
+      fetcher: (offset, limit) async {
+        final result = await api.collectFromAccount(
+          freeType: 1,
+          ordering: "-datetime_modifier",
+          offset: offset,
+          limit: limit,
+        );
+        return CommonPage<CommonComicInfo>(
+          list: result.list
+              .map((e) => CommonComicInfo(
+                    author: e.comic.author,
+                    cover: e.comic.cover,
+                    imgType: 1,
+                    name: e.comic.name,
+                    pathWord: e.comic.pathWord,
+                    popular: e.comic.popular,
+                    males: e.comic.males,
+                    females: e.comic.females,
+                  ))
+              .toList(),
+          total: result.total,
+          limit: result.limit,
+          offset: result.offset,
+        );
+      },
+    );
   }
 }
