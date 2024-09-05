@@ -5,9 +5,9 @@ on:
 
 env:
   LLVM_VERSION: '10.0'
-  RUST_TOOLCHAIN: nightly-2024-04-15
+  RUST_TOOLCHAIN: nightly-2024-09-04
   NDK_VERSION: 25.2.9519653
-  FLUTTER_VERSION: '3.19.3'
+  FLUTTER_VERSION: '3.24.2'
   FLUTTER_CHANNEL: 'stable'
   FRB_VERSION: 'v2.0.0-dev.32'
 
@@ -123,6 +123,8 @@ jobs:
 
       - id: check_asset
         name: Check asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd kobi/ci
           cargo run --release --bin check-asset

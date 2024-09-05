@@ -7,6 +7,10 @@ use ci::common;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let gh_token = std::env::var("GITHUB_TOKEN")?;
+    if gh_token.is_empty() {
+        panic!("Please set GITHUB_TOKEN");
+    }
     let repo = std::env::var("GITHUB_REPOSITORY")?;
     if repo.is_empty() {
         panic!("Can't got repo path");
@@ -30,6 +34,7 @@ async fn main() -> Result<()> {
         .get(format!(
             "https://api.github.com/repos/{repo}/releases/tags/{code}"
         ))
+        .header("Authorization", format!("token {}", gh_token))
         .send()
         .await?;
 
