@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-flutter_rust_bridge = "=2.0.0-dev.32"
+flutter_rust_bridge = "=2.3.0"
 anyhow = "1.0.81"
 async_once = "0.2.6"
 base64 = "0.22.0"
@@ -40,4 +40,3 @@ tracing = "0.1.40"
 rand = "0.8.5"
 async_zip = { version = "0.0.16", features = ["full", "tokio-util", "tokio", "tokio-fs", "async-compression"] }
 async-trait = "0.1.79"
-

@@ -6,7 +6,7 @@ import 'comic_list.dart';
 import 'commons.dart';
 
 class ComicPager extends StatefulWidget {
-  final Future<CommonPage<CommonComicInfo>> Function(int offset, int limit)
+  final Future<CommonPage<CommonComicInfo>> Function(BigInt offset, BigInt limit)
       fetcher;
 
   const ComicPager({Key? key, required this.fetcher}) : super(key: key);
@@ -22,7 +22,7 @@ class _ComicPagerState extends State<ComicPager> {
   bool finish = false;
   bool error = false;
   int _offset = 0;
-  static const int _limit = 21;
+  static final BigInt _limit = BigInt.parse("21");
 
   @override
   void dispose() {
@@ -59,13 +59,13 @@ class _ComicPagerState extends State<ComicPager> {
         error = false;
       });
       final resp = await widget.fetcher(
-        0,
+        BigInt.from(0),
         _limit,
       );
       setState(() {
         _records.clear();
         _records.addAll(resp.list);
-        _offset += _limit;
+        _offset = _offset + _limit.toInt();
         finish = resp.total <= _offset;
       });
       _refreshController.refreshCompleted();
@@ -93,12 +93,12 @@ class _ComicPagerState extends State<ComicPager> {
   _onLoading() async {
     try {
       final resp = await widget.fetcher(
-        _offset,
+        BigInt.from(_offset),
         _limit,
       );
       setState(() {
         _records.addAll(resp.list);
-        _offset += _limit;
+        _offset = _offset + _limit.toInt();
         finish = resp.total <= _offset;
       });
       _refreshController.loadComplete();

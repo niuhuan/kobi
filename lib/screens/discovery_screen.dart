@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/screens/comic_search_screen.dart';
-import 'package:flutter_search_bar/flutter_search_bar.dart' as sb;
+import 'components/flutter_search_bar_base.dart' as sb;
 import '../src/rust/api/api.dart' as api;
 import '../src/rust/udto.dart';
 import 'components/comic_card.dart';

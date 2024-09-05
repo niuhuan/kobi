@@ -1,19 +1,21 @@
 name: kobi
 description: A comic reader.
 publish_to: 'none'
+
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.1 <4.0.0'
+  sdk: ^3.5.2
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
   rust_lib_kobi:
     path: rust_builder
-  flutter_rust_bridge: 2.0.0-dev.32
+  flutter_rust_bridge: 2.3.0
+
   date_format: ^2.0.5
   uuid: ^4.1.0
   awesome_select: ^5.2.0
@@ -25,7 +27,6 @@ dependencies:
   permission_handler: ^10.1.0
   flutter_styled_toast: ^2.1.3
   flutter_svg: ^1.0.3
-  flutter_search_bar: ^3.0.0-dev.1
   url_launcher: ^6.1.2
   flutter_html: 3.0.0-alpha.3
   flutter_colorpicker: ^1.0.3
@@ -37,8 +38,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
   integration_test:
     sdk: flutter
 

@@ -12,7 +12,7 @@ class HistoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pager = ComicPager(fetcher: (offset, limit) async {
-      final result = await api.listComicViewLogs(offset: offset, limit: limit);
+      final result = await api.listComicViewLogs(offset: offset.toInt(), limit: limit.toInt());
       return CommonPage<CommonComicInfo>(
         list: result.list
             .map((e) => CommonComicInfo(

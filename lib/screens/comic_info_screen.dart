@@ -58,13 +58,13 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
     _loadViewLog();
   }
 
-  static const _chapterLimit = 100;
+  static BigInt _chapterLimit = BigInt.parse("100");
 
   Future fetch() async {
     final comic = await api.comic(pathWord: widget.comicInfo.pathWord);
     final Map<Group, List<UIComicChapter>> gcMap = {};
     for (var group in comic.groups) {
-      var offset = 0;
+      BigInt offset = BigInt.parse("0");
       List<UIComicChapter> cList = [];
       while (true) {
         final response = await api.comicChapters(
@@ -75,7 +75,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
         );
         cList.addAll(response.list);
         offset += _chapterLimit;
-        if (response.total <= offset) {
+        if (response.total <= offset.toInt()) {
           break;
         }
       }
@@ -438,7 +438,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 elevation: 0,
                 color: Colors.grey.shade500.withOpacity(.3),
                 textColor: Theme.of(context).textTheme.bodyMedium?.color,
-                child: const Text("从orde头开始"),
+                child: const Text("从头开始"),
                 onPressed: _startRead,
               ),
             ),

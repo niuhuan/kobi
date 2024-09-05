@@ -280,27 +280,38 @@ pub struct LoginResult {
     pub username: String,
     pub nickname: String,
     pub avatar: String,
+    #[serde(default)]
     pub is_authenticated: bool,
     pub datetime_created: String,
+    #[serde(default)]
     pub b_verify_email: bool,
-    pub email: String,
+    pub email: Option<String>,
     pub mobile: Option<String>,
     pub mobile_region: Option<String>,
+    #[serde(default)]
     pub point: i64,
+    #[serde(default)]
     pub comic_vip: i64,
     pub comic_vip_end: Option<String>,
     pub comic_vip_start: Option<String>,
+    #[serde(default)]
     pub cartoon_vip: i64,
     pub cartoon_vip_end: Option<String>,
     pub cartoon_vip_start: Option<String>,
     pub ads_vip_end: Option<String>,
+    #[serde(default)]
     pub close_report: bool,
+    #[serde(default)]
     pub downloads: i64,
+    #[serde(default)]
     pub vip_downloads: i64,
+    #[serde(default)]
     pub reward_downloads: i64,
     pub invite_code: Option<String>,
     pub invited: Option<String>,
+    #[serde(default)]
     pub b_sstv: bool,
+    #[serde(default)]
     pub scy_answer: bool,
 }
 
@@ -310,29 +321,41 @@ pub struct MemberInfo {
     pub username: String,
     pub nickname: String,
     pub avatar: String,
+    #[serde(default)]
     pub is_authenticated: bool,
     pub datetime_created: String,
+    #[serde(default)]
     pub b_verify_email: bool,
-    pub email: String,
+    pub email: Option<String>,
     pub mobile: Option<String>,
     pub mobile_region: Option<String>,
+    #[serde(default)]
     pub point: i64,
+    #[serde(default)]
     pub comic_vip: i64,
     pub comic_vip_end: Option<String>,
     pub comic_vip_start: Option<String>,
+    #[serde(default)]
     pub cartoon_vip: i64,
     pub cartoon_vip_end: Option<String>,
     pub cartoon_vip_start: Option<String>,
     pub ads_vip_end: Option<String>,
+    #[serde(default)]
     pub close_report: bool,
+    #[serde(default)]
     pub downloads: i64,
+    #[serde(default)]
     pub vip_downloads: i64,
+    #[serde(default)]
     pub reward_downloads: i64,
     pub invite_code: Option<String>,
     pub invited: Option<String>,
+    #[serde(default)]
     pub b_sstv: bool,
+    #[serde(default)]
     pub scy_answer: bool,
     pub day_downloads_refresh: String,
+    #[serde(default)]
     pub day_downloads: i64,
 }
 
