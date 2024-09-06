@@ -32,7 +32,6 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   crypto: ^3.0.2
   ffi: 2.0.1
-  uni_links: ^0.5.1
   pull_to_refresh: ^2.0.0
 
 dev_dependencies:
