@@ -6,10 +6,12 @@ import 'package:kobi/configs/reader_slider_position.dart';
 import 'package:kobi/configs/reader_type.dart';
 import 'package:kobi/configs/versions.dart';
 
+import 'api_host.dart';
 import 'cache_time.dart';
 import 'collect_ordering.dart';
 
 Future initConfigs() async {
+  await initApiHost();
   await initProxy();
   await initCacheTime();
   await initReaderControllerType();

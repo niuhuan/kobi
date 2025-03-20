@@ -667,3 +667,17 @@ pub fn exports(
         exports_type,
     ))
 }
+
+pub fn get_api_host() -> Result<String> {
+    Ok(block_on(async {
+        (*CLIENT.api_host_string().await).clone()
+    }))
+}
+
+pub fn set_api_host(api: String) -> Result<()> {
+    block_on(async {
+        CLIENT.set_api_host(api.clone()).await;
+        property::save_property("api".to_owned(), api).await?;
+        Ok(())
+    })
+}

@@ -3,6 +3,7 @@ mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be
 use crate::database::init_database;
 use base64::Engine;
 use copy_client::Client;
+use database::properties::property;
 use lazy_static::lazy_static;
 use once_cell::sync::OnceCell;
 use std::sync::Arc;
@@ -17,7 +18,8 @@ mod udto;
 mod utils;
 mod exports;
 
-const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
+const API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
+// const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
 // const API_URL_ORIGIN: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
 
 fn api_url() -> String {
@@ -64,6 +66,7 @@ pub fn init_root(path: &str) {
     create_dir_if_not_exists(DATABASE_DIR.get().unwrap());
     create_dir_if_not_exists(DOWNLOAD_DIR.get().unwrap());
     RUNTIME.block_on(init_database());
+    RUNTIME.block_on(load_api());
     RUNTIME.block_on(async {
         *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
             database::properties::property::load_property("download_and_export_to".to_owned())
@@ -95,4 +98,12 @@ pub(crate) fn get_database_dir() -> &'static String {
 
 pub(crate) fn get_download_dir() -> &'static String {
     DOWNLOAD_DIR.get().unwrap()
+}
+
+async fn load_api() {
+    let api = property::load_property("api".to_owned()).await.unwrap();
+    if api.is_empty() {
+        return;
+    }
+    CLIENT.set_api_host(api).await;
 }

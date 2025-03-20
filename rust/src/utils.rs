@@ -27,7 +27,7 @@ pub(crate) fn create_dir_if_not_exists(path: &str) {
 lazy_static! {
     static ref HASH_LOCK: Vec<Mutex::<()>> = {
         let mut mutex_vec: Vec<Mutex<()>> = vec![];
-        for _ in 0..64 {
+        for _ in 0..256 {
             mutex_vec.push(Mutex::<()>::new(()));
         }
         mutex_vec

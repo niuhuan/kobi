@@ -17,7 +17,7 @@ fn client() -> Client {
 async fn test_request() -> Result<()> {
     let value = client()
         .request(
-            Method::GET,
+            reqwest::Method::GET,
             "/api/v3/comics",
             json!({
                 "_update": true,
