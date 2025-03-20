@@ -164,7 +164,7 @@ jobs:
       - name: Install cargo tools (non-android)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'macos' || matrix.config.target == 'windows' || matrix.config.target == 'linux' )
         run: |
-          cargo install cbindgen
+          cargo install --force cbindgen
 
       - name: Install cargo tools (Android)
         if: steps.check_asset.outputs.skip_build != 'true' && ( matrix.config.target == 'android-arm32' || matrix.config.target == 'android-arm64' || matrix.config.target == 'android-x86_64' )
