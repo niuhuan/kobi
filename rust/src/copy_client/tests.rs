@@ -79,7 +79,7 @@ async fn test_collected_comics() -> Result<()> {
     let client = client();
     client.set_token("token").await;
     let value = client
-        .collected_comics(1, 0, 21, "-datetime_modifier")
+        .collected_comics(1, "-datetime_modifier", 0, 21)
         .await?;
     println!("{}", serde_json::to_string(&value).unwrap());
     Ok(())

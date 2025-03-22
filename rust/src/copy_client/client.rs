@@ -1,4 +1,5 @@
 pub use super::types::*;
+use super::Comment;
 use crate::copy_client::{
     ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch,
     ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
@@ -78,7 +79,7 @@ impl Client {
             .header("region", "1")
             .header("platform", "3")
             .header("accept", "application/json")
-            .header("device","QSR1.210802.001")
+            .header("device", "QSR1.210802.001")
             .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
             .header("deviceinfo", "Android SDK built for arm64-emulator64_arm64");
         let request = match method {
@@ -332,5 +333,40 @@ impl Client {
         let agent = agent_lock.clone();
         drop(agent_lock);
         Ok(agent.get(url).send().await?.bytes().await?)
+    }
+
+    pub async fn comments(
+        &self,
+        comic_id: &str,
+        reply_id: Option<&str>,
+        offset: u64,
+        limit: u64,
+    ) -> Result<Page<Comment>> {
+        self.request(
+            reqwest::Method::GET,
+            "/api/v3/comments",
+            serde_json::json!({
+                "comic_id": comic_id,
+                "reply_id": reply_id,
+                "limit": limit,
+                "offset": offset,
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn comment(&self, comic_id: &str, comment: &str, reply_id: Option<&str>) -> Result<()> {
+        self.request(
+            reqwest::Method::POST,
+            "/api/v3/member/comment",
+            serde_json::json!({
+                "comic_id": comic_id,
+                "comment": comment,
+                "reply_id": if let Some(reply_id) = reply_id { reply_id } else { "" },
+                "platform": 3,
+            }),
+        )
+        .await
     }
 }
