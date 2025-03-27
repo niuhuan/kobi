@@ -286,6 +286,8 @@ class _ComicReader extends StatefulWidget {
         return _ComicReaderGalleryState();
       case ReaderType.webToonFreeZoom:
         return _ListViewReaderState();
+      case ReaderType.twoPageGallery:
+        return _TwoPageGalleryReaderState();
     }
   }
 }
@@ -807,7 +809,8 @@ abstract class _ComicReaderState extends State<_ComicReader> {
     // 确定分卷
     UIComicChapter? nextEp;
     bool current = false;
-    X: for (var en in widget.groupChaptersMap.entries) {
+    X:
+    for (var en in widget.groupChaptersMap.entries) {
       en.value.sort((a, b) => a.index.compareTo(b.index));
       for (var c in en.value) {
         if (current) {
@@ -825,7 +828,8 @@ abstract class _ComicReaderState extends State<_ComicReader> {
     if (_hasNextEp()) {
       UIComicChapter? nextEp;
       bool current = false;
-      X: for (var en in widget.groupChaptersMap.entries) {
+      X:
+      for (var en in widget.groupChaptersMap.entries) {
         en.value.sort((a, b) => a.index.compareTo(b.index));
         for (var c in en.value) {
           if (current) {
@@ -1258,7 +1262,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
       return Container();
     }
     if (_current < widget.chapter.contents.length - 1) return Container();
-    return Align(
+    var ali = Align(
       alignment: Alignment.bottomRight,
       child: Material(
         color: Colors.transparent,
@@ -1287,6 +1291,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
         ),
       ),
     );
+    return ali;
   }
 }
 
@@ -1471,6 +1476,243 @@ class _ListViewReaderState extends _ComicReaderState
       });
       _animationController.forward(from: 0);
     }
+  }
+}
+
+class _TwoPageGalleryReaderState extends _ComicReaderState {
+  late PageController _pageController;
+  late PhotoViewGallery _gallery;
+
+  @override
+  void initState() {
+    List<PhotoViewGalleryPageOptions> options = [];
+    List<String> urls = genUrls(widget.chapter);
+    String? first;
+    for (var url in urls) {
+      if (first == null) {
+        first = url;
+      } else {
+        var tmp = first;
+        first = null;
+        options.add(
+          PhotoViewGalleryPageOptions.customChild(
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image(
+                          image: ImageCacheProvider(
+                            url: tmp,
+                            useful: 'comic_reader',
+                            extendsFieldFirst: widget.comic.pathWord,
+                            extendsFieldSecond: widget.chapter.groupPathWord,
+                            extendsFieldThird: widget.chapter.uuid,
+                          ),
+                          fit: BoxFit.contain,
+                          // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
+                          errorBuilder: (b, e, s) {
+                            print("$e,$s");
+                            return buildError(
+                              constraints.maxWidth / 2,
+                              constraints.maxHeight / 2,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image(
+                          image: ImageCacheProvider(
+                            url: url,
+                            useful: 'comic_reader',
+                            extendsFieldFirst: widget.comic.pathWord,
+                            extendsFieldSecond: widget.chapter.groupPathWord,
+                            extendsFieldThird: widget.chapter.uuid,
+                          ),
+                          fit: BoxFit.contain,
+                          // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
+                          errorBuilder: (b, e, s) {
+                            print("$e,$s");
+                            return buildError(
+                              constraints.maxWidth / 2,
+                              constraints.maxHeight / 2,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      }
+    }
+    if (first != null) {
+      options.add(
+        PhotoViewGalleryPageOptions.customChild(
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Image(
+                        image: ImageCacheProvider(
+                          url: first!,
+                          useful: 'comic_reader',
+                          extendsFieldFirst: widget.comic.pathWord,
+                          extendsFieldSecond: widget.chapter.groupPathWord,
+                          extendsFieldThird: widget.chapter.uuid,
+                        ),
+                        fit: BoxFit.contain,
+                        // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
+                        errorBuilder: (b, e, s) {
+                          print("$e,$s");
+                          return buildError(
+                            constraints.maxWidth / 2,
+                            constraints.maxHeight / 2,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Image(
+                        image: const AssetImage('lib/assets/0.png'),
+                        fit: BoxFit.contain,
+                        // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
+                        errorBuilder: (b, e, s) {
+                          print("$e,$s");
+                          return buildError(
+                            constraints.maxWidth / 2,
+                            constraints.maxHeight / 2,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+      first = null;
+    }
+
+    _pageController = PageController(initialPage: widget.startIndex ~/ 2);
+    _gallery = PhotoViewGallery.builder(
+      scrollDirection: widget.readerDirection == ReaderDirection.topToBottom
+          ? Axis.vertical
+          : Axis.horizontal,
+      reverse: widget.readerDirection == ReaderDirection.rightToLeft,
+      backgroundDecoration: const BoxDecoration(color: Colors.black),
+      loadingBuilder: (context, event) => LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return buildLoading(constraints.maxWidth, constraints.maxHeight);
+        },
+      ),
+      pageController: _pageController,
+      onPageChanged: _onGalleryPageChange,
+      itemCount: options.length,
+      allowImplicitScrolling: true,
+      builder: (BuildContext context, int index) {
+        return options[index];
+      },
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget _buildViewer() {
+    return Column(
+      children: [
+        Container(height: widget.fullScreen ? 0 : super._appBarHeight()),
+        Expanded(
+          child: Stack(
+            children: [
+              _gallery,
+              _buildNextEpController(),
+            ],
+          ),
+        ),
+        Container(height: widget.fullScreen ? 0 : super._bottomBarHeight()),
+      ],
+    );
+  }
+
+  @override
+  _needJumpTo(int pageIndex, bool animation) {
+    if (animation) {
+      _pageController.animateToPage(
+        pageIndex ~/ 2,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.ease,
+      );
+    } else {
+      _pageController.jumpToPage(pageIndex ~/ 2);
+    }
+  }
+
+  void _onGalleryPageChange(int to) {
+    super._onCurrentChange(to * 2);
+  }
+
+  Widget _buildNextEpController() {
+    if (super._fullscreenController()) {
+      return Container();
+    }
+    var i = widget.chapter.contents.length ~/ 2;
+    if (widget.chapter.contents.length % 2 != 0) {
+      i++;
+    }
+    if (_current < i - 1) return Container();
+    var ali = Align(
+      alignment: Alignment.bottomRight,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding:
+              const EdgeInsets.only(left: 10, right: 10, top: 4, bottom: 4),
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+            ),
+            color: Color(0x88000000),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              if (super._hasNextEp()) {
+                super._onNextAction();
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+            child: Text(super._hasNextEp() ? '下一章' : '结束阅读',
+                style: const TextStyle(color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+    return SafeArea(child: ali);
   }
 }
 
