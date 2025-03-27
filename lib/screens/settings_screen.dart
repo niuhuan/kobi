@@ -17,7 +17,6 @@ class SettingsScreen extends StatelessWidget {
           apiHostSetting(),
           proxySetting(),
           cacheTimeNameSetting(),
-          collectOrderingSetting.configWidget(context),
         ],
       ),
     );

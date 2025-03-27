@@ -20,6 +20,5 @@ Future initConfigs() async {
   await initReaderType();
   await initLogin();
   await initVersion();
-  await collectOrderingSetting.initConfig();
   autoCheckNewVersion();
 }

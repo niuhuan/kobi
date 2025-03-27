@@ -8,6 +8,13 @@ import '../configs/login.dart';
 import '../src/rust/api/api.dart' as api;
 import 'components/comic_card.dart';
 
+const _sortMap = {
+  "-datetime_modifier": "最晚收藏",
+  "datetime_modifier": "最早收藏",
+  "-datetime_updated": "最晚更新",
+  "datetime_updated": "最早更新",
+};
+
 class CollectedComicsAccountScreen extends StatefulWidget {
   const CollectedComicsAccountScreen({Key? key}) : super(key: key);
 
@@ -18,17 +25,17 @@ class CollectedComicsAccountScreen extends StatefulWidget {
 
 class _CollectedComicsAccountScreenState
     extends State<CollectedComicsAccountScreen> {
+  String _sort = _sortMap.keys.first;
+
   @override
   void initState() {
     super.initState();
     loginEvent.subscribe(_setState);
-    collectOrderingSetting.changeEvent.subscribe(_setState);
   }
 
   @override
   void dispose() {
     loginEvent.unsubscribe(_setState);
-    collectOrderingSetting.changeEvent.unsubscribe(_setState);
     super.dispose();
   }
 
@@ -41,6 +48,32 @@ class _CollectedComicsAccountScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text("收藏列表(账户)"),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (String value) {
+              setState(() {
+                _sort = value;
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return _sortMap.entries
+                  .map((e) => PopupMenuItem<String>(
+                        value: e.key,
+                        child: Row(
+                          children: [
+                            if (e.key == _sort)
+                              const Icon(Icons.check_box)
+                            else
+                              const Icon(Icons.check_box_outline_blank),
+                            Container(width: 10),
+                            Text(e.value),
+                          ],
+                        ),
+                      ))
+                  .toList();
+            },
+          ),
+        ],
       ),
       body: _buildBody(),
     );
@@ -56,12 +89,18 @@ class _CollectedComicsAccountScreenState
     if (loginState.state == 2) {
       return const Center(child: Text("登录失败"));
     }
+    return Column(children: [
+      Expanded(child: _comicPager()),
+    ]);
+  }
+
+  Widget _comicPager() {
     return ComicPager(
-      key: Key("collected_comics_account:${collectOrderingSetting.value}"),
+      key: Key("collected_comics_account:$_sort"),
       fetcher: (offset, limit) async {
         final result = await api.collectFromAccount(
           freeType: 1,
-          ordering: "-datetime_modifier",
+          ordering: _sort,
           offset: offset,
           limit: limit,
         );
