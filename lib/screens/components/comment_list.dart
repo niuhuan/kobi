@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/commnet_card.dart';
 import 'package:kobi/screens/components/commons.dart';
@@ -89,7 +90,11 @@ class _CommnetListState extends State<CommnetList> {
                       );
                       defaultToast(context, "发送成功");
                     } catch (e) {
-                      defaultToast(context, "发送失败 : $e");
+                      if (e is AnyhowException) {
+                        defaultToast(context, "发送失败 : ${e.message}");
+                      } else {
+                        defaultToast(context, "发送失败 : $e");
+                      }
                       debugPrint("$e");
                     }
                   }
@@ -227,7 +232,12 @@ class _ReplyButtonState extends State<ReplyButton> {
             );
             defaultToast(context, "发送成功");
           } catch (e) {
-            defaultToast(context, "发送失败 : $e");
+            if (e is AnyhowException) {
+              defaultToast(context, "发送失败 : ${e.message}");
+            } else {
+              defaultToast(context, "发送失败 : $e");
+            }
+            debugPrint("$e");
           }
         }
       },
