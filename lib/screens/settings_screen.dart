@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/api_host.dart';
+import 'package:kobi/configs/app_orientation.dart';
 import 'package:kobi/configs/collect_ordering.dart';
 
 import '../configs/cache_time.dart';
@@ -17,6 +18,7 @@ class SettingsScreen extends StatelessWidget {
           apiHostSetting(),
           proxySetting(),
           cacheTimeNameSetting(),
+          appOrientationWidget(),
         ],
       ),
     );

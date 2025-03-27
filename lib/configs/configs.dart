@@ -1,3 +1,4 @@
+import 'package:kobi/configs/app_orientation.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/configs/proxy.dart';
 import 'package:kobi/configs/reader_controller_type.dart';
@@ -11,6 +12,7 @@ import 'cache_time.dart';
 import 'collect_ordering.dart';
 
 Future initConfigs() async {
+  await initAppOrientation();
   await initApiHost();
   await initProxy();
   await initCacheTime();
