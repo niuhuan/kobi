@@ -72,6 +72,16 @@ class _CollectedComicsAccountScreenState
                       ))
                   .toList();
             },
+            child: Container(
+              padding: const EdgeInsets.only(right: 20),
+              child: Text(
+                _sortMap[_sort] ?? "UNKNOWN",
+                style: const TextStyle(
+                  fontSize: 14,
+                  decoration: TextDecoration.underline
+                ),
+              ),
+            ),
           ),
         ],
       ),
