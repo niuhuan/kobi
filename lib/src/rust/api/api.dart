@@ -70,6 +70,11 @@ Future<UIPageComment> comments(
     RustLib.instance.api.crateApiApiComments(
         comicId: comicId, replyId: replyId, offset: offset, limit: limit);
 
+Future<void> sendComment(
+        {required String comicId, required String comment, String? replyId}) =>
+    RustLib.instance.api.crateApiApiSendComment(
+        comicId: comicId, comment: comment, replyId: replyId);
+
 Future<UIComicQuery> comicQuery({required String pathWord}) =>
     RustLib.instance.api.crateApiApiComicQuery(pathWord: pathWord);
 

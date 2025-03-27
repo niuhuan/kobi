@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/commnet_card.dart';
+import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/components/content_loading.dart';
 import 'package:kobi/src/rust/api/api.dart' as api;
 import 'package:kobi/src/rust/udto.dart';
@@ -23,7 +25,18 @@ class _CommnetListState extends State<CommnetList> {
   @override
   void initState() {
     _load(0);
+    loginEvent.subscribe(_setState);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    loginEvent.unsubscribe(_setState);
+    super.dispose();
+  }
+
+  _setState(_) {
+    setState(() {});
   }
 
   _load(int offser) {
@@ -64,6 +77,55 @@ class _CommnetListState extends State<CommnetList> {
         var data = snapshot.requireData;
         return Column(
           children: [
+            if (widget.parentId == null && loginState.state == 1)
+              GestureDetector(
+                onTap: () async {
+                  var comment = await displayTextInputDialog(context);
+                  if (comment != null && comment.isNotEmpty) {
+                    try {
+                      await api.sendComment(
+                        comicId: widget.comicId,
+                        comment: comment,
+                      );
+                      defaultToast(context, "发送成功");
+                    } catch (e) {
+                      defaultToast(context, "发送失败 : $e");
+                      debugPrint("$e");
+                    }
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  child: Text(
+                    "我有话要讲",
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withOpacity(.5)),
+                  ),
+                ),
+              ),
+            GestureDetector(
+              onTap: () {
+                _load(_commentOffset);
+              },
+              child: Container(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Text(
+                  "刷新",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.color
+                          ?.withOpacity(.5)),
+                ),
+              ),
+            ),
             if (data.offset > 0)
               TextButton(
                 onPressed: () {
@@ -82,6 +144,11 @@ class _CommnetListState extends State<CommnetList> {
                     return Scaffold(
                       appBar: AppBar(
                         title: const Text('评论'),
+                        actions: [
+                          ReplyButton(
+                              comicId: widget.comicId,
+                              commentId: e.id.toString()),
+                        ],
                       ),
                       body: Column(
                         children: [
@@ -111,6 +178,60 @@ class _CommnetListState extends State<CommnetList> {
           ],
         );
       },
+    );
+  }
+}
+
+class ReplyButton extends StatefulWidget {
+  final String comicId;
+  final String commentId;
+
+  const ReplyButton({Key? key, required this.comicId, required this.commentId})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _ReplyButtonState();
+}
+
+class _ReplyButtonState extends State<ReplyButton> {
+  @override
+  void initState() {
+    loginEvent.subscribe(_setState);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    loginEvent.unsubscribe(_setState);
+    super.dispose();
+  }
+
+  _setState(_) {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (loginState.state != 1) {
+      return const SizedBox();
+    }
+    return IconButton(
+      onPressed: () async {
+        var comment = await displayTextInputDialog(context);
+        if (comment != null && comment.isNotEmpty) {
+          try {
+            await api.sendComment(
+              comicId: widget.comicId,
+              comment: comment,
+              replyId: widget.commentId,
+            );
+            defaultToast(context, "发送成功");
+          } catch (e) {
+            defaultToast(context, "发送失败 : $e");
+          }
+        }
+      },
+      icon: const Icon(Icons.reply),
     );
   }
 }

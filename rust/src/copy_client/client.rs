@@ -6,7 +6,6 @@ use crate::copy_client::{
     Tags,
 };
 use base64::Engine;
-use prost_types::value;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -54,9 +53,67 @@ impl Client {
         &self,
         method: reqwest::Method,
         path: &str,
-        params: serde_json::Value,
+        mut params: serde_json::Value,
     ) -> Result<T> {
-        let obj = params.as_object().expect("query must be object");
+        let obj = params.as_object_mut().expect("query must be object");
+        if !path.ends_with("/login") && !path.ends_with("/register") {
+            if let reqwest::Method::POST = method {
+                obj.insert(
+                    "authorization".to_string(),
+                    serde_json::Value::String(format!("Token {}", self.get_token().await.as_str())),
+                );
+                obj.insert(
+                    "referer".to_string(),
+                    serde_json::Value::String("com.copymanga.app-2.2.0".to_string()),
+                );
+                obj.insert(
+                    "userAgent".to_string(),
+                    serde_json::Value::String("COPY/2.2.0".to_string()),
+                );
+                obj.insert(
+                    "source".to_string(),
+                    serde_json::Value::String("copyApp".to_string()),
+                );
+                obj.insert(
+                    "webp".to_string(),
+                    serde_json::Value::String("1".to_string()),
+                );
+                obj.insert(
+                    "version".to_string(),
+                    serde_json::Value::String("2.2.0".to_string()),
+                );
+                obj.insert(
+                    "region".to_string(),
+                    serde_json::Value::String("1".to_string()),
+                );
+                obj.insert(
+                    "accept".to_string(),
+                    serde_json::Value::String("application/json".to_string()),
+                );
+                obj.insert(
+                    "device".to_string(),
+                    serde_json::Value::String("QSR1.210802.001".to_string()),
+                );
+                obj.insert(
+                    "umString".to_string(),
+                    serde_json::Value::String("b4c89ca4104ea9a97750314d791520ac".to_string()),
+                );
+                obj.insert(
+                    "deviceInfo".to_string(),
+                    serde_json::Value::String(
+                        "Android SDK built for arm64-emulator64_arm64".to_string(),
+                    ),
+                );
+                obj.insert(
+                    "isGoogle".to_string(),
+                    serde_json::Value::String("false".to_string()),
+                );
+                obj.insert(
+                    "platform".to_string(),
+                    serde_json::Value::String("3".to_string()),
+                );
+            }
+        }
         let agent_lock = self.agent.lock().await;
         let agent = agent_lock.clone();
         drop(agent_lock);
@@ -69,13 +126,10 @@ impl Client {
                 "authorization",
                 format!("Token {}", self.get_token().await.as_str()),
             )
-            // .header("referer", "com.copymanga.app-2.1.7")
             .header("referer", "com.copymanga.app-2.2.0")
-            // .header("user-agent", "COPY/2.1.7")
             .header("user-agent", "COPY/2.2.0")
             .header("source", "copyApp")
             .header("webp", "1")
-            // .header("version", "2.1.7")
             .header("version", "2.2.0")
             .header("region", "1")
             .header("platform", "3")
@@ -93,7 +147,15 @@ impl Client {
         if status.as_u16() == 404 {
             return Err(Error::message("404 Not found"));
         }
-        println!("{} {}", status, text);
+        println!("RESPONSE : {} {}", status, text);
+        let value = serde_json::from_str(text.as_str())?;
+        if let serde_json::Value::Object(value) = value {
+            if value.len() == 1 {
+                if let Some(serde_json::Value::String(detal)) = value.get("detail") {
+                    return Err(Error::message(detal.to_string()));
+               }
+            }
+        }
         let response: Response = serde_json::from_str(text.as_str())?;
         if response.code != 200 {
             return Err(Error::message(response.message));
@@ -301,7 +363,6 @@ impl Client {
             serde_json::json!({
                 "comic_id": comic_id,
                 "is_collect": if is_collect { 1 } else { 0 },
-                "platform": 3,
             }),
         )
         .await
@@ -348,10 +409,7 @@ impl Client {
             "/api/v3/comments",
             serde_json::json!({
                 "comic_id": comic_id,
-                "reply_id": match reply_id {
-                    Some(value) => value,
-                    None => "",
-                },
+                "reply_id": if let Some(reply_id) = reply_id { reply_id } else { "" },
                 "limit": limit,
                 "offset": offset,
                 "platform": 3,

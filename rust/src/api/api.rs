@@ -6,7 +6,11 @@ use crate::database::download::{
 };
 use crate::database::properties::property;
 use crate::udto::{
-    ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState, UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageComment, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags, UIViewLog
+    ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
+    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
+    UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageComment, UIPageRankItem,
+    UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags,
+    UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
@@ -267,9 +271,20 @@ pub fn comic_chapters(
     ))
 }
 
-pub fn comments(comic_id: String, reply_id: Option<String>, offset: u64, limit: u64) -> Result<UIPageComment> {
-    let a = block_on(CLIENT.comments(comic_id.as_str(), reply_id.as_deref(), offset, limit)).map(UIPageComment::from)?;
+pub fn comments(
+    comic_id: String,
+    reply_id: Option<String>,
+    offset: u64,
+    limit: u64,
+) -> Result<UIPageComment> {
+    let a = block_on(CLIENT.comments(comic_id.as_str(), reply_id.as_deref(), offset, limit))
+        .map(UIPageComment::from)?;
     Ok(UIPageComment::from(a))
+}
+
+pub fn send_comment(comic_id: String, comment: String, reply_id: Option<String>) -> Result<()> {
+    block_on(CLIENT.comment(comic_id.as_str(), comment.as_str(), reply_id.as_deref()))?;
+    Ok(())
 }
 
 pub fn comic_query(path_word: String) -> Result<UIComicQuery> {
@@ -686,4 +701,3 @@ pub fn set_api_host(api: String) -> Result<()> {
         Ok(())
     })
 }
-
