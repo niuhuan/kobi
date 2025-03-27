@@ -27,6 +27,27 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
         _tagsLoadStatus = 0;
       });
       uiTags = await api.tags();
+      var pKeytop = await api.loadProperty(k: "_keyTop");
+      for (var element in uiTags.top) {
+        if (element.pathWord == pKeytop) {
+          _keyTop = pKeytop;
+          break;
+        }
+      }
+      var pKeytheme = await api.loadProperty(k: "_keyTheme");
+      for (var element in uiTags.theme) {
+        if (element.pathWord == pKeytheme) {
+          _keyTheme = pKeytheme;
+          break;
+        }
+      }
+      var pKeyordering = await api.loadProperty(k: "_keyOrdering");
+      for (var element in uiTags.ordering) {
+        if (element.pathWord == pKeyordering) {
+          _keyOrdering = pKeyordering;
+          break;
+        }
+      }
       setState(() {
         _tagsLoadStatus = 1;
       });
@@ -123,6 +144,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           return orderingItems;
         },
         onSelected: (String value) {
+          api.saveProperty(k: "_keyOrdering", v: value);
           setState(() {
             _keyOrdering = value;
           });
@@ -159,6 +181,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           return topItems;
         },
         onSelected: (String value) {
+          api.saveProperty(k: "_keyTop", v: value);
           setState(() {
             _keyTop = value;
           });
@@ -195,6 +218,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           return themeItems;
         },
         onSelected: (String value) {
+          api.saveProperty(k: "_keyTheme", v: value);
           setState(() {
             _keyTheme = value;
           });
