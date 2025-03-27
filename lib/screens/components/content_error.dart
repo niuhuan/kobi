@@ -1,17 +1,19 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'error_types.dart';
-
 
 class ContentError extends StatelessWidget {
   final Object? error;
   final StackTrace? stackTrace;
   final Future<void> Function() onRefresh;
+  final bool sq;
 
   const ContentError({
     Key? key,
     required this.error,
     required this.stackTrace,
     required this.onRefresh,
+    this.sq = false,
   }) : super(key: key);
 
   @override
@@ -51,6 +53,9 @@ class ContentError extends StatelessWidget {
         print("$stackTrace");
         var width = constraints.maxWidth;
         var height = constraints.maxHeight;
+        if (sq) {
+          height = width;
+        }
         var min = width < height ? width : height;
         var iconSize = min / 2.3;
         var textSize = min / 16;
@@ -58,38 +63,35 @@ class ContentError extends StatelessWidget {
         var infoSize = min / 30;
         return GestureDetector(
           onTap: onRefresh,
-          child: ListView(
-            children: [
-              SizedBox(
-                height: height,
-                child: Column(
-                  children: [
-                    Expanded(child: Container()),
-                    Icon(
-                      iconData,
-                      size: iconSize,
-                      color: Colors.grey.shade600,
-                    ),
-                    Container(height: min / 10),
-                    Container(
-                      padding: const EdgeInsets.only(
-                        left: 30,
-                        right: 30,
-                      ),
-                      child: Text(
-                        message,
-                        style: TextStyle(fontSize: textSize),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Text('(点击刷新)', style: TextStyle(fontSize: tipSize)),
-                    Container(height: min / 15),
-                    Text('$error', style: TextStyle(fontSize: infoSize)),
-                    Expanded(child: Container()),
-                  ],
+          child: SizedBox(
+            width: width,
+            height: height,
+            child: Column(
+              children: [
+                Expanded(child: Container()),
+                Icon(
+                  iconData,
+                  size: iconSize,
+                  color: Colors.grey.shade600,
                 ),
-              ),
-            ],
+                Container(height: min / 10),
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 30,
+                    right: 30,
+                  ),
+                  child: Text(
+                    message,
+                    style: TextStyle(fontSize: textSize),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Text('(点击刷新)', style: TextStyle(fontSize: tipSize)),
+                Container(height: min / 15),
+                Text('$error', style: TextStyle(fontSize: infoSize)),
+                Expanded(child: Container()),
+              ],
+            ),
           ),
         );
       },

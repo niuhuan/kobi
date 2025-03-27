@@ -128,6 +128,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<UIComicInList> dco_decode_list_ui_comic_in_list(dynamic raw);
 
   @protected
+  List<UIComment> dco_decode_list_ui_comment(dynamic raw);
+
+  @protected
   List<UIDownloadComic> dco_decode_list_ui_download_comic(dynamic raw);
 
   @protected
@@ -228,6 +231,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   UIComicQuery dco_decode_ui_comic_query(dynamic raw);
 
   @protected
+  UIComment dco_decode_ui_comment(dynamic raw);
+
+  @protected
   UIDownloadComic dco_decode_ui_download_comic(dynamic raw);
 
   @protected
@@ -250,6 +256,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   UIPageComicInExplore dco_decode_ui_page_comic_in_explore(dynamic raw);
+
+  @protected
+  UIPageComment dco_decode_ui_page_comment(dynamic raw);
 
   @protected
   UIPageRankItem dco_decode_ui_page_rank_item(dynamic raw);
@@ -404,6 +413,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  List<UIComment> sse_decode_list_ui_comment(SseDeserializer deserializer);
+
+  @protected
   List<UIDownloadComic> sse_decode_list_ui_download_comic(
       SseDeserializer deserializer);
 
@@ -512,6 +524,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   UIComicQuery sse_decode_ui_comic_query(SseDeserializer deserializer);
 
   @protected
+  UIComment sse_decode_ui_comment(SseDeserializer deserializer);
+
+  @protected
   UIDownloadComic sse_decode_ui_download_comic(SseDeserializer deserializer);
 
   @protected
@@ -540,6 +555,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   UIPageComicInExplore sse_decode_ui_page_comic_in_explore(
       SseDeserializer deserializer);
+
+  @protected
+  UIPageComment sse_decode_ui_page_comment(SseDeserializer deserializer);
 
   @protected
   UIPageRankItem sse_decode_ui_page_rank_item(SseDeserializer deserializer);
@@ -705,6 +723,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       List<UIComicInList> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_ui_comment(
+      List<UIComment> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_ui_download_comic(
       List<UIDownloadComic> self, SseSerializer serializer);
 
@@ -821,6 +843,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_ui_comic_query(UIComicQuery self, SseSerializer serializer);
 
   @protected
+  void sse_encode_ui_comment(UIComment self, SseSerializer serializer);
+
+  @protected
   void sse_encode_ui_download_comic(
       UIDownloadComic self, SseSerializer serializer);
 
@@ -850,6 +875,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_ui_page_comic_in_explore(
       UIPageComicInExplore self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_ui_page_comment(UIPageComment self, SseSerializer serializer);
 
   @protected
   void sse_encode_ui_page_rank_item(

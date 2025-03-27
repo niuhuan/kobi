@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.9.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 378854231;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 982445569;
 
 // Section: executor
 
@@ -430,6 +430,49 @@ fn wire__crate__api__api__comic_search_impl(
                     (move || {
                         let output_ok = crate::api::api::comic_search(
                             api_q_type, api_q, api_offset, api_limit,
+                        )?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__api__comments_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "comments",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_comic_id = <String>::sse_decode(&mut deserializer);
+            let api_reply_id = <Option<String>>::sse_decode(&mut deserializer);
+            let api_offset = <u64>::sse_decode(&mut deserializer);
+            let api_limit = <u64>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::api::comments(
+                            api_comic_id,
+                            api_reply_id,
+                            api_offset,
+                            api_limit,
                         )?;
                         Ok(output_ok)
                     })(),
@@ -1970,6 +2013,18 @@ impl SseDecode for Vec<crate::udto::UIComicInList> {
     }
 }
 
+impl SseDecode for Vec<crate::udto::UIComment> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::udto::UIComment>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<crate::udto::UIDownloadComic> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2595,6 +2650,34 @@ impl SseDecode for crate::udto::UIComicQuery {
     }
 }
 
+impl SseDecode for crate::udto::UIComment {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <i64>::sse_decode(deserializer);
+        let mut var_createAt = <String>::sse_decode(deserializer);
+        let mut var_userId = <String>::sse_decode(deserializer);
+        let mut var_userName = <String>::sse_decode(deserializer);
+        let mut var_userAvatar = <String>::sse_decode(deserializer);
+        let mut var_comment = <String>::sse_decode(deserializer);
+        let mut var_count = <i64>::sse_decode(deserializer);
+        let mut var_parentId = <Option<i64>>::sse_decode(deserializer);
+        let mut var_parentUserId = <Option<String>>::sse_decode(deserializer);
+        let mut var_parentUserName = <Option<String>>::sse_decode(deserializer);
+        return crate::udto::UIComment {
+            id: var_id,
+            create_at: var_createAt,
+            user_id: var_userId,
+            user_name: var_userName,
+            user_avatar: var_userAvatar,
+            comment: var_comment,
+            count: var_count,
+            parent_id: var_parentId,
+            parent_user_id: var_parentUserId,
+            parent_user_name: var_parentUserName,
+        };
+    }
+}
+
 impl SseDecode for crate::udto::UIDownloadComic {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2809,6 +2892,22 @@ impl SseDecode for crate::udto::UIPageComicInExplore {
         let mut var_limit = <i64>::sse_decode(deserializer);
         let mut var_offset = <i64>::sse_decode(deserializer);
         return crate::udto::UIPageComicInExplore {
+            list: var_list,
+            total: var_total,
+            limit: var_limit,
+            offset: var_offset,
+        };
+    }
+}
+
+impl SseDecode for crate::udto::UIPageComment {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_list = <Vec<crate::udto::UIComment>>::sse_decode(deserializer);
+        let mut var_total = <i64>::sse_decode(deserializer);
+        let mut var_limit = <i64>::sse_decode(deserializer);
+        let mut var_offset = <i64>::sse_decode(deserializer);
+        return crate::udto::UIPageComment {
             list: var_list,
             total: var_total,
             limit: var_limit,
@@ -3106,41 +3205,42 @@ fn pde_ffi_dispatcher_primary_impl(
         8 => wire__crate__api__api__comic_chapters_impl(port, ptr, rust_vec_len, data_len),
         9 => wire__crate__api__api__comic_query_impl(port, ptr, rust_vec_len, data_len),
         10 => wire__crate__api__api__comic_search_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire__crate__api__api__delete_download_comic_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire__crate__api__api__desktop_root_impl(port, ptr, rust_vec_len, data_len),
-        13 => {
+        11 => wire__crate__api__api__comments_impl(port, ptr, rust_vec_len, data_len),
+        12 => wire__crate__api__api__delete_download_comic_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__api__api__desktop_root_impl(port, ptr, rust_vec_len, data_len),
+        14 => {
             wire__crate__api__api__download_comic_chapters_impl(port, ptr, rust_vec_len, data_len)
         }
-        14 => wire__crate__api__api__download_comic_groups_impl(port, ptr, rust_vec_len, data_len),
-        15 => wire__crate__api__api__download_comic_pages_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__api__download_comics_impl(port, ptr, rust_vec_len, data_len),
-        17 => wire__crate__api__api__download_is_pause_impl(port, ptr, rust_vec_len, data_len),
-        18 => wire__crate__api__api__download_set_pause_impl(port, ptr, rust_vec_len, data_len),
-        19 => wire__crate__api__api__explorer_impl(port, ptr, rust_vec_len, data_len),
-        20 => wire__crate__api__api__exports_impl(port, ptr, rust_vec_len, data_len),
-        21 => wire__crate__api__api__find_comic_view_log_impl(port, ptr, rust_vec_len, data_len),
-        22 => wire__crate__api__api__get_api_host_impl(port, ptr, rust_vec_len, data_len),
-        23 => wire__crate__api__api__get_proxy_impl(port, ptr, rust_vec_len, data_len),
-        25 => wire__crate__api__api__http_get_impl(port, ptr, rust_vec_len, data_len),
-        26 => {
+        15 => wire__crate__api__api__download_comic_groups_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire__crate__api__api__download_comic_pages_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__api__download_comics_impl(port, ptr, rust_vec_len, data_len),
+        18 => wire__crate__api__api__download_is_pause_impl(port, ptr, rust_vec_len, data_len),
+        19 => wire__crate__api__api__download_set_pause_impl(port, ptr, rust_vec_len, data_len),
+        20 => wire__crate__api__api__explorer_impl(port, ptr, rust_vec_len, data_len),
+        21 => wire__crate__api__api__exports_impl(port, ptr, rust_vec_len, data_len),
+        22 => wire__crate__api__api__find_comic_view_log_impl(port, ptr, rust_vec_len, data_len),
+        23 => wire__crate__api__api__get_api_host_impl(port, ptr, rust_vec_len, data_len),
+        24 => wire__crate__api__api__get_proxy_impl(port, ptr, rust_vec_len, data_len),
+        26 => wire__crate__api__api__http_get_impl(port, ptr, rust_vec_len, data_len),
+        27 => {
             wire__crate__api__api__in_download_chapter_uuid_impl(port, ptr, rust_vec_len, data_len)
         }
-        27 => wire__crate__api__api__init_impl(port, ptr, rust_vec_len, data_len),
-        28 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
-        29 => wire__crate__api__api__init_login_state_impl(port, ptr, rust_vec_len, data_len),
-        30 => wire__crate__api__api__list_comic_view_logs_impl(port, ptr, rust_vec_len, data_len),
-        31 => wire__crate__api__api__load_property_impl(port, ptr, rust_vec_len, data_len),
-        32 => wire__crate__api__api__login_impl(port, ptr, rust_vec_len, data_len),
-        33 => wire__crate__api__api__rank_impl(port, ptr, rust_vec_len, data_len),
-        34 => wire__crate__api__api__recommends_impl(port, ptr, rust_vec_len, data_len),
-        35 => wire__crate__api__api__register_impl(port, ptr, rust_vec_len, data_len),
-        36 => wire__crate__api__api__reset_fail_downloads_impl(port, ptr, rust_vec_len, data_len),
-        37 => wire__crate__api__api__save_property_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__api__api__set_api_host_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
-        40 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
-        41 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
+        28 => wire__crate__api__api__init_impl(port, ptr, rust_vec_len, data_len),
+        29 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        30 => wire__crate__api__api__init_login_state_impl(port, ptr, rust_vec_len, data_len),
+        31 => wire__crate__api__api__list_comic_view_logs_impl(port, ptr, rust_vec_len, data_len),
+        32 => wire__crate__api__api__load_property_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__api__api__login_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__api__api__rank_impl(port, ptr, rust_vec_len, data_len),
+        35 => wire__crate__api__api__recommends_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__api__api__register_impl(port, ptr, rust_vec_len, data_len),
+        37 => wire__crate__api__api__reset_fail_downloads_impl(port, ptr, rust_vec_len, data_len),
+        38 => wire__crate__api__api__save_property_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__api__api__set_api_host_impl(port, ptr, rust_vec_len, data_len),
+        40 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
+        41 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
+        42 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
+        43 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -3153,7 +3253,7 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        24 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        25 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -3762,6 +3862,30 @@ impl flutter_rust_bridge::IntoIntoDart<crate::udto::UIComicQuery> for crate::udt
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::udto::UIComment {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.id.into_into_dart().into_dart(),
+            self.create_at.into_into_dart().into_dart(),
+            self.user_id.into_into_dart().into_dart(),
+            self.user_name.into_into_dart().into_dart(),
+            self.user_avatar.into_into_dart().into_dart(),
+            self.comment.into_into_dart().into_dart(),
+            self.count.into_into_dart().into_dart(),
+            self.parent_id.into_into_dart().into_dart(),
+            self.parent_user_id.into_into_dart().into_dart(),
+            self.parent_user_name.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::udto::UIComment {}
+impl flutter_rust_bridge::IntoIntoDart<crate::udto::UIComment> for crate::udto::UIComment {
+    fn into_into_dart(self) -> crate::udto::UIComment {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::udto::UIDownloadComic {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -3980,6 +4104,24 @@ impl flutter_rust_bridge::IntoIntoDart<crate::udto::UIPageComicInExplore>
     for crate::udto::UIPageComicInExplore
 {
     fn into_into_dart(self) -> crate::udto::UIPageComicInExplore {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::udto::UIPageComment {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.list.into_into_dart().into_dart(),
+            self.total.into_into_dart().into_dart(),
+            self.limit.into_into_dart().into_dart(),
+            self.offset.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::udto::UIPageComment {}
+impl flutter_rust_bridge::IntoIntoDart<crate::udto::UIPageComment> for crate::udto::UIPageComment {
+    fn into_into_dart(self) -> crate::udto::UIPageComment {
         self
     }
 }
@@ -4525,6 +4667,16 @@ impl SseEncode for Vec<crate::udto::UIComicInList> {
     }
 }
 
+impl SseEncode for Vec<crate::udto::UIComment> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::udto::UIComment>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<crate::udto::UIDownloadComic> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4931,6 +5083,22 @@ impl SseEncode for crate::udto::UIComicQuery {
     }
 }
 
+impl SseEncode for crate::udto::UIComment {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.id, serializer);
+        <String>::sse_encode(self.create_at, serializer);
+        <String>::sse_encode(self.user_id, serializer);
+        <String>::sse_encode(self.user_name, serializer);
+        <String>::sse_encode(self.user_avatar, serializer);
+        <String>::sse_encode(self.comment, serializer);
+        <i64>::sse_encode(self.count, serializer);
+        <Option<i64>>::sse_encode(self.parent_id, serializer);
+        <Option<String>>::sse_encode(self.parent_user_id, serializer);
+        <Option<String>>::sse_encode(self.parent_user_name, serializer);
+    }
+}
+
 impl SseEncode for crate::udto::UIDownloadComic {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -5051,6 +5219,16 @@ impl SseEncode for crate::udto::UIPageComicInExplore {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<crate::udto::UIComicInExplore>>::sse_encode(self.list, serializer);
+        <i64>::sse_encode(self.total, serializer);
+        <i64>::sse_encode(self.limit, serializer);
+        <i64>::sse_encode(self.offset, serializer);
+    }
+}
+
+impl SseEncode for crate::udto::UIPageComment {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<crate::udto::UIComment>>::sse_encode(self.list, serializer);
         <i64>::sse_encode(self.total, serializer);
         <i64>::sse_encode(self.limit, serializer);
         <i64>::sse_encode(self.offset, serializer);

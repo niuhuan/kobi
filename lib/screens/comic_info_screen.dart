@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/login.dart';
+import 'package:kobi/screens/components/content_loading.dart';
 import '../src/rust/api/api.dart' as api;
 import '../src/rust/udto.dart';
 import 'package:kobi/screens/components/commons.dart';
@@ -12,6 +13,7 @@ import '../src/rust/udto.dart';
 import 'comic_download_screen.dart';
 import 'comic_reader_screen.dart';
 import 'components/comic_card.dart';
+import 'components/content_error.dart';
 import 'components/images.dart';
 import 'components/router.dart';
 
@@ -28,10 +30,12 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   final _scrollController = ScrollController();
   double _scrollOffset = 0;
   late Future _fetchFuture = fetch();
+  late Future<UIPageComment> _commentFuture;
   late UIComicData _comic;
   late Map<Group, List<UIComicChapter>> _gcMap;
   late UIComicQuery _query;
   late UIViewLog? _viewLog;
+  late int _commentOffset;
 
   @override
   void initState() {
@@ -95,6 +99,11 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       comicAuthors: comic.comic.author,
       comicCover: comic.comic.cover,
     );
+    _commentOffset = 0;
+    _commentFuture = api.comments(
+        comicId: _comic.comic.uuid,
+        offset: BigInt.from(_commentOffset),
+        limit: BigInt.from(10));
   }
 
   _loadViewLog() async {
@@ -201,28 +210,53 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   }
 
   Widget _comicInfoLoaded() {
-    return ListView(
-      controller: _scrollController,
-      children: [
-        // 站位APP-BAR
-        AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-        ),
-        ComicInfoCard(_comic.comic),
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: _brief(_comic.comic.brief),
-        ),
-        const Divider(),
-        ..._continueAndRestart(),
-        ..._chapters(),
-        const Divider(),
-        SafeArea(child: Container()),
-      ],
+    return DefaultTabController(
+      length: 2,
+      child: ListView(
+        controller: _scrollController,
+        children: [
+          // 站位APP-BAR
+          AppBar(
+            automaticallyImplyLeading: false,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+          ),
+          ComicInfoCard(_comic.comic),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: _brief(_comic.comic.brief),
+          ),
+          const Divider(),
+          Column(
+            children: [
+              TabBar(
+                tabs: const <Widget>[
+                  Tab(text: '章节'),
+                  Tab(text: '评论'),
+                ],
+                onTap: (val) async {
+                  setState(() {
+                    _tabIndex = val;
+                  });
+                },
+              ),
+              if (_tabIndex == 0) ...[
+                ..._continueAndRestart(),
+                ..._chapters(),
+              ],
+              if (_tabIndex == 1) ...[
+                _comments(),
+              ],
+            ],
+          ),
+          const Divider(),
+          SafeArea(child: Container()),
+        ],
+      ),
     );
   }
+
+  var _tabIndex = 0;
 
   Widget _titleBar() {
     final theme = Theme.of(context);
@@ -563,6 +597,35 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
       }
     }
   }
+
+  Widget _comments() {
+    return FutureBuilder(
+      future: _commentFuture,
+      builder: (BuildContext context, AsyncSnapshot<UIPageComment> snapshot) {
+        if (snapshot.hasError) {
+          return ContentError(
+            onRefresh: () async {
+              setState(() {
+                _commentFuture = api.comments(
+                    comicId: _comic.comic.uuid,
+                    offset: BigInt.from(_commentOffset),
+                    limit: BigInt.from(10));
+              });
+            },
+            error: snapshot.error,
+            stackTrace: snapshot.stackTrace,
+            sq: true,
+          );
+        }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return ContentLoading(sq: true);
+        }
+        return Column(
+          children: [...snapshot.requireData.list.map((e) => CommentCard(e))],
+        );
+      },
+    );
+  }
 }
 
 class ComicInfoCard extends StatelessWidget {
@@ -685,6 +748,89 @@ class ComicInfoCard extends StatelessWidget {
           fontSize: 13,
           color: Colors.grey.withAlpha(220),
         ),
+      ),
+    );
+  }
+}
+
+class CommentCard extends StatelessWidget {
+  final UIComment comment;
+
+  const CommentCard(this.comment, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.shade400,
+            width: .5,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // https://hi77-overseas.mangafuna.xyz/user/cover/copymanga.png
+              if (comment.userAvatar.isEmpty ||
+                  comment.userAvatar.endsWith('copymanga.png'))
+                const ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  child: Icon(
+                    Icons.account_circle,
+                    size: 30,
+                    color: Colors.grey,
+                  ),
+                )
+              else
+                ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                  child: LoadingCacheImage(
+                    url: comment.userAvatar,
+                    width: 30,
+                    height: 30,
+                    useful: 'USER_AVATAR',
+                    extendsFieldFirst: comment.userId,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              Container(
+                width: 10,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    comment.userName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    comment.createAt,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Container(
+            height: 5,
+          ),
+          Text(
+            comment.comment,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ],
       ),
     );
   }

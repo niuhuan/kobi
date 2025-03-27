@@ -62,6 +62,14 @@ Future<UIPageComicChapter> comicChapters(
         limit: limit,
         offset: offset);
 
+Future<UIPageComment> comments(
+        {required String comicId,
+        String? replyId,
+        required BigInt offset,
+        required BigInt limit}) =>
+    RustLib.instance.api.crateApiApiComments(
+        comicId: comicId, replyId: replyId, offset: offset, limit: limit);
+
 Future<UIComicQuery> comicQuery({required String pathWord}) =>
     RustLib.instance.api.crateApiApiComicQuery(pathWord: pathWord);
 

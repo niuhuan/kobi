@@ -1,7 +1,7 @@
 use crate::copy_client::{
     Author, Browse, ChapterAndContents, ChapterComicInfo, ChapterData, ChapterImage, ClassifyItem,
     CollectedComic, Comic, ComicChapter, ComicData, ComicInExplore, ComicInList, ComicInSearch,
-    Group, LastChapter, MemberInfo, Page, RankItem, RecommendItem, RegisterResult,
+    Comment, Group, LastChapter, MemberInfo, Page, RankItem, RecommendItem, RegisterResult,
     SexualOrientation, Tag,
 };
 use crate::database::active::comic_view_log;
@@ -903,4 +903,54 @@ impl From<Page<CollectedComic>> for UIPageCollectedComic {
 pub enum ExportsType {
     Folder,
     Zip,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageComment {
+    pub list: Vec<UIComment>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIComment {
+    pub id: i64,
+    pub create_at: String,
+    pub user_id: String,
+    pub user_name: String,
+    pub user_avatar: String,
+    pub comment: String,
+    pub count: i64,
+    pub parent_id: Option<i64>,
+    pub parent_user_id: Option<String>,
+    pub parent_user_name: Option<String>,
+}
+
+impl From<Page<Comment>> for UIPageComment {
+    fn from(value: Page<Comment>) -> Self {
+        UIPageComment {
+            list: value.list.into_iter().map(UIComment::from).collect(),
+            total: value.total,
+            limit: value.limit,
+            offset: value.offset,
+        }
+    }
+}
+
+impl From<Comment> for UIComment {
+    fn from(value: Comment) -> Self {
+        UIComment {
+            id: value.id,
+            create_at: value.create_at,
+            user_id: value.user_id,
+            user_name: value.user_name,
+            user_avatar: value.user_avatar,
+            comment: value.comment,
+            count: value.count,
+            parent_id: value.parent_id,
+            parent_user_id: value.parent_user_id,
+            parent_user_name: value.parent_user_name,
+        }
+    }
 }

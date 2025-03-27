@@ -576,6 +576,61 @@ class UIComicQuery {
           isVip == other.isVip;
 }
 
+class UIComment {
+  final PlatformInt64 id;
+  final String createAt;
+  final String userId;
+  final String userName;
+  final String userAvatar;
+  final String comment;
+  final PlatformInt64 count;
+  final PlatformInt64? parentId;
+  final String? parentUserId;
+  final String? parentUserName;
+
+  const UIComment({
+    required this.id,
+    required this.createAt,
+    required this.userId,
+    required this.userName,
+    required this.userAvatar,
+    required this.comment,
+    required this.count,
+    this.parentId,
+    this.parentUserId,
+    this.parentUserName,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      createAt.hashCode ^
+      userId.hashCode ^
+      userName.hashCode ^
+      userAvatar.hashCode ^
+      comment.hashCode ^
+      count.hashCode ^
+      parentId.hashCode ^
+      parentUserId.hashCode ^
+      parentUserName.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UIComment &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          createAt == other.createAt &&
+          userId == other.userId &&
+          userName == other.userName &&
+          userAvatar == other.userAvatar &&
+          comment == other.comment &&
+          count == other.count &&
+          parentId == other.parentId &&
+          parentUserId == other.parentUserId &&
+          parentUserName == other.parentUserName;
+}
+
 class UIDownloadComic {
   final String pathWord;
   final String? alias;
@@ -989,6 +1044,34 @@ class UIPageComicInExplore {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is UIPageComicInExplore &&
+          runtimeType == other.runtimeType &&
+          list == other.list &&
+          total == other.total &&
+          limit == other.limit &&
+          offset == other.offset;
+}
+
+class UIPageComment {
+  final List<UIComment> list;
+  final PlatformInt64 total;
+  final PlatformInt64 limit;
+  final PlatformInt64 offset;
+
+  const UIPageComment({
+    required this.list,
+    required this.total,
+    required this.limit,
+    required this.offset,
+  });
+
+  @override
+  int get hashCode =>
+      list.hashCode ^ total.hashCode ^ limit.hashCode ^ offset.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UIPageComment &&
           runtimeType == other.runtimeType &&
           list == other.list &&
           total == other.total &&

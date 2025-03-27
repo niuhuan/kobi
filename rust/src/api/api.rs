@@ -6,11 +6,7 @@ use crate::database::download::{
 };
 use crate::database::properties::property;
 use crate::udto::{
-    ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
-    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
-    UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageRankItem,
-    UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags,
-    UIViewLog,
+    ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic, UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState, UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageComment, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags, UIViewLog
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
@@ -271,6 +267,11 @@ pub fn comic_chapters(
     ))
 }
 
+pub fn comments(comic_id: String, reply_id: Option<String>, offset: u64, limit: u64) -> Result<UIPageComment> {
+    let a = block_on(CLIENT.comments(comic_id.as_str(), reply_id.as_deref(), offset, limit)).map(UIPageComment::from)?;
+    Ok(UIPageComment::from(a))
+}
+
 pub fn comic_query(path_word: String) -> Result<UIComicQuery> {
     let key = format!("COMIC_QUERY${path_word}");
     block_on(web_cache::cache_first_map(
@@ -459,16 +460,19 @@ pub fn cache_image(
     extends_field_third: Option<String>,
 ) -> Result<UICacheImage> {
     block_on(async {
-        let _ = hash_lock(&url).await;
+        let lock = hash_lock(&url).await;
         if let Some(model) = image_cache::load_image_by_cache_key(cache_key.as_str()).await? {
             image_cache::update_cache_time(cache_key.as_str()).await?;
+            drop(lock);
             Ok(UICacheImage::from(model))
         } else if let Some(model) = download_comic::has_download_cover(cache_key.clone()).await? {
             // check downloads images has the same key
+            drop(lock);
             Ok(UICacheImage::from(model))
         } else if let Some(model) = download_comic_page::has_download_pic(cache_key.clone()).await?
         {
             // check downloads images has the same key
+            drop(lock);
             Ok(UICacheImage::from(model))
         } else {
             let local_path = hex::encode(md5::compute(&url).as_slice());
@@ -496,6 +500,7 @@ pub fn cache_image(
             };
             let model = image_cache::insert(model.clone()).await?;
             tokio::fs::write(&abs_path, &bytes).await?;
+            drop(lock);
             Ok(UICacheImage::from(model))
         }
     })
@@ -681,3 +686,4 @@ pub fn set_api_host(api: String) -> Result<()> {
         Ok(())
     })
 }
+

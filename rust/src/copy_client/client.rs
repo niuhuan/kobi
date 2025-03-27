@@ -6,6 +6,7 @@ use crate::copy_client::{
     Tags,
 };
 use base64::Engine;
+use prost_types::value;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -347,7 +348,10 @@ impl Client {
             "/api/v3/comments",
             serde_json::json!({
                 "comic_id": comic_id,
-                "reply_id": reply_id,
+                "reply_id": match reply_id {
+                    Some(value) => value,
+                    None => "",
+                },
                 "limit": limit,
                 "offset": offset,
                 "platform": 3,
@@ -356,7 +360,12 @@ impl Client {
         .await
     }
 
-    pub async fn comment(&self, comic_id: &str, comment: &str, reply_id: Option<&str>) -> Result<()> {
+    pub async fn comment(
+        &self,
+        comic_id: &str,
+        comment: &str,
+        reply_id: Option<&str>,
+    ) -> Result<()> {
         self.request(
             reqwest::Method::POST,
             "/api/v3/member/comment",
