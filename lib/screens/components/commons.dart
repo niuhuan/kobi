@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:kobi/screens/components/android_version.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../cross.dart';
@@ -115,7 +116,13 @@ Future<T?> chooseListDialog<T>(BuildContext context,
 
 Future saveImageFileToGallery(BuildContext context, String path) async {
   if (Platform.isAndroid) {
-    if (!(await Permission.storage.request()).isGranted) {
+    bool g;
+    if (androidVersion < 30) {
+      g = await Permission.storage.request().isGranted;
+    } else {
+      g = await Permission.manageExternalStorage.request().isGranted;
+    }
+    if (!g) {
       return;
     }
   }
