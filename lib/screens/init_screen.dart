@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/configs/configs.dart';
+import 'package:kobi/screens/components/fade_image_widget.dart';
 import '../cross.dart';
 import '../src/rust/api/api.dart' as api;
 import '../src/rust/udto.dart';
@@ -28,9 +29,19 @@ class _InitScreenState extends State<InitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Init Screen'),
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Center(
+            child: SizedBox(
+              width: constraints.maxWidth / 2,
+              height: constraints.maxHeight / 2,
+              child: FadeImageWidget(
+                child: Image.asset('lib/assets/startup.png'),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
