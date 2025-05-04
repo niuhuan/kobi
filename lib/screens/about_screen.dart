@@ -71,7 +71,7 @@ class _AboutState extends State<AboutScreen> {
             child: SizedBox(
               width: width,
               height: height,
-              child: Container(),
+              child: Image.asset('lib/assets/icon.png'),
             ),
           ),
         );
