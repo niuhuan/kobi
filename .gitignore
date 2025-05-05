@@ -45,3 +45,4 @@ app.*.map.json
 /android/app/release
 
 target/
+android/app/.cxx/

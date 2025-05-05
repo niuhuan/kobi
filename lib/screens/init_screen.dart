@@ -30,18 +30,41 @@ class _InitScreenState extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Center(
-            child: SizedBox(
-              width: constraints.maxWidth / 2,
-              height: constraints.maxHeight / 2,
-              child: FadeImageWidget(
-                child: Image.asset('lib/assets/startup.png'),
+      body: ConstrainedBox(
+        constraints: const BoxConstraints.expand(),
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            var width = 1024;
+            var height = 1536;
+            var min = constraints.maxWidth > constraints.maxHeight
+                ? constraints.maxHeight
+                : constraints.maxWidth;
+            var newHeight = min;
+            var newWidth = min * (width / height);
+            return Center(
+              child: ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black,
+                      Colors.black,
+                      Colors.transparent,
+                    ],
+                    stops: [0.0, 0.95, 1.0],
+                  ).createShader(bounds);
+                },
+                blendMode: BlendMode.dstIn,
+                child: Image.asset(
+                  "lib/assets/startup.png",
+                  width: newWidth,
+                  height: newHeight,
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
