@@ -1,5 +1,6 @@
 pub mod api;
 mod frb_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
+use crate::api::api::save_property;
 use crate::database::init_database;
 use base64::Engine;
 use copy_client::Client;
@@ -11,16 +12,16 @@ use std::sync::Mutex;
 use tokio::runtime;
 use utils::create_dir_if_not_exists;
 use utils::join_paths;
+
 pub mod copy_client;
 mod database;
 pub mod downloading;
+mod exports;
 mod udto;
 mod utils;
-mod exports;
 
-const API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
-// const API_URL: &str = "aHR0cHM6Ly9hcGkubWFuZ2Fjb3B5LmNvbQ==";
-// const API_URL_ORIGIN: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
+const OLD_API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
+const API_URL: &str = "aHR0cHM6Ly93d3cuY29weTIwLmNvbQ==";
 
 fn api_url() -> String {
     String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
@@ -66,6 +67,7 @@ pub fn init_root(path: &str) {
     create_dir_if_not_exists(DATABASE_DIR.get().unwrap());
     create_dir_if_not_exists(DOWNLOAD_DIR.get().unwrap());
     RUNTIME.block_on(init_database());
+    RUNTIME.block_on(reset_api());
     RUNTIME.block_on(load_api());
     RUNTIME.block_on(async {
         *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
@@ -98,6 +100,30 @@ pub(crate) fn get_database_dir() -> &'static String {
 
 pub(crate) fn get_download_dir() -> &'static String {
     DOWNLOAD_DIR.get().unwrap()
+}
+
+async fn reset_api() {
+    let old_api = property::load_property("old_api".to_owned()).await.unwrap();
+    let api = property::load_property("api".to_owned()).await.unwrap();
+    if api.is_empty() {
+        return;
+    }
+    let replace_from = String::from_utf8(
+        base64::prelude::BASE64_STANDARD
+            .decode(OLD_API_URL)
+            .unwrap(),
+    )
+    .unwrap();
+    if !replace_from.eq(&old_api) && replace_from.eq(&api) {
+        let replace_to =
+            String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap();
+        property::save_property("old_api".to_owned(), replace_from)
+            .await
+            .unwrap();
+        property::save_property("api".to_owned(), replace_to)
+            .await
+            .unwrap();
+    }
 }
 
 async fn load_api() {
