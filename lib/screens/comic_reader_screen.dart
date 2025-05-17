@@ -5,6 +5,7 @@ import 'package:another_xlider/another_xlider.dart';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kobi/configs/no_pager_animation.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -239,7 +240,7 @@ Widget readerKeyboardHolder(Widget widget) {
 }
 
 ////////////////////////////////
-bool noAnimation() => false;
+bool noAnimation() => currentNoPagerAnimation;
 
 Event<_ReaderControllerEventArgs> _readerControllerEvent =
     Event<_ReaderControllerEventArgs>();

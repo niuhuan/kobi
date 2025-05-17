@@ -1,5 +1,6 @@
 import 'package:kobi/configs/app_orientation.dart';
 import 'package:kobi/configs/login.dart';
+import 'package:kobi/configs/no_pager_animation.dart';
 import 'package:kobi/configs/proxy.dart';
 import 'package:kobi/configs/reader_controller_type.dart';
 import 'package:kobi/configs/reader_direction.dart';
@@ -22,5 +23,6 @@ Future initConfigs() async {
   await initReaderType();
   await initLogin();
   await initVersion();
+  await initNoPagerAnimation();
   autoCheckNewVersion();
 }

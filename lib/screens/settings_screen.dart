@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kobi/configs/api_host.dart';
 import 'package:kobi/configs/app_orientation.dart';
 import 'package:kobi/configs/collect_ordering.dart';
+import 'package:kobi/configs/no_pager_animation.dart';
 
 import '../configs/cache_time.dart';
 import '../configs/proxy.dart';
@@ -19,6 +20,7 @@ class SettingsScreen extends StatelessWidget {
           proxySetting(),
           cacheTimeNameSetting(),
           appOrientationWidget(),
+          noPagerAnimationSwitch(),
         ],
       ),
     );
