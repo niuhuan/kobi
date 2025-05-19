@@ -24,8 +24,9 @@ import 'comic_card.dart';
 
 List<Widget> comicListLines(
   BuildContext context,
-  List<CommonComicInfo> comics,
-) {
+  List<CommonComicInfo> comics, [
+  void Function(CommonComicInfo comic)? onLongPress,
+]) {
   List<Widget> lines = [];
   for (var value in comics) {
     lines.add(GestureDetector(
@@ -36,6 +37,7 @@ List<Widget> comicListLines(
           },
         ));
       },
+      onLongPress: onLongPress != null ? () => onLongPress(value) : null,
       child: CommonComicCard(value),
     ));
   }

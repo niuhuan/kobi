@@ -231,3 +231,9 @@ Future<String> getApiHost() => RustLib.instance.api.crateApiApiGetApiHost();
 
 Future<void> setApiHost({required String api}) =>
     RustLib.instance.api.crateApiApiSetApiHost(api: api);
+
+Future<void> deleteComicViewLog({required String pathWord}) =>
+    RustLib.instance.api.crateApiApiDeleteComicViewLog(pathWord: pathWord);
+
+Future<void> deleteAllComicViewLogs() =>
+    RustLib.instance.api.crateApiApiDeleteAllComicViewLogs();

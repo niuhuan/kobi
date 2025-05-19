@@ -8,8 +8,13 @@ import 'commons.dart';
 class ComicPager extends StatefulWidget {
   final Future<CommonPage<CommonComicInfo>> Function(BigInt offset, BigInt limit)
       fetcher;
+  final void Function(CommonComicInfo comic)? onLongPress;
 
-  const ComicPager({Key? key, required this.fetcher}) : super(key: key);
+  const ComicPager({
+    Key? key, 
+    required this.fetcher,
+    this.onLongPress,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ComicPagerState();
@@ -33,7 +38,7 @@ class _ComicPagerState extends State<ComicPager> {
 
   @override
   Widget build(BuildContext context) {
-    final lines = comicListLines(context, _records);
+    final lines = comicListLines(context, _records, widget.onLongPress);
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,

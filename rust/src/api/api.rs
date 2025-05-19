@@ -701,3 +701,11 @@ pub fn set_api_host(api: String) -> Result<()> {
         Ok(())
     })
 }
+
+pub fn delete_comic_view_log(path_word: String) -> Result<()> {
+    block_on(comic_view_log::delete_by_comic_path_word(path_word))
+}
+
+pub fn delete_all_comic_view_logs() -> Result<()> {
+    block_on(comic_view_log::delete_all())
+}

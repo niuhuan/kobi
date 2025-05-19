@@ -108,3 +108,15 @@ pub(crate) async fn view_log_by_comic_path_word(
     let db = ACTIVE_DATABASE.get().unwrap().lock().await;
     Ok(Entity::find_by_id(path_word).one(db.deref()).await?)
 }
+
+pub(crate) async fn delete_by_comic_path_word(path_word: String) -> anyhow::Result<()> {
+    let db = ACTIVE_DATABASE.get().unwrap().lock().await;
+    Entity::delete_by_id(path_word).exec(db.deref()).await?;
+    Ok(())
+}
+
+pub(crate) async fn delete_all() -> anyhow::Result<()> {
+    let db = ACTIVE_DATABASE.get().unwrap().lock().await;
+    Entity::delete_many().exec(db.deref()).await?;
+    Ok(())
+}
