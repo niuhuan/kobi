@@ -6,11 +6,18 @@ import '../src/rust/udto.dart';
 import 'components/comic_card.dart';
 import 'components/comic_pager.dart';
 
-class HistoriesScreen extends StatelessWidget {
+class HistoriesScreen extends StatefulWidget {
   const HistoriesScreen({super.key});
 
-  Future<void> _showDeleteConfirmDialog(BuildContext context, String title,
-      String content, VoidCallback onConfirm) async {
+  @override
+  State<HistoriesScreen> createState() => _HistoriesScreenState();
+}
+
+class _HistoriesScreenState extends State<HistoriesScreen> {
+  final _pagerController = ComicPagerController();
+
+  Future<void> _showDeleteConfirmDialog(
+      BuildContext context, String title, String content, VoidCallback onConfirm) async {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -36,6 +43,7 @@ class HistoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pager = ComicPager(
+      controller: _pagerController,
       fetcher: (offset, limit) async {
         final result = await api.listComicViewLogs(
             offset: offset.toInt(), limit: limit.toInt());
@@ -57,7 +65,7 @@ class HistoriesScreen extends StatelessWidget {
           offset: result.offset,
         );
       },
-      onLongPress: (comic) async {
+      onLongPress: (comic, index) async {
         await _showDeleteConfirmDialog(
           context,
           '删除历史记录',
@@ -68,11 +76,8 @@ class HistoriesScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('删除成功')),
               );
-              // 刷新页面
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (context) => const HistoriesScreen()),
-              );
+              // 从当前页开始刷新
+              await _pagerController.refreshFromLimit(index);
             }
           },
         );
@@ -96,11 +101,8 @@ class HistoriesScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('清空成功')),
                     );
-                    // 刷新页面
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const HistoriesScreen()),
-                    );
+                    // 清空所有记录并刷新
+                    _pagerController.filterComics((_) => false);
                   }
                 },
               );

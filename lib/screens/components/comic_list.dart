@@ -25,10 +25,11 @@ import 'comic_card.dart';
 List<Widget> comicListLines(
   BuildContext context,
   List<CommonComicInfo> comics, [
-  void Function(CommonComicInfo comic)? onLongPress,
+  void Function(CommonComicInfo comic, int index)? onLongPress,
 ]) {
   List<Widget> lines = [];
-  for (var value in comics) {
+  for (var i = 0; i < comics.length; i++) {
+    final value = comics[i];
     lines.add(GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -37,7 +38,7 @@ List<Widget> comicListLines(
           },
         ));
       },
-      onLongPress: onLongPress != null ? () => onLongPress(value) : null,
+      onLongPress: onLongPress != null ? () => onLongPress(value, i) : null,
       child: CommonComicCard(value),
     ));
   }

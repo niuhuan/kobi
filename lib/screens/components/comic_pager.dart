@@ -5,15 +5,29 @@ import 'comic_card.dart';
 import 'comic_list.dart';
 import 'commons.dart';
 
+class ComicPagerController {
+  _ComicPagerState? _state;
+  
+  void filterComics(bool Function(CommonComicInfo comic) filter) {
+    _state?.filterComics(filter);
+  }
+
+  Future<void> refreshFromLimit(int limit) async {
+    await _state?.refreshFromLimit(limit);
+  }
+}
+
 class ComicPager extends StatefulWidget {
   final Future<CommonPage<CommonComicInfo>> Function(BigInt offset, BigInt limit)
       fetcher;
-  final void Function(CommonComicInfo comic)? onLongPress;
+  final void Function(CommonComicInfo comic, int index)? onLongPress;
+  final ComicPagerController? controller;
 
   const ComicPager({
     Key? key, 
     required this.fetcher,
     this.onLongPress,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -30,10 +44,53 @@ class _ComicPagerState extends State<ComicPager> {
   static final BigInt _limit = BigInt.parse("21");
 
   @override
+  void initState() {
+    super.initState();
+    widget.controller?._state = this;
+  }
+
+  @override
   void dispose() {
+    if (widget.controller?._state == this) {
+      widget.controller?._state = null;
+    }
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void filterComics(bool Function(CommonComicInfo comic) filter) {
+    setState(() {
+      _records.removeWhere((comic) => !filter(comic));
+    });
+  }
+
+  Future<void> refreshFromLimit(int limit) async {
+    // 计算要从哪个21的倍数开始刷新
+    final startIndex = (limit ~/ 21) * 21;
+    if (startIndex >= _records.length) return;
+
+    try {
+      // 先获取新数据
+      final resp = await widget.fetcher(
+        BigInt.from(startIndex),
+        _limit,
+      );
+      
+      // 再截断旧数据
+      setState(() {
+        _records.removeRange(startIndex, _records.length);
+        _records.addAll(resp.list);
+        _offset = startIndex + _limit.toInt();
+        finish = resp.total <= _offset;
+      });
+    } catch (e, s) {
+      print("$e\n$s");
+      setState(() {
+        error = true;
+      });
+      defaultToast(context, "刷新失败");
+    }
   }
 
   @override
@@ -70,7 +127,7 @@ class _ComicPagerState extends State<ComicPager> {
       setState(() {
         _records.clear();
         _records.addAll(resp.list);
-        _offset = _offset + _limit.toInt();
+        _offset = _limit.toInt();
         finish = resp.total <= _offset;
       });
       _refreshController.refreshCompleted();
