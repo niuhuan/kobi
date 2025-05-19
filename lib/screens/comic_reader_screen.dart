@@ -956,6 +956,8 @@ class _SettingPanelState extends State<_SettingPanel> {
             ),
           ],
         ),
+        const Divider(color: Colors.white24),
+        noPagerAnimationSwitch(),
       ],
     );
   }
