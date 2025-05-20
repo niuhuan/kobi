@@ -115,6 +115,37 @@ Future<T?> chooseListDialog<T>(BuildContext context,
 }
 
 Future saveImageFileToGallery(BuildContext context, String path) async {
+  Future? future;
+  if (Platform.isIOS) {
+    await cross.saveImageToGallery(path);
+  } else if (Platform.isAndroid) {
+    bool g;
+    if (androidVersion < 30) {
+      g = await Permission.storage.request().isGranted;
+    } else {
+      g = await Permission.manageExternalStorage.request().isGranted;
+    }
+    if (!g) {
+      return;
+    }
+    await cross.saveImageToGallery(path);
+  } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    defaultToast(context, '暂不支持该平台');
+    // String? folder = await chooseFolder(context);
+    // if (folder != null) {
+    //   future = method.convertImageToJPEG100(path, folder);
+    // }
+  } else {
+    defaultToast(context, '暂不支持该平台');
+    return;
+  }
+  if (future == null) {
+    defaultToast(context, '保存取消');
+    return;
+  }
+}
+
+Future saveImageFileToFile(BuildContext context, String path) async {
   if (Platform.isAndroid) {
     bool g;
     if (androidVersion < 30) {
@@ -126,12 +157,6 @@ Future saveImageFileToGallery(BuildContext context, String path) async {
       return;
     }
   }
-  if (Platform.isIOS || Platform.isAndroid) {
-    await cross.saveImageToGallery(path);
-    defaultToast(context, "保存成功");
-    return;
-  }
-  defaultToast(context, "暂不支持该平台");
 }
 
 Future<T?> chooseMapDialog<T>(
