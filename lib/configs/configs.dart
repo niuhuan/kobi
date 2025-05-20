@@ -1,4 +1,5 @@
 import 'package:kobi/configs/app_orientation.dart';
+import 'package:kobi/configs/app_theme.dart';
 import 'package:kobi/configs/comic_grid_columns.dart';
 import 'package:kobi/configs/comic_pager_type.dart';
 import 'package:kobi/configs/login.dart';
@@ -16,6 +17,7 @@ import 'collect_ordering.dart';
 
 Future initConfigs() async {
   await initAppOrientation();
+  await initAppTheme();
   await initApiHost();
   await initProxy();
   await initCacheTime();

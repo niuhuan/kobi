@@ -6,7 +6,7 @@ const _minColumns = 2;
 const _maxColumns = 10;
 const _propertyName = "comic_grid_columns";
 
-late int _comicGridColumns = 3; // 默认3列
+late int _comicGridColumns = 2; // 默认3列
 
 int get currentComicGridColumns => _comicGridColumns;
 
