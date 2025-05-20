@@ -170,12 +170,16 @@ Widget buildFile(String file, double? width, double? height,
     fit: fit,
   );
   if (context == null) return image;
+  var a = ['预览图片'];
+  if (Platform.isIOS || Platform.isAndroid) {
+    a.add('保存图片');
+  }
   return GestureDetector(
     onLongPress: () async {
       String? choose = await chooseListDialog(
         context,
         title: '请选择',
-        values: ['预览图片', '保存图片到相册'],
+        values: a,
       );
       switch (choose) {
         case '预览图片':
@@ -183,11 +187,8 @@ Widget buildFile(String file, double? width, double? height,
             builder: (context) => FilePhotoViewScreen(file),
           ));
           break;
-        case '保存图片到相册':
-          saveImageFileToGallery(context, file);
-          break;
-        // case '保存图片到文件':
-        //   saveImageFileToFile(context, file);
+        case '保存图片':
+          await saveImageFileToGallery(context, file);
           break;
       }
     },

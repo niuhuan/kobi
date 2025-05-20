@@ -1,9 +1,11 @@
 
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:kobi/screens/components/android_version.dart';
+import 'package:kobi/src/rust/api/api.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../cross.dart';
@@ -120,14 +122,14 @@ Future saveImageFileToGallery(BuildContext context, String path) async {
     await cross.saveImageToGallery(path);
   } else if (Platform.isAndroid) {
     bool g;
-    if (androidVersion < 30) {
-      g = await Permission.storage.request().isGranted;
-    } else {
-      g = await Permission.manageExternalStorage.request().isGranted;
-    }
-    if (!g) {
-      return;
-    }
+    // if (androidVersion < 30) {
+    //   g = await Permission.storage.request().isGranted;
+    // } else {
+    //   g = await Permission.manageExternalStorage.request().isGranted;
+    // }
+    // if (!g) {
+    //   return;
+    // }
     await cross.saveImageToGallery(path);
   } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     defaultToast(context, '暂不支持该平台');
@@ -145,19 +147,6 @@ Future saveImageFileToGallery(BuildContext context, String path) async {
   }
 }
 
-Future saveImageFileToFile(BuildContext context, String path) async {
-  if (Platform.isAndroid) {
-    bool g;
-    if (androidVersion < 30) {
-      g = await Permission.storage.request().isGranted;
-    } else {
-      g = await Permission.manageExternalStorage.request().isGranted;
-    }
-    if (!g) {
-      return;
-    }
-  }
-}
 
 Future<T?> chooseMapDialog<T>(
     BuildContext buildContext, {

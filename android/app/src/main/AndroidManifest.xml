@@ -16,6 +16,7 @@
 
     <application
         android:label="kobi"
+        android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

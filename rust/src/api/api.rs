@@ -709,3 +709,25 @@ pub fn delete_comic_view_log(path_word: String) -> Result<()> {
 pub fn delete_all_comic_view_logs() -> Result<()> {
     block_on(comic_view_log::delete_all())
 }
+
+pub fn copy_image(path: String, to_dir: String) -> Result<()> {
+    block_on(async {
+        let bytes = tokio::fs::read(&path).await?;
+        let format = image::guess_format(&bytes)?;
+        let ext = if let Some(ext) = format.extensions_str().first() {
+            ext.to_string()
+        } else {
+            "".to_string()
+        };
+        
+        let file_name = std::path::Path::new(&path)
+            .file_stem()
+            .ok_or_else(|| anyhow::anyhow!("Invalid file path"))?
+            .to_str()
+            .ok_or_else(|| anyhow::anyhow!("Invalid file name"))?;
+            
+        let target_path = join_paths(vec![to_dir.as_str(), &format!("{}.{}", file_name, ext)]);
+        tokio::fs::write(&target_path, &bytes).await?;
+        Ok(())
+    })
+}

@@ -237,3 +237,6 @@ Future<void> deleteComicViewLog({required String pathWord}) =>
 
 Future<void> deleteAllComicViewLogs() =>
     RustLib.instance.api.crateApiApiDeleteAllComicViewLogs();
+
+Future<void> copyImage({required String path, required String toDir}) =>
+    RustLib.instance.api.crateApiApiCopyImage(path: path, toDir: toDir);
