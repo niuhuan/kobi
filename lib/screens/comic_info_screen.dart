@@ -672,6 +672,25 @@ class ComicInfoCard extends StatelessWidget {
                   ),
                 ])),
                 Container(
+                  height: 5,
+                ),
+                Text.rich(TextSpan(children: [
+                  const WidgetSpan(
+                    child: Icon(
+                      Icons.update,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  TextSpan(
+                    text: comic.datetimeUpdated,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ])),
+                Container(
                   height: 6,
                 ),
                 Wrap(
