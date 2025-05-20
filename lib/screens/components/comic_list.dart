@@ -99,32 +99,106 @@ Widget _buildGridCard(BuildContext context, CommonComicInfo comic, int index, vo
         },
       ));
     },
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AspectRatio(
-          aspectRatio: 328 / 422, // 保持封面比例
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LoadingCacheImage(
-              url: comic.cover,
-              useful: 'COMIC_COVER',
-              extendsFieldFirst: comic.pathWord,
-              fit: BoxFit.cover,
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 328 / 422, // 保持封面比例
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: LoadingCacheImage(
+                    url: comic.cover,
+                    useful: 'COMIC_COVER',
+                    extendsFieldFirst: comic.pathWord,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              // 渐变遮罩
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.3),
+                      ],
+                      stops: const [0.7, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  comic.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (comic.author.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    comic.author.map((a) => a.name).join(", "),
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                if (comic.popular > 0) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.favorite,
+                        size: 12,
+                        color: Colors.pink[300],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        comic.popular.toString(),
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          comic.name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
