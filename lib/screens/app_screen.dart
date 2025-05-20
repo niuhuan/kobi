@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kobi/screens/components/badged.dart';
 import 'rank_screen.dart';
 import 'user_screen.dart';
 import 'discovery_screen.dart';
@@ -45,7 +46,7 @@ class _AppScreenState extends State<AppScreen> {
         items: _screens
             .map((e) => BottomNavigationBarItem(
                   label: e.title,
-                  icon: Icon(e.icon),
+                  icon: e.title == "偏好" ? VersionBadged(child: Icon(e.icon)) :Icon(e.icon),
                   tooltip: "",
                 ))
             .toList(),
