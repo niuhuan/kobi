@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:event/event.dart';
+import '../../configs/comic_pager_type.dart';
 import '../comic_info_screen.dart';
+import 'package:kobi/configs/comic_grid_columns.dart';
 import 'comic_card.dart';
 import 'commons.dart';
 import 'images.dart';
@@ -50,44 +53,38 @@ List<Widget> comicListLines(
 List<Widget> comicGridLines(
     BuildContext context, List<CommonComicInfo> records, void Function(CommonComicInfo comic, int index)? onLongPress) {
   List<Widget> lines = [];
-  for (var i = 0; i < records.length; i += 2) {
-    if (i + 1 < records.length) {
-      // 双列布局
-      lines.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _buildGridCard(context, records[i], i, onLongPress),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildGridCard(context, records[i + 1], i + 1, onLongPress),
-              ),
-            ],
+  final columns = currentComicGridColumns;
+  
+  for (var i = 0; i < records.length; i += columns) {
+    List<Widget> rowChildren = [];
+    for (var j = 0; j < columns; j++) {
+      if (i + j < records.length) {
+        rowChildren.add(
+          Expanded(
+            child: _buildGridCard(context, records[i + j], i + j, onLongPress),
           ),
-        ),
-      );
-    } else {
-      // 最后一个单列
-      lines.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _buildGridCard(context, records[i], i, onLongPress),
-              ),
-              const SizedBox(width: 8),
-              const Expanded(child: SizedBox()),
-            ],
-          ),
-        ),
-      );
+        );
+        if (j < columns - 1) {
+          rowChildren.add(const SizedBox(width: 8));
+        }
+      } else {
+        // 填充空白以保持布局
+        rowChildren.add(const Expanded(child: SizedBox()));
+        if (j < columns - 1) {
+          rowChildren.add(const SizedBox(width: 8));
+        }
+      }
     }
+    
+    lines.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: rowChildren,
+        ),
+      ),
+    );
   }
   return lines;
 }
@@ -131,4 +128,3 @@ Widget _buildGridCard(BuildContext context, CommonComicInfo comic, int index, vo
     ),
   );
 }
-

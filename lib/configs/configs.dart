@@ -1,4 +1,5 @@
 import 'package:kobi/configs/app_orientation.dart';
+import 'package:kobi/configs/comic_grid_columns.dart';
 import 'package:kobi/configs/comic_pager_type.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/configs/no_pager_animation.dart';
@@ -26,5 +27,6 @@ Future initConfigs() async {
   await initVersion();
   await initNoPagerAnimation();
   await initComicPagerType();
+  await initComicGridColumns();
   autoCheckNewVersion();
 }

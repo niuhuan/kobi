@@ -3,6 +3,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:event/event.dart';
 import 'package:kobi/configs/comic_pager_type.dart';
+import 'package:kobi/configs/comic_grid_columns.dart';
 import 'comic_card.dart';
 import 'comic_list.dart';
 import 'commons.dart';
@@ -50,6 +51,7 @@ class _ComicPagerState extends State<ComicPager> {
     super.initState();
     widget.controller?._state = this;
     comicPagerTypeEvent.subscribe(_onPagerTypeChange);
+    comicGridColumnsEvent.subscribe(_onGridColumnsChange);
   }
 
   @override
@@ -58,12 +60,19 @@ class _ComicPagerState extends State<ComicPager> {
       widget.controller?._state = null;
     }
     comicPagerTypeEvent.unsubscribe(_onPagerTypeChange);
+    comicGridColumnsEvent.unsubscribe(_onGridColumnsChange);
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   void _onPagerTypeChange(ComicPagerTypeEventArgs? args) {
+    if (args != null) {
+      setState(() {});
+    }
+  }
+
+  void _onGridColumnsChange(ComicGridColumnsEventArgs? args) {
     if (args != null) {
       setState(() {});
     }
