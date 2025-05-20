@@ -1201,6 +1201,8 @@ class _ComicReaderGalleryState extends _ComicReaderState {
       builder: (BuildContext context, int index) {
         return PhotoViewGalleryPageOptions(
           filterQuality: FilterQuality.high,
+          disableGestures: currentReaderControllerType == ReaderControllerType.touchDouble || 
+                          currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext,
           imageProvider: ImageCacheProvider(
             url: urls[index],
             useful: 'comic_reader',
@@ -1499,6 +1501,8 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
         first = null;
         options.add(
           PhotoViewGalleryPageOptions.customChild(
+            disableGestures: currentReaderControllerType == ReaderControllerType.touchDouble || 
+                           currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return Row(
@@ -1515,7 +1519,6 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
                             extendsFieldThird: widget.chapter.uuid,
                           ),
                           fit: BoxFit.contain,
-                          // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
                           errorBuilder: (b, e, s) {
                             print("$e,$s");
                             return buildError(
@@ -1538,7 +1541,6 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
                             extendsFieldThird: widget.chapter.uuid,
                           ),
                           fit: BoxFit.contain,
-                          // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
                           errorBuilder: (b, e, s) {
                             print("$e,$s");
                             return buildError(
@@ -1560,6 +1562,8 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
     if (first != null) {
       options.add(
         PhotoViewGalleryPageOptions.customChild(
+          disableGestures: currentReaderControllerType == ReaderControllerType.touchDouble || 
+                         currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext,
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return Row(
@@ -1576,7 +1580,6 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
                           extendsFieldThird: widget.chapter.uuid,
                         ),
                         fit: BoxFit.contain,
-                        // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
                         errorBuilder: (b, e, s) {
                           print("$e,$s");
                           return buildError(
@@ -1593,7 +1596,6 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
                       child: Image(
                         image: const AssetImage('lib/assets/0.png'),
                         fit: BoxFit.contain,
-                        // loadingBuilder: (context, child, event) => buildLoading(constraints.maxWidth, constraints.maxHeight),
                         errorBuilder: (b, e, s) {
                           print("$e,$s");
                           return buildError(

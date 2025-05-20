@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:event/event.dart';
+import 'package:kobi/configs/comic_pager_type.dart';
 import 'comic_card.dart';
 import 'comic_list.dart';
 import 'commons.dart';
@@ -47,6 +49,7 @@ class _ComicPagerState extends State<ComicPager> {
   void initState() {
     super.initState();
     widget.controller?._state = this;
+    comicPagerTypeEvent.subscribe(_onPagerTypeChange);
   }
 
   @override
@@ -54,9 +57,16 @@ class _ComicPagerState extends State<ComicPager> {
     if (widget.controller?._state == this) {
       widget.controller?._state = null;
     }
+    comicPagerTypeEvent.unsubscribe(_onPagerTypeChange);
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onPagerTypeChange(ComicPagerTypeEventArgs? args) {
+    if (args != null) {
+      setState(() {});
+    }
   }
 
   void filterComics(bool Function(CommonComicInfo comic) filter) {
@@ -95,7 +105,9 @@ class _ComicPagerState extends State<ComicPager> {
 
   @override
   Widget build(BuildContext context) {
-    final lines = comicListLines(context, _records, widget.onLongPress);
+    final lines = currentComicPagerType == ComicPagerType.grid
+        ? comicGridLines(context, _records, widget.onLongPress)
+        : comicListLines(context, _records, widget.onLongPress);
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,

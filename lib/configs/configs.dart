@@ -1,4 +1,5 @@
 import 'package:kobi/configs/app_orientation.dart';
+import 'package:kobi/configs/comic_pager_type.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/configs/no_pager_animation.dart';
 import 'package:kobi/configs/proxy.dart';
@@ -24,5 +25,6 @@ Future initConfigs() async {
   await initLogin();
   await initVersion();
   await initNoPagerAnimation();
+  await initComicPagerType();
   autoCheckNewVersion();
 }
