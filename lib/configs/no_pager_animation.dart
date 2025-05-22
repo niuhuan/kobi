@@ -40,7 +40,8 @@ Widget noPagerAnimationSwitch() {
       return SwitchListTile(
         title: const Text("禁用翻页动画"),
         value: currentNoPagerAnimation,
-        onChanged: (value) {
+        onChanged: (value) async {
+          await api.saveProperty(k: _propertyName, v: "$value");
           setState(() {
             _noPagerAnimation = value;
           });

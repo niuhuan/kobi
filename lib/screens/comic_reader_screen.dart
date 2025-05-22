@@ -1247,7 +1247,7 @@ class _ComicReaderGalleryState extends _ComicReaderState {
 
   @override
   _needJumpTo(int pageIndex, bool animation) {
-    if (animation) {
+    if (animation && !noAnimation()) {
       _pageController.animateToPage(
         pageIndex,
         duration: const Duration(milliseconds: 400),
@@ -1664,7 +1664,7 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
 
   @override
   _needJumpTo(int pageIndex, bool animation) {
-    if (animation) {
+    if (animation && !noAnimation()) {
       _pageController.animateToPage(
         pageIndex ~/ 2,
         duration: const Duration(milliseconds: 400),
