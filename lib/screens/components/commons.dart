@@ -119,7 +119,7 @@ Future<T?> chooseListDialog<T>(BuildContext context,
 Future saveImageFileToGallery(BuildContext context, String path) async {
   Future? future;
   if (Platform.isIOS) {
-    await cross.saveImageToGallery(path);
+    future = cross.saveImageToGallery(path);
   } else if (Platform.isAndroid) {
     bool g;
     // if (androidVersion < 30) {
@@ -130,7 +130,7 @@ Future saveImageFileToGallery(BuildContext context, String path) async {
     // if (!g) {
     //   return;
     // }
-    await cross.saveImageToGallery(path);
+    future = cross.saveImageToGallery(path);
   } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     defaultToast(context, '暂不支持该平台');
     // String? folder = await chooseFolder(context);
@@ -145,6 +145,7 @@ Future saveImageFileToGallery(BuildContext context, String path) async {
     defaultToast(context, '保存取消');
     return;
   }
+  await future;
 }
 
 
