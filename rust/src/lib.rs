@@ -20,8 +20,11 @@ mod exports;
 mod udto;
 mod utils;
 
-const OLD_API_URL: &str = "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=";
-const API_URL: &str = "aHR0cHM6Ly93d3cuY29weTIwLmNvbQ==";
+const OLD_API_URL: [&str; 2] = [
+    "aHR0cHM6Ly93d3cuY29weS1tYW5nYS5jb20=",
+    "aHR0cHM6Ly93d3cuY29weTIwLmNvbQ==",
+];
+const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weTIwMDAub25saW5l";
 
 fn api_url() -> String {
     String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
@@ -103,21 +106,24 @@ pub(crate) fn get_download_dir() -> &'static String {
 }
 
 async fn reset_api() {
-    let old_api = property::load_property("old_api".to_owned()).await.unwrap();
     let api = property::load_property("api".to_owned()).await.unwrap();
     if api.is_empty() {
         return;
     }
-    let replace_from = String::from_utf8(
-        base64::prelude::BASE64_STANDARD
-            .decode(OLD_API_URL)
-            .unwrap(),
-    )
-    .unwrap();
-    if !replace_from.eq(&old_api) && replace_from.eq(&api) {
+    let replace_from_string = OLD_API_URL
+        .iter()
+        .map(|s| String::from_utf8(base64::prelude::BASE64_STANDARD.decode(s).unwrap()).unwrap())
+        .collect::<Vec<String>>();
+
+    let replace_from = replace_from_string
+        .iter()
+        .map(|e| e.as_str())
+        .collect::<Vec<&str>>();
+
+    if replace_from.contains(&api.as_str()) {
         let replace_to =
             String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap();
-        property::save_property("old_api".to_owned(), replace_from)
+        property::save_property("old_api".to_owned(), api)
             .await
             .unwrap();
         property::save_property("api".to_owned(), replace_to)
