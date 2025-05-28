@@ -99,6 +99,9 @@ class MainActivity : FlutterActivity() {
                 }
             }
         }
+
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, "volume_button")
+            .setStreamHandler(volumeStreamHandler)
     }
 
     private fun saveImageToGallery(path: String) {
@@ -180,6 +183,36 @@ class MainActivity : FlutterActivity() {
         var packageURI = Uri.fromParts("package", packageName, null)
         var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
         startActivity(intent)
+    }
+
+    private var volumeEvents: EventChannel.EventSink? = null
+
+    private val volumeStreamHandler = object : EventChannel.StreamHandler {
+        override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+            volumeEvents = events
+        }
+
+        override fun onCancel(arguments: Any?) {
+            volumeEvents = null
+        }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        volumeEvents?.let {
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                uiThreadHandler.post {
+                    it.success("DOWN")
+                }
+                return true
+            }
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                uiThreadHandler.post {
+                    it.success("UP")
+                }
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
 }
