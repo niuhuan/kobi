@@ -6,7 +6,7 @@ const _minColumns = 2;
 const _maxColumns = 10;
 const _propertyName = "comic_grid_columns";
 
-late int _comicGridColumns = 2; // 默认3列
+late int _comicGridColumns = 3; // 默认3列
 
 int get currentComicGridColumns => _comicGridColumns;
 
@@ -19,7 +19,7 @@ final Event<ComicGridColumnsEventArgs> comicGridColumnsEvent = Event<ComicGridCo
 
 Future initComicGridColumns() async {
   var value = await api.loadProperty(k: _propertyName);
-  if (value == null) {
+  if (value == null || value.isEmpty) {
     await api.saveProperty(k: _propertyName, v: _comicGridColumns.toString());
   } else {
     var columns = int.tryParse(value) ?? _comicGridColumns;
@@ -69,11 +69,9 @@ Widget comicGridColumnsSetting(BuildContext context) {
   return ListTile(
     title: const Text(
       "网格列数",
-      style: TextStyle(color: Colors.white),
     ),
     subtitle: Text(
       "${currentComicGridColumns}列",
-      style: const TextStyle(color: Colors.white70),
     ),
     onTap: () => chooseComicGridColumns(context),
   );

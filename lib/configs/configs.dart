@@ -2,6 +2,7 @@ import 'package:kobi/configs/app_orientation.dart';
 import 'package:kobi/configs/app_theme.dart';
 import 'package:kobi/configs/comic_grid_columns.dart';
 import 'package:kobi/configs/comic_pager_type.dart';
+import 'package:kobi/configs/list_volume.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/configs/no_pager_animation.dart';
 import 'package:kobi/configs/proxy.dart';
@@ -30,5 +31,6 @@ Future initConfigs() async {
   await initNoPagerAnimation();
   await initComicPagerType();
   await initComicGridColumns();
+  await initListVolume();
   autoCheckNewVersion();
 }

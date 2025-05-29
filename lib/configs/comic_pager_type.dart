@@ -9,7 +9,7 @@ enum ComicPagerType {
 
 const _propertyName = "comic_pager_type";
 
-late ComicPagerType _comicPagerType = ComicPagerType.list;
+ComicPagerType _comicPagerType = ComicPagerType.grid;
 
 ComicPagerType get currentComicPagerType => _comicPagerType;
 
@@ -22,13 +22,12 @@ final Event<ComicPagerTypeEventArgs> comicPagerTypeEvent = Event<ComicPagerTypeE
 
 Future initComicPagerType() async {
   var value = await api.loadProperty(k: _propertyName);
-  if (value == null) {
-    await api.saveProperty(k: _propertyName, v: ComicPagerType.list.name);
-    _comicPagerType = ComicPagerType.list;
+  if (value == null || value.isEmpty) {
+    _comicPagerType = ComicPagerType.grid;
   } else {
     _comicPagerType = ComicPagerType.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => ComicPagerType.list,
+      orElse: () => ComicPagerType.grid,
     );
   }
   comicPagerTypeEvent.broadcast(ComicPagerTypeEventArgs(_comicPagerType));
@@ -90,11 +89,9 @@ Widget comicPagerTypeSetting(BuildContext context) {
   return ListTile(
     title: const Text(
       "漫画列表显示方式",
-      style: TextStyle(color: Colors.white),
     ),
     subtitle: Text(
       comicPagerTypeName(currentComicPagerType, context),
-      style: const TextStyle(color: Colors.white70),
     ),
     onTap: () => chooseComicPagerType(context),
   );

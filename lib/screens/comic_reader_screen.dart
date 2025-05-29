@@ -9,6 +9,7 @@ import 'package:kobi/configs/no_pager_animation.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import '../configs/list_volume.dart';
 import '../configs/reader_controller_type.dart';
 import '../configs/reader_direction.dart';
 import '../configs/reader_slider_position.dart';
@@ -191,7 +192,7 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
 // 仅最后一次监听生效
 // event可能为DOWN/UP
 
-const _listVolume = false;
+bool get _listVolume => Platform.isAndroid && currentListVolume;
 
 var _volumeListenCount = 0;
 
