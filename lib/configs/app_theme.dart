@@ -100,13 +100,20 @@ String appThemeName(AppTheme theme, BuildContext context) {
 }
 
 Widget appThemeSetting(BuildContext context) {
-  return ListTile(
-    title: const Text(
-      "应用主题",
-    ),
-    subtitle: Text(
-      appThemeName(currentAppTheme, context),
-    ),
-    onTap: () => chooseAppTheme(context),
+  return StatefulBuilder(
+    builder: (BuildContext context, void Function(void Function()) setState) {
+      return ListTile(
+        title: const Text(
+          "应用主题",
+        ),
+        subtitle: Text(
+          appThemeName(currentAppTheme, context),
+        ),
+        onTap: () async {
+          await chooseAppTheme(context);
+          setState(() {}); // 更新状态以反映新的主题
+        },
+      );
+    },
   );
 }
