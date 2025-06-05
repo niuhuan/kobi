@@ -7,6 +7,7 @@ import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/downloads_screen.dart';
 import 'package:kobi/screens/histories_screen.dart';
 import 'package:kobi/screens/settings_screen.dart';
+import 'components/images.dart';
 import 'login_screen.dart';
 
 class UserScreen extends StatelessWidget {
@@ -155,6 +156,20 @@ class _UserInfoCardState extends State<UserInfoCard> {
       id = Icons.no_accounts_sharp;
     } else if (loginState.state == 1) {
       id = Icons.face;
+      // only path not host
+      // user/cover/copymanga.png
+      // all path in /api/v3/member/info?platform=3
+      // var img = LoadingCacheImage(
+      //   url: loginState.member?.avatar ?? '',
+      //   useful: 'avatar',
+      //   extendsFieldFirst: loginState.member?.userId ?? '',
+      //   width: 50,
+      //   height: 50,
+      // );
+      // return ClipRRect(
+      //   borderRadius: BorderRadius.circular(50.0),
+      //   child: img,
+      // );
     } else if (loginState.state == 2) {
       id = Icons.error_outline;
     } else {
