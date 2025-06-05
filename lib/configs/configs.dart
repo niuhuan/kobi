@@ -14,6 +14,7 @@ import 'package:kobi/configs/versions.dart';
 
 import 'api_host.dart';
 import 'cache_time.dart';
+import 'chapter_order_newest.dart';
 import 'collect_ordering.dart';
 
 Future initConfigs() async {
@@ -29,6 +30,7 @@ Future initConfigs() async {
   await initLogin();
   await initVersion();
   await initNoPagerAnimation();
+  await initChapterOrderNewest();
   await initComicPagerType();
   await initComicGridColumns();
   await initListVolume();

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kobi/configs/api_host.dart';
 import 'package:kobi/configs/app_orientation.dart';
 import 'package:kobi/configs/app_theme.dart';
+import 'package:kobi/configs/chapter_order_newest.dart';
 import 'package:kobi/configs/collect_ordering.dart';
 import 'package:kobi/configs/comic_grid_columns.dart';
 import 'package:kobi/configs/comic_pager_type.dart';
@@ -30,6 +31,7 @@ class SettingsScreen extends StatelessWidget {
           noPagerAnimationSwitch(),
           comicPagerTypeSetting(context),
           comicGridColumnsSetting(context),
+          chapterOrderNewestSwitch(),
           if (Platform.isAndroid) listVolumeSwitch(),
         ],
       ),

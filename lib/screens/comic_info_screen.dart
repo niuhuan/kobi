@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:kobi/configs/chapter_order_newest.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/commnet_card.dart';
 import 'package:kobi/screens/components/content_loading.dart';
@@ -442,9 +443,9 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 elevation: 0,
                 color: Colors.grey.shade500.withOpacity(.3),
                 textColor: Theme.of(context).textTheme.bodyMedium?.color,
+                onPressed: _continueRead,
                 child: Text(
                     "继续阅读 : ${_viewLog!.chapterName} (${_viewLog!.pageRank + 1})"),
-                onPressed: _continueRead,
               ),
             ),
           ],
@@ -466,8 +467,8 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 elevation: 0,
                 color: Colors.grey.shade500.withOpacity(.3),
                 textColor: Theme.of(context).textTheme.bodyMedium?.color,
-                child: const Text("从头开始"),
                 onPressed: _startRead,
+                child: const Text("从头开始"),
               ),
             ),
           ],
@@ -507,6 +508,9 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   }
 
   List<Widget> _groupChapters(List<UIComicChapter> value) {
+    if (currentChapterOrderNewest) {
+      value = value.reversed.toList();
+    }
     return [
       Container(
         margin: const EdgeInsets.only(
