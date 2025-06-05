@@ -7,6 +7,7 @@ use crate::copy_client::{
 };
 use base64::Engine;
 use std::sync::Arc;
+use chrono::Datelike;
 use tokio::sync::Mutex;
 
 pub struct Client {
@@ -64,11 +65,11 @@ impl Client {
                 );
                 obj.insert(
                     "referer".to_string(),
-                    serde_json::Value::String("com.copymanga.app-2.2.0".to_string()),
+                    serde_json::Value::String("com.copymanga.app-2.3.0".to_string()),
                 );
                 obj.insert(
                     "userAgent".to_string(),
-                    serde_json::Value::String("COPY/2.2.0".to_string()),
+                    serde_json::Value::String("COPY/2.3.0".to_string()),
                 );
                 obj.insert(
                     "source".to_string(),
@@ -80,7 +81,7 @@ impl Client {
                 );
                 obj.insert(
                     "version".to_string(),
-                    serde_json::Value::String("2.2.0".to_string()),
+                    serde_json::Value::String("2.3.0".to_string()),
                 );
                 obj.insert(
                     "region".to_string(),
@@ -126,17 +127,19 @@ impl Client {
                 "authorization",
                 format!("Token {}", self.get_token().await.as_str()),
             )
-            .header("referer", "com.copymanga.app-2.2.0")
-            .header("user-agent", "COPY/2.2.0")
+            .header("referer", "com.copymanga.app-2.3.0")
+            .header("user-agent", "COPY/2.3.0")
             .header("source", "copyApp")
             .header("webp", "1")
-            .header("version", "2.2.0")
+            .header("version", "2.3.0")
             .header("region", "1")
             .header("platform", "3")
             .header("accept", "application/json")
             .header("device", "QSR1.210802.001")
             .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
-            .header("deviceinfo", "Android SDK built for arm64-emulator64_arm64");
+            .header("deviceinfo", "Android SDK built for arm64-emu64a")
+            .header("dt", Self::dt())
+            ;
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
             _ => request.form(&obj),
@@ -161,6 +164,16 @@ impl Client {
             return Err(Error::message(response.message));
         }
         Ok(serde_json::from_value(response.results)?)
+    }
+    
+    fn dt() -> String {
+        let now = chrono::Local::now();
+        format!(
+            "{}.{}.{}",
+            now.year(),
+            now.month(),
+            now.day(),
+        )
     }
 
     pub async fn register(&self, username: &str, password: &str) -> Result<RegisterResult> {
