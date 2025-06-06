@@ -1,13 +1,13 @@
 pub use super::types::*;
-use super::Comment;
+use super::{Comment, Roast};
 use crate::copy_client::{
     ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch,
     ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
     Tags,
 };
 use base64::Engine;
-use std::sync::Arc;
 use chrono::Datelike;
+use std::sync::Arc;
 use tokio::sync::Mutex;
 
 pub struct Client {
@@ -138,8 +138,7 @@ impl Client {
             .header("device", "QSR1.210802.001")
             .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
             .header("deviceinfo", "Android SDK built for arm64-emu64a")
-            .header("dt", Self::dt())
-            ;
+            .header("dt", Self::dt());
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
             _ => request.form(&obj),
@@ -156,7 +155,7 @@ impl Client {
             if value.len() == 1 {
                 if let Some(serde_json::Value::String(detal)) = value.get("detail") {
                     return Err(Error::message(detal.to_string()));
-               }
+                }
             }
         }
         let response: Response = serde_json::from_str(text.as_str())?;
@@ -165,15 +164,10 @@ impl Client {
         }
         Ok(serde_json::from_value(response.results)?)
     }
-    
+
     fn dt() -> String {
         let now = chrono::Local::now();
-        format!(
-            "{}.{}.{}",
-            now.year(),
-            now.month(),
-            now.day(),
-        )
+        format!("{}.{}.{}", now.year(), now.month(), now.day(),)
     }
 
     pub async fn register(&self, username: &str, password: &str) -> Result<RegisterResult> {
@@ -408,6 +402,20 @@ impl Client {
         let agent = agent_lock.clone();
         drop(agent_lock);
         Ok(agent.get(url).send().await?.bytes().await?)
+    }
+
+    pub async fn roasts(&self, chapter_id: &str) -> Result<Page<Roast>> {
+        self.request(
+            reqwest::Method::GET,
+            "/api/v3/roasts",
+            serde_json::json!({
+                "chapter_id": chapter_id,
+                "limit": 10,
+                "offset": 0,
+                "platform": 3,
+            }),
+        )
+        .await
     }
 
     pub async fn comments(

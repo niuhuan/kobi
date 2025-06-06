@@ -1,4 +1,4 @@
-use crate::copy_client::{Author, ErrorInfo, LoginResult, MemberInfo};
+use crate::copy_client::{Author, ErrorInfo, LoginResult, MemberInfo, Roast};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::download::{
@@ -719,15 +719,22 @@ pub fn copy_image(path: String, to_dir: String) -> Result<()> {
         } else {
             "".to_string()
         };
-        
+
         let file_name = std::path::Path::new(&path)
             .file_stem()
             .ok_or_else(|| anyhow::anyhow!("Invalid file path"))?
             .to_str()
             .ok_or_else(|| anyhow::anyhow!("Invalid file name"))?;
-            
+
         let target_path = join_paths(vec![to_dir.as_str(), &format!("{}.{}", file_name, ext)]);
         tokio::fs::write(&target_path, &bytes).await?;
         Ok(())
+    })
+}
+
+pub fn roasts(chapter_id: String) -> Result<Vec<Roast>> {
+    block_on(async move {
+        let roasts = CLIENT.roasts(chapter_id.as_str()).await?;
+        Ok(roasts.list)
     })
 }

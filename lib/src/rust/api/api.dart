@@ -240,3 +240,6 @@ Future<void> deleteAllComicViewLogs() =>
 
 Future<void> copyImage({required String path, required String toDir}) =>
     RustLib.instance.api.crateApiApiCopyImage(path: path, toDir: toDir);
+
+Future<List<Roast>> roasts({required String chapterId}) =>
+    RustLib.instance.api.crateApiApiRoasts(chapterId: chapterId);

@@ -71,7 +71,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.9.0';
 
   @override
-  int get rustContentHash => -158502977;
+  int get rustContentHash => 88473027;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -207,6 +207,8 @@ abstract class RustLibApi extends BaseApi {
       {required String username, required String password});
 
   Future<void> crateApiApiResetFailDownloads();
+
+  Future<List<Roast>> crateApiApiRoasts({required String chapterId});
 
   Future<void> crateApiApiSaveProperty({required String k, required String v});
 
@@ -1302,6 +1304,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<List<Roast>> crateApiApiRoasts({required String chapterId}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(chapterId, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 41, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_roast,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kCrateApiApiRoastsConstMeta,
+      argValues: [chapterId],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiRoastsConstMeta => const TaskConstMeta(
+        debugName: "roasts",
+        argNames: ["chapterId"],
+      );
+
+  @override
   Future<void> crateApiApiSaveProperty({required String k, required String v}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -1309,7 +1335,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(k, serializer);
         sse_encode_String(v, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 41, port: port_);
+            funcId: 42, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1336,7 +1362,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(comment, serializer);
         sse_encode_opt_String(replyId, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 42, port: port_);
+            funcId: 43, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1360,7 +1386,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(api, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 43, port: port_);
+            funcId: 44, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1384,7 +1410,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(proxy, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 44, port: port_);
+            funcId: 45, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1407,7 +1433,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 45, port: port_);
+            funcId: 46, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_ui_tags,
@@ -1444,7 +1470,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_i_64(chapterCount, serializer);
         sse_encode_i_32(pageRank, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 46, port: port_);
+            funcId: 47, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1491,7 +1517,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_author(comicAuthors, serializer);
         sse_encode_String(comicCover, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 47, port: port_);
+            funcId: 48, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1773,6 +1799,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<Roast> dco_decode_list_roast(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_roast).toList();
+  }
+
+  @protected
   List<SexualOrientation> dco_decode_list_sexual_orientation(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_sexual_orientation).toList();
@@ -1971,6 +2003,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       nickname: dco_decode_String(arr[4]),
       avatar: dco_decode_String(arr[5]),
       inviteCode: dco_decode_opt_String(arr[6]),
+    );
+  }
+
+  @protected
+  Roast dco_decode_roast(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return Roast(
+      id: dco_decode_i_64(arr[0]),
+      createAt: dco_decode_String(arr[1]),
+      userId: dco_decode_String(arr[2]),
+      userName: dco_decode_String(arr[3]),
+      userAvatar: dco_decode_String(arr[4]),
+      comment: dco_decode_String(arr[5]),
     );
   }
 
@@ -2906,6 +2954,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<Roast> sse_decode_list_roast(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <Roast>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_roast(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   List<SexualOrientation> sse_decode_list_sexual_orientation(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3257,6 +3317,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         nickname: var_nickname,
         avatar: var_avatar,
         inviteCode: var_inviteCode);
+  }
+
+  @protected
+  Roast sse_decode_roast(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_i_64(deserializer);
+    var var_createAt = sse_decode_String(deserializer);
+    var var_userId = sse_decode_String(deserializer);
+    var var_userName = sse_decode_String(deserializer);
+    var var_userAvatar = sse_decode_String(deserializer);
+    var var_comment = sse_decode_String(deserializer);
+    return Roast(
+        id: var_id,
+        createAt: var_createAt,
+        userId: var_userId,
+        userName: var_userName,
+        userAvatar: var_userAvatar,
+        comment: var_comment);
   }
 
   @protected
@@ -4284,6 +4362,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_roast(List<Roast> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_roast(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_list_sexual_orientation(
       List<SexualOrientation> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -4551,6 +4638,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.nickname, serializer);
     sse_encode_String(self.avatar, serializer);
     sse_encode_opt_String(self.inviteCode, serializer);
+  }
+
+  @protected
+  void sse_encode_roast(Roast self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.id, serializer);
+    sse_encode_String(self.createAt, serializer);
+    sse_encode_String(self.userId, serializer);
+    sse_encode_String(self.userName, serializer);
+    sse_encode_String(self.userAvatar, serializer);
+    sse_encode_String(self.comment, serializer);
   }
 
   @protected

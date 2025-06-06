@@ -482,6 +482,45 @@ class RegisterResult {
           inviteCode == other.inviteCode;
 }
 
+class Roast {
+  final PlatformInt64 id;
+  final String createAt;
+  final String userId;
+  final String userName;
+  final String userAvatar;
+  final String comment;
+
+  const Roast({
+    required this.id,
+    required this.createAt,
+    required this.userId,
+    required this.userName,
+    required this.userAvatar,
+    required this.comment,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      createAt.hashCode ^
+      userId.hashCode ^
+      userName.hashCode ^
+      userAvatar.hashCode ^
+      comment.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Roast &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          createAt == other.createAt &&
+          userId == other.userId &&
+          userName == other.userName &&
+          userAvatar == other.userAvatar &&
+          comment == other.comment;
+}
+
 class SexualOrientation {
   final String name;
   final String pathWord;

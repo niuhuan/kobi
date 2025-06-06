@@ -55,6 +55,7 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
   bool _loaded = false;
   late bool _fullScreen;
   var _replace = false;
+  List<Roast> roastList = [];
 
   void _load() {
     // todo multiple used setState and FutureBuilder, it is not good.
@@ -79,7 +80,21 @@ class _ComicReaderScreenState extends State<ComicReaderScreen> {
         });
         return value;
       });
+      _loadRoasts();
     });
+  }
+
+  _loadRoasts() {
+    // setState(() {
+    //   roastList = [];
+    // });
+    // api.roasts(chapterId: widget.chapterUuid).then((value) {
+    //   setState(() {
+    //     roastList = value;
+    //   });
+    // }).catchError((e, s) {
+    //   print("加载吐槽失败: $e\n$s");
+    // });
   }
 
   @override
@@ -1202,8 +1217,10 @@ class _ComicReaderGalleryState extends _ComicReaderState {
       builder: (BuildContext context, int index) {
         return PhotoViewGalleryPageOptions(
           filterQuality: FilterQuality.high,
-          disableGestures: currentReaderControllerType == ReaderControllerType.touchDouble || 
-                          currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext,
+          disableGestures:
+              currentReaderControllerType == ReaderControllerType.touchDouble ||
+                  currentReaderControllerType ==
+                      ReaderControllerType.touchDoubleOnceNext,
           imageProvider: ImageCacheProvider(
             url: urls[index],
             useful: 'comic_reader',
@@ -1502,8 +1519,10 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
         first = null;
         options.add(
           PhotoViewGalleryPageOptions.customChild(
-            disableGestures: currentReaderControllerType == ReaderControllerType.touchDouble || 
-                           currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext,
+            disableGestures: currentReaderControllerType ==
+                    ReaderControllerType.touchDouble ||
+                currentReaderControllerType ==
+                    ReaderControllerType.touchDoubleOnceNext,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return Row(
@@ -1563,8 +1582,10 @@ class _TwoPageGalleryReaderState extends _ComicReaderState {
     if (first != null) {
       options.add(
         PhotoViewGalleryPageOptions.customChild(
-          disableGestures: currentReaderControllerType == ReaderControllerType.touchDouble || 
-                         currentReaderControllerType == ReaderControllerType.touchDoubleOnceNext,
+          disableGestures:
+              currentReaderControllerType == ReaderControllerType.touchDouble ||
+                  currentReaderControllerType ==
+                      ReaderControllerType.touchDoubleOnceNext,
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return Row(

@@ -393,7 +393,6 @@ pub struct CollectedComicInfo {
     pub last_chapter_name: String,
 }
 
-
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Comment {
     pub id: i64,
@@ -406,4 +405,14 @@ pub struct Comment {
     pub parent_id: Option<i64>,
     pub parent_user_id: Option<String>,
     pub parent_user_name: Option<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Roast {
+    pub id: i64,
+    pub create_at: String,
+    pub user_id: String,
+    pub user_name: String,
+    pub user_avatar: String,
+    pub comment: String,
 }

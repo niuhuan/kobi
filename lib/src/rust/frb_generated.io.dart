@@ -113,6 +113,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<Roast> dco_decode_list_roast(dynamic raw);
+
+  @protected
   List<SexualOrientation> dco_decode_list_sexual_orientation(dynamic raw);
 
   @protected
@@ -187,6 +190,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RegisterResult dco_decode_register_result(dynamic raw);
+
+  @protected
+  Roast dco_decode_roast(dynamic raw);
 
   @protected
   SexualOrientation dco_decode_sexual_orientation(dynamic raw);
@@ -394,6 +400,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<Roast> sse_decode_list_roast(SseDeserializer deserializer);
+
+  @protected
   List<SexualOrientation> sse_decode_list_sexual_orientation(
       SseDeserializer deserializer);
 
@@ -479,6 +488,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RegisterResult sse_decode_register_result(SseDeserializer deserializer);
+
+  @protected
+  Roast sse_decode_roast(SseDeserializer deserializer);
 
   @protected
   SexualOrientation sse_decode_sexual_orientation(SseDeserializer deserializer);
@@ -704,6 +716,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       Uint8List self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_roast(List<Roast> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_sexual_orientation(
       List<SexualOrientation> self, SseSerializer serializer);
 
@@ -794,6 +809,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_register_result(
       RegisterResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_roast(Roast self, SseSerializer serializer);
 
   @protected
   void sse_encode_sexual_orientation(
