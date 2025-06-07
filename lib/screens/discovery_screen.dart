@@ -7,7 +7,8 @@ import 'components/comic_card.dart';
 import 'components/comic_pager.dart';
 
 class DiscoveryScreen extends StatefulWidget {
-  const DiscoveryScreen({Key? key}) : super(key: key);
+  final String? initTheme;
+  const DiscoveryScreen({Key? key, this.initTheme}) : super(key: key);
 
   @override
   _DiscoveryScreenState createState() => _DiscoveryScreenState();
@@ -34,7 +35,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           break;
         }
       }
-      var pKeytheme = await api.loadProperty(k: "_keyTheme");
+      var pKeytheme = widget.initTheme != null && !widget.initTheme!.isEmpty ? widget.initTheme! : await api.loadProperty(k: "_keyTheme");
       for (var element in uiTags.theme) {
         if (element.pathWord == pKeytheme) {
           _keyTheme = pKeytheme;

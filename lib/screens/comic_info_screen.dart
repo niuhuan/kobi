@@ -6,6 +6,7 @@ import 'package:kobi/configs/chapter_order_newest.dart';
 import 'package:kobi/configs/login.dart';
 import 'package:kobi/screens/components/commnet_card.dart';
 import 'package:kobi/screens/components/content_loading.dart';
+import 'package:kobi/screens/discovery_screen.dart';
 import '../src/rust/api/api.dart' as api;
 import '../src/rust/udto.dart';
 import 'package:kobi/screens/components/commons.dart';
@@ -265,26 +266,32 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
   }
 
   Widget _ci(Tag ci) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 7,
-        top: 2,
-        right: 7,
-        bottom: 2,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.withAlpha(220),
-          style: BorderStyle.solid,
-          width: .5,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => DiscoveryScreen(
+              initTheme: ci.pathWord,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 7,
+          top: 2,
+          right: 7,
+          bottom: 2,
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Text(
-        ci.name,
-        style: TextStyle(
-          fontSize: 13,
-          color: Colors.grey.withAlpha(220),
+        child: Text(
+          ci.name,
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.red.shade300,
+            decoration: TextDecoration.underline,
+            decorationColor: Colors.red.shade300.withAlpha(150),
+          ),
         ),
       ),
     );
