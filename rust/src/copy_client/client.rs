@@ -336,6 +336,27 @@ impl Client {
         .await
     }
 
+    pub async fn explore_by_author_name(
+        &self,
+        author_name: &str,
+        ordering: Option<&str>,
+        offset: u64,
+        limit: u64,
+    ) -> Result<Page<ComicInExplore>> {
+        let mut params = serde_json::json!({
+            "offset": offset,
+            "limit": limit,
+            "author": author_name,
+            "free_type": 1,
+            "platform": 3,
+        });
+        if let Some(ordering) = ordering {
+            params["ordering"] = serde_json::json!(ordering);
+        }
+        self.request(reqwest::Method::GET, "/api/v3/comics", params)
+            .await
+    }
+
     pub async fn explore_by_author(
         &self,
         author: &str,
@@ -346,7 +367,7 @@ impl Client {
         let mut params = serde_json::json!({
             "offset": offset,
             "limit": limit,
-            "author_id": author,
+            "author": author,
             "free_type": 1,
             "platform": 3,
         });
