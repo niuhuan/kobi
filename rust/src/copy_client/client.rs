@@ -346,7 +346,7 @@ impl Client {
         let mut params = serde_json::json!({
             "offset": offset,
             "limit": limit,
-            "author": author_name,
+            "q": author_name,
             "free_type": 1,
             "platform": 3,
         });

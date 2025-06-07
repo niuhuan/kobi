@@ -318,6 +318,30 @@ pub fn tags() -> Result<UITags> {
     ))
 }
 
+pub fn explore_by_author_name(
+    author_name: String,
+    ordering: Option<String>,
+    offset: u64,
+    limit: u64,
+) -> Result<UIPageComicInExplore> {
+    let key = format!(
+        "COMIC_EXPLORE_BY_AUTHOR_NAME${}${}${}${}",
+        author_name,
+        ordering.as_deref().unwrap_or(""),
+        limit,
+        offset
+    );
+    block_on(web_cache::cache_first_map(
+        key,
+        Duration::from_secs(60 * 60 * 2),
+        Box::pin(async move {
+            CLIENT
+                .explore_by_author_name(author_name.as_str(), ordering.as_deref(), offset, limit)
+                .await
+        }),
+    ))
+}
+
 pub fn explore_by_author(
     author: String,
     ordering: Option<String>,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kobi/screens/comic_search_screen.dart';
+import 'author_search_screen.dart';
 import 'components/flutter_search_bar_base.dart' as sb;
 import '../src/rust/api/api.dart' as api;
 import '../src/rust/udto.dart';
@@ -77,10 +78,20 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
   );
 
   Widget _buildNormalAppBar(BuildContext context) {
+    var _b = IconButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AuthorSearchScreen()),
+        );
+      },
+      icon: const Icon(Icons.person_search),
+    );
     if (_tagsLoadStatus == 0) {
       return AppBar(
         title: const Text('加载中'),
         actions: [
+          _b,
           _searchBar.getSearchAction(context),
         ],
       );
@@ -91,6 +102,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           child: const Text("分类加载失败, 点击重试"),
         ),
         actions: [
+          _b,
           _searchBar.getSearchAction(context),
         ],
       );
@@ -242,6 +254,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           ),
         ]),
         actions: [
+          _b,
           _searchBar.getSearchAction(context),
         ],
       );
