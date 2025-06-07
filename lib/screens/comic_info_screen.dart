@@ -12,6 +12,7 @@ import 'package:kobi/screens/components/commons.dart';
 
 import '../src/rust/copy_client/dtos.dart';
 import '../src/rust/udto.dart';
+import 'author_comics_screen.dart';
 import 'comic_download_screen.dart';
 import 'comic_reader_screen.dart';
 import 'components/comic_card.dart';
@@ -216,7 +217,7 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
             elevation: 0,
             backgroundColor: Colors.transparent,
           ),
-          ComicInfoCard(_comic.comic),
+          ComicInfoCard(_comic.comic, linked: true),
           Container(
             padding: const EdgeInsets.all(10),
             child: _brief(_comic.comic.brief),
@@ -605,8 +606,9 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
 
 class ComicInfoCard extends StatelessWidget {
   final UIComic comic;
+  final bool linked;
 
-  const ComicInfoCard(this.comic, {super.key});
+  const ComicInfoCard(this.comic, {super.key, this.linked = false});
 
   @override
   Widget build(BuildContext context) {
@@ -649,13 +651,28 @@ class ComicInfoCard extends StatelessWidget {
                 Container(
                   height: 5,
                 ),
-                Text(
-                  comic.author.map((e) => e.name).join(','),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.red.shade300,
+                for (var author in comic.author)
+                  Container(
+                    margin: const EdgeInsets.only(right: 5),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AuthorComicsScreen(author),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        author.name,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.red.shade300,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
                 Container(
                   height: 5,
                 ),
