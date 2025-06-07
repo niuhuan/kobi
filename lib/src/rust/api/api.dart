@@ -85,6 +85,14 @@ Future<UIChapterData> comicChapterData(
 
 Future<UITags> tags() => RustLib.instance.api.crateApiApiTags();
 
+Future<UIPageComicInExplore> exploreByAuthor(
+        {required String author,
+        String? ordering,
+        required BigInt offset,
+        required BigInt limit}) =>
+    RustLib.instance.api.crateApiApiExploreByAuthor(
+        author: author, ordering: ordering, offset: offset, limit: limit);
+
 Future<UIPageComicInExplore> explorer(
         {String? ordering,
         String? top,

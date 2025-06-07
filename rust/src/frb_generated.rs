@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.9.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 88473027;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1221030919;
 
 // Section: executor
 
@@ -863,6 +863,49 @@ fn wire__crate__api__api__download_set_pause_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok = crate::api::api::download_set_pause(api_pause)?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__api__explore_by_author_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "explore_by_author",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_author = <String>::sse_decode(&mut deserializer);
+            let api_ordering = <Option<String>>::sse_decode(&mut deserializer);
+            let api_offset = <u64>::sse_decode(&mut deserializer);
+            let api_limit = <u64>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::api::explore_by_author(
+                            api_author,
+                            api_ordering,
+                            api_offset,
+                            api_limit,
+                        )?;
                         Ok(output_ok)
                     })(),
                 )
@@ -3434,33 +3477,34 @@ fn pde_ffi_dispatcher_primary_impl(
         20 => wire__crate__api__api__download_comics_impl(port, ptr, rust_vec_len, data_len),
         21 => wire__crate__api__api__download_is_pause_impl(port, ptr, rust_vec_len, data_len),
         22 => wire__crate__api__api__download_set_pause_impl(port, ptr, rust_vec_len, data_len),
-        23 => wire__crate__api__api__explorer_impl(port, ptr, rust_vec_len, data_len),
-        24 => wire__crate__api__api__exports_impl(port, ptr, rust_vec_len, data_len),
-        25 => wire__crate__api__api__find_comic_view_log_impl(port, ptr, rust_vec_len, data_len),
-        26 => wire__crate__api__api__get_api_host_impl(port, ptr, rust_vec_len, data_len),
-        27 => wire__crate__api__api__get_proxy_impl(port, ptr, rust_vec_len, data_len),
-        29 => wire__crate__api__api__http_get_impl(port, ptr, rust_vec_len, data_len),
-        30 => {
+        23 => wire__crate__api__api__explore_by_author_impl(port, ptr, rust_vec_len, data_len),
+        24 => wire__crate__api__api__explorer_impl(port, ptr, rust_vec_len, data_len),
+        25 => wire__crate__api__api__exports_impl(port, ptr, rust_vec_len, data_len),
+        26 => wire__crate__api__api__find_comic_view_log_impl(port, ptr, rust_vec_len, data_len),
+        27 => wire__crate__api__api__get_api_host_impl(port, ptr, rust_vec_len, data_len),
+        28 => wire__crate__api__api__get_proxy_impl(port, ptr, rust_vec_len, data_len),
+        30 => wire__crate__api__api__http_get_impl(port, ptr, rust_vec_len, data_len),
+        31 => {
             wire__crate__api__api__in_download_chapter_uuid_impl(port, ptr, rust_vec_len, data_len)
         }
-        31 => wire__crate__api__api__init_impl(port, ptr, rust_vec_len, data_len),
-        32 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
-        33 => wire__crate__api__api__init_login_state_impl(port, ptr, rust_vec_len, data_len),
-        34 => wire__crate__api__api__list_comic_view_logs_impl(port, ptr, rust_vec_len, data_len),
-        35 => wire__crate__api__api__load_property_impl(port, ptr, rust_vec_len, data_len),
-        36 => wire__crate__api__api__login_impl(port, ptr, rust_vec_len, data_len),
-        37 => wire__crate__api__api__rank_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__api__api__recommends_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__api__api__register_impl(port, ptr, rust_vec_len, data_len),
-        40 => wire__crate__api__api__reset_fail_downloads_impl(port, ptr, rust_vec_len, data_len),
-        41 => wire__crate__api__api__roasts_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__api__api__save_property_impl(port, ptr, rust_vec_len, data_len),
-        43 => wire__crate__api__api__send_comment_impl(port, ptr, rust_vec_len, data_len),
-        44 => wire__crate__api__api__set_api_host_impl(port, ptr, rust_vec_len, data_len),
-        45 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
-        46 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
-        47 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
-        48 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
+        32 => wire__crate__api__api__init_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__api__api__init_login_state_impl(port, ptr, rust_vec_len, data_len),
+        35 => wire__crate__api__api__list_comic_view_logs_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__api__api__load_property_impl(port, ptr, rust_vec_len, data_len),
+        37 => wire__crate__api__api__login_impl(port, ptr, rust_vec_len, data_len),
+        38 => wire__crate__api__api__rank_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__api__api__recommends_impl(port, ptr, rust_vec_len, data_len),
+        40 => wire__crate__api__api__register_impl(port, ptr, rust_vec_len, data_len),
+        41 => wire__crate__api__api__reset_fail_downloads_impl(port, ptr, rust_vec_len, data_len),
+        42 => wire__crate__api__api__roasts_impl(port, ptr, rust_vec_len, data_len),
+        43 => wire__crate__api__api__save_property_impl(port, ptr, rust_vec_len, data_len),
+        44 => wire__crate__api__api__send_comment_impl(port, ptr, rust_vec_len, data_len),
+        45 => wire__crate__api__api__set_api_host_impl(port, ptr, rust_vec_len, data_len),
+        46 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
+        47 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
+        48 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
+        49 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -3473,7 +3517,7 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        28 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        29 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
