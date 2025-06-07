@@ -651,28 +651,39 @@ class ComicInfoCard extends StatelessWidget {
                 Container(
                   height: 5,
                 ),
-                for (var author in comic.author)
-                  Container(
-                    margin: const EdgeInsets.only(right: 5),
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AuthorComicsScreen(author),
+                if (linked)
+                  for (var author in comic.author)
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AuthorComicsScreen(author),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          author.name,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.red.shade300,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.red.shade300,
                           ),
-                        );
-                      },
-                      child: Text(
-                        author.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.red.shade300,
                         ),
                       ),
                     ),
-                  ),
+                if (!linked)
+                  for (var author in comic.author)
+                    Text(
+                      author.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.red.shade300,
+                      ),
+                    ),
                 Container(
                   height: 5,
                 ),
