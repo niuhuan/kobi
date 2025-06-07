@@ -219,6 +219,18 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           ),
           ComicInfoCard(_comic.comic, linked: true),
           Container(
+            margin: const EdgeInsets.all(10),
+            child: Wrap(
+              spacing: 15,
+              runSpacing: 15,
+              children: [
+                for (var theme in _comic.comic.theme)
+                  _ci(theme),
+              ],
+            ),
+          ),
+          const Divider(),
+          Container(
             padding: const EdgeInsets.all(10),
             child: _brief(_comic.comic.brief),
           ),
@@ -248,6 +260,32 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
           const Divider(),
           SafeArea(child: Container()),
         ],
+      ),
+    );
+  }
+
+  Widget _ci(Tag ci) {
+    return Container(
+      padding: const EdgeInsets.only(
+        left: 7,
+        top: 2,
+        right: 7,
+        bottom: 2,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey.withAlpha(220),
+          style: BorderStyle.solid,
+          width: .5,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+      ),
+      child: Text(
+        ci.name,
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey.withAlpha(220),
+        ),
       ),
     );
   }
