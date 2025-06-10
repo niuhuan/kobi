@@ -69,6 +69,108 @@ class Browse {
           pathWord == other.pathWord;
 }
 
+class BrowseComic {
+  final PlatformInt64 id;
+  final String lastChapterId;
+  final String lastChapterName;
+  final BrowseComicComic comic;
+
+  const BrowseComic({
+    required this.id,
+    required this.lastChapterId,
+    required this.lastChapterName,
+    required this.comic,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      lastChapterId.hashCode ^
+      lastChapterName.hashCode ^
+      comic.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BrowseComic &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          lastChapterId == other.lastChapterId &&
+          lastChapterName == other.lastChapterName &&
+          comic == other.comic;
+}
+
+class BrowseComicComic {
+  final String uuid;
+  final bool bDisplay;
+  final String name;
+  final String pathWord;
+  final List<SexualOrientation> females;
+  final List<SexualOrientation> males;
+  final List<Author> author;
+  final List<Tag> theme;
+  final String cover;
+  final PlatformInt64 status;
+  final PlatformInt64 popular;
+  final String datetimeUpdated;
+  final String lastChapterId;
+  final String lastChapterName;
+
+  const BrowseComicComic({
+    required this.uuid,
+    required this.bDisplay,
+    required this.name,
+    required this.pathWord,
+    required this.females,
+    required this.males,
+    required this.author,
+    required this.theme,
+    required this.cover,
+    required this.status,
+    required this.popular,
+    required this.datetimeUpdated,
+    required this.lastChapterId,
+    required this.lastChapterName,
+  });
+
+  @override
+  int get hashCode =>
+      uuid.hashCode ^
+      bDisplay.hashCode ^
+      name.hashCode ^
+      pathWord.hashCode ^
+      females.hashCode ^
+      males.hashCode ^
+      author.hashCode ^
+      theme.hashCode ^
+      cover.hashCode ^
+      status.hashCode ^
+      popular.hashCode ^
+      datetimeUpdated.hashCode ^
+      lastChapterId.hashCode ^
+      lastChapterName.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BrowseComicComic &&
+          runtimeType == other.runtimeType &&
+          uuid == other.uuid &&
+          bDisplay == other.bDisplay &&
+          name == other.name &&
+          pathWord == other.pathWord &&
+          females == other.females &&
+          males == other.males &&
+          author == other.author &&
+          theme == other.theme &&
+          cover == other.cover &&
+          status == other.status &&
+          popular == other.popular &&
+          datetimeUpdated == other.datetimeUpdated &&
+          lastChapterId == other.lastChapterId &&
+          lastChapterName == other.lastChapterName;
+}
+
 class ChapterComicInfo {
   final String name;
   final String pathWord;

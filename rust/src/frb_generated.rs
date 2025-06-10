@@ -2003,6 +2003,60 @@ impl SseDecode for crate::copy_client::dtos::Browse {
     }
 }
 
+impl SseDecode for crate::copy_client::dtos::BrowseComic {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <i64>::sse_decode(deserializer);
+        let mut var_lastChapterId = <String>::sse_decode(deserializer);
+        let mut var_lastChapterName = <String>::sse_decode(deserializer);
+        let mut var_comic = <crate::copy_client::dtos::BrowseComicComic>::sse_decode(deserializer);
+        return crate::copy_client::dtos::BrowseComic {
+            id: var_id,
+            last_chapter_id: var_lastChapterId,
+            last_chapter_name: var_lastChapterName,
+            comic: var_comic,
+        };
+    }
+}
+
+impl SseDecode for crate::copy_client::dtos::BrowseComicComic {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_uuid = <String>::sse_decode(deserializer);
+        let mut var_bDisplay = <bool>::sse_decode(deserializer);
+        let mut var_name = <String>::sse_decode(deserializer);
+        let mut var_pathWord = <String>::sse_decode(deserializer);
+        let mut var_females =
+            <Vec<crate::copy_client::dtos::SexualOrientation>>::sse_decode(deserializer);
+        let mut var_males =
+            <Vec<crate::copy_client::dtos::SexualOrientation>>::sse_decode(deserializer);
+        let mut var_author = <Vec<crate::copy_client::dtos::Author>>::sse_decode(deserializer);
+        let mut var_theme = <Vec<crate::copy_client::dtos::Tag>>::sse_decode(deserializer);
+        let mut var_cover = <String>::sse_decode(deserializer);
+        let mut var_status = <i64>::sse_decode(deserializer);
+        let mut var_popular = <i64>::sse_decode(deserializer);
+        let mut var_datetimeUpdated = <String>::sse_decode(deserializer);
+        let mut var_lastChapterId = <String>::sse_decode(deserializer);
+        let mut var_lastChapterName = <String>::sse_decode(deserializer);
+        return crate::copy_client::dtos::BrowseComicComic {
+            uuid: var_uuid,
+            b_display: var_bDisplay,
+            name: var_name,
+            path_word: var_pathWord,
+            females: var_females,
+            males: var_males,
+            author: var_author,
+            theme: var_theme,
+            cover: var_cover,
+            status: var_status,
+            popular: var_popular,
+            datetime_updated: var_datetimeUpdated,
+            last_chapter_id: var_lastChapterId,
+            last_chapter_name: var_lastChapterName,
+        };
+    }
+}
+
 impl SseDecode for crate::copy_client::dtos::ChapterComicInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2187,13 +2241,15 @@ impl SseDecode for Vec<crate::copy_client::dtos::Author> {
     }
 }
 
-impl SseDecode for Vec<crate::copy_client::dtos::Browse> {
+impl SseDecode for Vec<crate::copy_client::dtos::BrowseComic> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut len_ = <i32>::sse_decode(deserializer);
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
-            ans_.push(<crate::copy_client::dtos::Browse>::sse_decode(deserializer));
+            ans_.push(<crate::copy_client::dtos::BrowseComic>::sse_decode(
+                deserializer,
+            ));
         }
         return ans_;
     }
@@ -3195,14 +3251,14 @@ impl SseDecode for crate::udto::UILoginState {
     }
 }
 
-impl SseDecode for crate::udto::UIPageBrowse {
+impl SseDecode for crate::udto::UIPageBrowseComic {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_list = <Vec<crate::copy_client::dtos::Browse>>::sse_decode(deserializer);
+        let mut var_list = <Vec<crate::copy_client::dtos::BrowseComic>>::sse_decode(deserializer);
         let mut var_total = <i64>::sse_decode(deserializer);
         let mut var_limit = <i64>::sse_decode(deserializer);
         let mut var_offset = <i64>::sse_decode(deserializer);
-        return crate::udto::UIPageBrowse {
+        return crate::udto::UIPageBrowseComic {
             list: var_list,
             total: var_total,
             limit: var_limit,
@@ -3677,6 +3733,62 @@ impl flutter_rust_bridge::IntoIntoDart<crate::copy_client::dtos::Browse>
     for crate::copy_client::dtos::Browse
 {
     fn into_into_dart(self) -> crate::copy_client::dtos::Browse {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::copy_client::dtos::BrowseComic {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.id.into_into_dart().into_dart(),
+            self.last_chapter_id.into_into_dart().into_dart(),
+            self.last_chapter_name.into_into_dart().into_dart(),
+            self.comic.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::copy_client::dtos::BrowseComic
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::copy_client::dtos::BrowseComic>
+    for crate::copy_client::dtos::BrowseComic
+{
+    fn into_into_dart(self) -> crate::copy_client::dtos::BrowseComic {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::copy_client::dtos::BrowseComicComic {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.uuid.into_into_dart().into_dart(),
+            self.b_display.into_into_dart().into_dart(),
+            self.name.into_into_dart().into_dart(),
+            self.path_word.into_into_dart().into_dart(),
+            self.females.into_into_dart().into_dart(),
+            self.males.into_into_dart().into_dart(),
+            self.author.into_into_dart().into_dart(),
+            self.theme.into_into_dart().into_dart(),
+            self.cover.into_into_dart().into_dart(),
+            self.status.into_into_dart().into_dart(),
+            self.popular.into_into_dart().into_dart(),
+            self.datetime_updated.into_into_dart().into_dart(),
+            self.last_chapter_id.into_into_dart().into_dart(),
+            self.last_chapter_name.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::copy_client::dtos::BrowseComicComic
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::copy_client::dtos::BrowseComicComic>
+    for crate::copy_client::dtos::BrowseComicComic
+{
+    fn into_into_dart(self) -> crate::copy_client::dtos::BrowseComicComic {
         self
     }
 }
@@ -4437,7 +4549,7 @@ impl flutter_rust_bridge::IntoIntoDart<crate::udto::UILoginState> for crate::udt
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::udto::UIPageBrowse {
+impl flutter_rust_bridge::IntoDart for crate::udto::UIPageBrowseComic {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.list.into_into_dart().into_dart(),
@@ -4448,9 +4560,14 @@ impl flutter_rust_bridge::IntoDart for crate::udto::UIPageBrowse {
         .into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::udto::UIPageBrowse {}
-impl flutter_rust_bridge::IntoIntoDart<crate::udto::UIPageBrowse> for crate::udto::UIPageBrowse {
-    fn into_into_dart(self) -> crate::udto::UIPageBrowse {
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::udto::UIPageBrowseComic
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::udto::UIPageBrowseComic>
+    for crate::udto::UIPageBrowseComic
+{
+    fn into_into_dart(self) -> crate::udto::UIPageBrowseComic {
         self
     }
 }
@@ -4851,6 +4968,36 @@ impl SseEncode for crate::copy_client::dtos::Browse {
     }
 }
 
+impl SseEncode for crate::copy_client::dtos::BrowseComic {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.id, serializer);
+        <String>::sse_encode(self.last_chapter_id, serializer);
+        <String>::sse_encode(self.last_chapter_name, serializer);
+        <crate::copy_client::dtos::BrowseComicComic>::sse_encode(self.comic, serializer);
+    }
+}
+
+impl SseEncode for crate::copy_client::dtos::BrowseComicComic {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.uuid, serializer);
+        <bool>::sse_encode(self.b_display, serializer);
+        <String>::sse_encode(self.name, serializer);
+        <String>::sse_encode(self.path_word, serializer);
+        <Vec<crate::copy_client::dtos::SexualOrientation>>::sse_encode(self.females, serializer);
+        <Vec<crate::copy_client::dtos::SexualOrientation>>::sse_encode(self.males, serializer);
+        <Vec<crate::copy_client::dtos::Author>>::sse_encode(self.author, serializer);
+        <Vec<crate::copy_client::dtos::Tag>>::sse_encode(self.theme, serializer);
+        <String>::sse_encode(self.cover, serializer);
+        <i64>::sse_encode(self.status, serializer);
+        <i64>::sse_encode(self.popular, serializer);
+        <String>::sse_encode(self.datetime_updated, serializer);
+        <String>::sse_encode(self.last_chapter_id, serializer);
+        <String>::sse_encode(self.last_chapter_name, serializer);
+    }
+}
+
 impl SseEncode for crate::copy_client::dtos::ChapterComicInfo {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4983,12 +5130,12 @@ impl SseEncode for Vec<crate::copy_client::dtos::Author> {
     }
 }
 
-impl SseEncode for Vec<crate::copy_client::dtos::Browse> {
+impl SseEncode for Vec<crate::copy_client::dtos::BrowseComic> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
-            <crate::copy_client::dtos::Browse>::sse_encode(item, serializer);
+            <crate::copy_client::dtos::BrowseComic>::sse_encode(item, serializer);
         }
     }
 }
@@ -5643,10 +5790,10 @@ impl SseEncode for crate::udto::UILoginState {
     }
 }
 
-impl SseEncode for crate::udto::UIPageBrowse {
+impl SseEncode for crate::udto::UIPageBrowseComic {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<crate::copy_client::dtos::Browse>>::sse_encode(self.list, serializer);
+        <Vec<crate::copy_client::dtos::BrowseComic>>::sse_encode(self.list, serializer);
         <i64>::sse_encode(self.total, serializer);
         <i64>::sse_encode(self.limit, serializer);
         <i64>::sse_encode(self.offset, serializer);

@@ -1,9 +1,7 @@
 pub use super::types::*;
 use super::{Browse, Comment, Roast};
 use crate::copy_client::{
-    ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch,
-    ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
-    Tags,
+    BrowseComic, ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response, Tags
 };
 use base64::Engine;
 use chrono::Datelike;
@@ -500,9 +498,9 @@ impl Client {
         .await
     }
 
-    pub async fn browser(&self, offset: u64, limit: u64) -> Result<Page<Browse>> {
+    pub async fn browser(&self, offset: u64, limit: u64) -> Result<Page<BrowseComic>> {
         self.request(
-            reqwest::Method::POST,
+            reqwest::Method::GET,
             "/api/v3/member/browse/comics",
             serde_json::json!({
                 "limit": limit,

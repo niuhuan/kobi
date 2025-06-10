@@ -263,5 +263,6 @@ Future<void> copyImage({required String path, required String toDir}) =>
 Future<List<Roast>> roasts({required String chapterId}) =>
     RustLib.instance.api.crateApiApiRoasts(chapterId: chapterId);
 
-Future<UIPageBrowse> browser({required BigInt offset, required BigInt limit}) =>
+Future<UIPageBrowseComic> browser(
+        {required BigInt offset, required BigInt limit}) =>
     RustLib.instance.api.crateApiApiBrowser(offset: offset, limit: limit);

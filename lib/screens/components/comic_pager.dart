@@ -25,12 +25,14 @@ class ComicPager extends StatefulWidget {
       fetcher;
   final void Function(CommonComicInfo comic, int index)? onLongPress;
   final ComicPagerController? controller;
+  final int? pageSize;
 
   const ComicPager({
     Key? key, 
     required this.fetcher,
     this.onLongPress,
     this.controller,
+    this.pageSize,
   }) : super(key: key);
 
   @override
@@ -44,7 +46,7 @@ class _ComicPagerState extends State<ComicPager> {
   bool finish = false;
   bool error = false;
   int _offset = 0;
-  static final BigInt _limit = BigInt.parse("21");
+  late final BigInt _limit = widget.pageSize != null ? BigInt.from(widget.pageSize!) : BigInt.parse("21");
 
   @override
   void initState() {

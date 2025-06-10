@@ -84,7 +84,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 abstract class RustLibApi extends BaseApi {
   Future<void> crateApiApiAppendDownload({required UIQueryDownloadComic data});
 
-  Future<UIPageBrowse> crateApiApiBrowser(
+  Future<UIPageBrowseComic> crateApiApiBrowser(
       {required BigInt offset, required BigInt limit});
 
   Future<UICacheImage> crateApiApiCacheImage(
@@ -285,7 +285,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<UIPageBrowse> crateApiApiBrowser(
+  Future<UIPageBrowseComic> crateApiApiBrowser(
       {required BigInt offset, required BigInt limit}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -296,7 +296,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             funcId: 2, port: port_);
       },
       codec: SseCodec(
-        decodeSuccessData: sse_decode_ui_page_browse,
+        decodeSuccessData: sse_decode_ui_page_browse_comic,
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiApiBrowserConstMeta,
@@ -1729,6 +1729,44 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BrowseComic dco_decode_browse_comic(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return BrowseComic(
+      id: dco_decode_i_64(arr[0]),
+      lastChapterId: dco_decode_String(arr[1]),
+      lastChapterName: dco_decode_String(arr[2]),
+      comic: dco_decode_browse_comic_comic(arr[3]),
+    );
+  }
+
+  @protected
+  BrowseComicComic dco_decode_browse_comic_comic(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 14)
+      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    return BrowseComicComic(
+      uuid: dco_decode_String(arr[0]),
+      bDisplay: dco_decode_bool(arr[1]),
+      name: dco_decode_String(arr[2]),
+      pathWord: dco_decode_String(arr[3]),
+      females: dco_decode_list_sexual_orientation(arr[4]),
+      males: dco_decode_list_sexual_orientation(arr[5]),
+      author: dco_decode_list_author(arr[6]),
+      theme: dco_decode_list_tag(arr[7]),
+      cover: dco_decode_String(arr[8]),
+      status: dco_decode_i_64(arr[9]),
+      popular: dco_decode_i_64(arr[10]),
+      datetimeUpdated: dco_decode_String(arr[11]),
+      lastChapterId: dco_decode_String(arr[12]),
+      lastChapterName: dco_decode_String(arr[13]),
+    );
+  }
+
+  @protected
   ChapterComicInfo dco_decode_chapter_comic_info(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1873,9 +1911,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<Browse> dco_decode_list_browse(dynamic raw) {
+  List<BrowseComic> dco_decode_list_browse_comic(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_browse).toList();
+    return (raw as List<dynamic>).map(dco_decode_browse_comic).toList();
   }
 
   @protected
@@ -2509,13 +2547,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  UIPageBrowse dco_decode_ui_page_browse(dynamic raw) {
+  UIPageBrowseComic dco_decode_ui_page_browse_comic(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 4)
       throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
-    return UIPageBrowse(
-      list: dco_decode_list_browse(arr[0]),
+    return UIPageBrowseComic(
+      list: dco_decode_list_browse_comic(arr[0]),
       total: dco_decode_i_64(arr[1]),
       limit: dco_decode_i_64(arr[2]),
       offset: dco_decode_i_64(arr[3]),
@@ -2875,6 +2913,54 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BrowseComic sse_decode_browse_comic(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_i_64(deserializer);
+    var var_lastChapterId = sse_decode_String(deserializer);
+    var var_lastChapterName = sse_decode_String(deserializer);
+    var var_comic = sse_decode_browse_comic_comic(deserializer);
+    return BrowseComic(
+        id: var_id,
+        lastChapterId: var_lastChapterId,
+        lastChapterName: var_lastChapterName,
+        comic: var_comic);
+  }
+
+  @protected
+  BrowseComicComic sse_decode_browse_comic_comic(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_uuid = sse_decode_String(deserializer);
+    var var_bDisplay = sse_decode_bool(deserializer);
+    var var_name = sse_decode_String(deserializer);
+    var var_pathWord = sse_decode_String(deserializer);
+    var var_females = sse_decode_list_sexual_orientation(deserializer);
+    var var_males = sse_decode_list_sexual_orientation(deserializer);
+    var var_author = sse_decode_list_author(deserializer);
+    var var_theme = sse_decode_list_tag(deserializer);
+    var var_cover = sse_decode_String(deserializer);
+    var var_status = sse_decode_i_64(deserializer);
+    var var_popular = sse_decode_i_64(deserializer);
+    var var_datetimeUpdated = sse_decode_String(deserializer);
+    var var_lastChapterId = sse_decode_String(deserializer);
+    var var_lastChapterName = sse_decode_String(deserializer);
+    return BrowseComicComic(
+        uuid: var_uuid,
+        bDisplay: var_bDisplay,
+        name: var_name,
+        pathWord: var_pathWord,
+        females: var_females,
+        males: var_males,
+        author: var_author,
+        theme: var_theme,
+        cover: var_cover,
+        status: var_status,
+        popular: var_popular,
+        datetimeUpdated: var_datetimeUpdated,
+        lastChapterId: var_lastChapterId,
+        lastChapterName: var_lastChapterName);
+  }
+
+  @protected
   ChapterComicInfo sse_decode_chapter_comic_info(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_name = sse_decode_String(deserializer);
@@ -3026,13 +3112,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<Browse> sse_decode_list_browse(SseDeserializer deserializer) {
+  List<BrowseComic> sse_decode_list_browse_comic(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
-    var ans_ = <Browse>[];
+    var ans_ = <BrowseComic>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_browse(deserializer));
+      ans_.add(sse_decode_browse_comic(deserializer));
     }
     return ans_;
   }
@@ -3970,13 +4056,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  UIPageBrowse sse_decode_ui_page_browse(SseDeserializer deserializer) {
+  UIPageBrowseComic sse_decode_ui_page_browse_comic(
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_list = sse_decode_list_browse(deserializer);
+    var var_list = sse_decode_list_browse_comic(deserializer);
     var var_total = sse_decode_i_64(deserializer);
     var var_limit = sse_decode_i_64(deserializer);
     var var_offset = sse_decode_i_64(deserializer);
-    return UIPageBrowse(
+    return UIPageBrowseComic(
         list: var_list, total: var_total, limit: var_limit, offset: var_offset);
   }
 
@@ -4351,6 +4438,35 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_browse_comic(BrowseComic self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.id, serializer);
+    sse_encode_String(self.lastChapterId, serializer);
+    sse_encode_String(self.lastChapterName, serializer);
+    sse_encode_browse_comic_comic(self.comic, serializer);
+  }
+
+  @protected
+  void sse_encode_browse_comic_comic(
+      BrowseComicComic self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.uuid, serializer);
+    sse_encode_bool(self.bDisplay, serializer);
+    sse_encode_String(self.name, serializer);
+    sse_encode_String(self.pathWord, serializer);
+    sse_encode_list_sexual_orientation(self.females, serializer);
+    sse_encode_list_sexual_orientation(self.males, serializer);
+    sse_encode_list_author(self.author, serializer);
+    sse_encode_list_tag(self.theme, serializer);
+    sse_encode_String(self.cover, serializer);
+    sse_encode_i_64(self.status, serializer);
+    sse_encode_i_64(self.popular, serializer);
+    sse_encode_String(self.datetimeUpdated, serializer);
+    sse_encode_String(self.lastChapterId, serializer);
+    sse_encode_String(self.lastChapterName, serializer);
+  }
+
+  @protected
   void sse_encode_chapter_comic_info(
       ChapterComicInfo self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -4464,11 +4580,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_list_browse(List<Browse> self, SseSerializer serializer) {
+  void sse_encode_list_browse_comic(
+      List<BrowseComic> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
-      sse_encode_browse(item, serializer);
+      sse_encode_browse_comic(item, serializer);
     }
   }
 
@@ -5109,9 +5226,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_ui_page_browse(UIPageBrowse self, SseSerializer serializer) {
+  void sse_encode_ui_page_browse_comic(
+      UIPageBrowseComic self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_list_browse(self.list, serializer);
+    sse_encode_list_browse_comic(self.list, serializer);
     sse_encode_i_64(self.total, serializer);
     sse_encode_i_64(self.limit, serializer);
     sse_encode_i_64(self.offset, serializer);

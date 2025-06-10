@@ -967,13 +967,13 @@ class UILoginState {
           member == other.member;
 }
 
-class UIPageBrowse {
-  final List<Browse> list;
+class UIPageBrowseComic {
+  final List<BrowseComic> list;
   final PlatformInt64 total;
   final PlatformInt64 limit;
   final PlatformInt64 offset;
 
-  const UIPageBrowse({
+  const UIPageBrowseComic({
     required this.list,
     required this.total,
     required this.limit,
@@ -987,7 +987,7 @@ class UIPageBrowse {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UIPageBrowse &&
+      other is UIPageBrowseComic &&
           runtimeType == other.runtimeType &&
           list == other.list &&
           total == other.total &&

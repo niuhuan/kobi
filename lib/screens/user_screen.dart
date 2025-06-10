@@ -7,6 +7,7 @@ import 'package:kobi/screens/components/commons.dart';
 import 'package:kobi/screens/downloads_screen.dart';
 import 'package:kobi/screens/histories_screen.dart';
 import 'package:kobi/screens/settings_screen.dart';
+import 'browser_comics_account_screen.dart';
 import 'components/images.dart';
 import 'login_screen.dart';
 
@@ -83,6 +84,17 @@ class UserScreen extends StatelessWidget {
               );
             },
             title: const Text('收藏列表(账户)'),
+          ),
+          const Divider(),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const BrowserComicsAccountScreen()),
+              );
+            },
+            title: const Text('历史记录(账户)'),
           ),
         ],
       ),
