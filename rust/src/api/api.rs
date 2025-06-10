@@ -7,7 +7,7 @@ use crate::database::download::{
 use crate::database::properties::property;
 use crate::udto::{
     ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
-    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
+    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState, UIPageBrowse,
     UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageComment, UIPageRankItem,
     UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags,
     UIViewLog,
@@ -785,4 +785,9 @@ pub fn roasts(chapter_id: String) -> Result<Vec<Roast>> {
         let roasts = CLIENT.roasts(chapter_id.as_str()).await?;
         Ok(roasts.list)
     })
+}
+
+pub fn browser(offset: u64, limit: u64) -> Result<UIPageBrowse> {
+    let b = block_on(CLIENT.browser(offset, limit))?;
+    Ok(UIPageBrowse::from(b))
 }

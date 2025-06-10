@@ -100,6 +100,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<Author> dco_decode_list_author(dynamic raw);
 
   @protected
+  List<Browse> dco_decode_list_browse(dynamic raw);
+
+  @protected
   List<ChapterImage> dco_decode_list_chapter_image(dynamic raw);
 
   @protected
@@ -257,6 +260,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   UILoginState dco_decode_ui_login_state(dynamic raw);
 
   @protected
+  UIPageBrowse dco_decode_ui_page_browse(dynamic raw);
+
+  @protected
   UIPageCollectedComic dco_decode_ui_page_collected_comic(dynamic raw);
 
   @protected
@@ -383,6 +389,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<Author> sse_decode_list_author(SseDeserializer deserializer);
+
+  @protected
+  List<Browse> sse_decode_list_browse(SseDeserializer deserializer);
 
   @protected
   List<ChapterImage> sse_decode_list_chapter_image(
@@ -559,6 +568,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   UILoginState sse_decode_ui_login_state(SseDeserializer deserializer);
 
   @protected
+  UIPageBrowse sse_decode_ui_page_browse(SseDeserializer deserializer);
+
+  @protected
   UIPageCollectedComic sse_decode_ui_page_collected_comic(
       SseDeserializer deserializer);
 
@@ -697,6 +709,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_author(List<Author> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_browse(List<Browse> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_chapter_image(
@@ -883,6 +898,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_ui_login_state(UILoginState self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_ui_page_browse(UIPageBrowse self, SseSerializer serializer);
 
   @protected
   void sse_encode_ui_page_collected_comic(

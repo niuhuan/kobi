@@ -967,6 +967,34 @@ class UILoginState {
           member == other.member;
 }
 
+class UIPageBrowse {
+  final List<Browse> list;
+  final PlatformInt64 total;
+  final PlatformInt64 limit;
+  final PlatformInt64 offset;
+
+  const UIPageBrowse({
+    required this.list,
+    required this.total,
+    required this.limit,
+    required this.offset,
+  });
+
+  @override
+  int get hashCode =>
+      list.hashCode ^ total.hashCode ^ limit.hashCode ^ offset.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UIPageBrowse &&
+          runtimeType == other.runtimeType &&
+          list == other.list &&
+          total == other.total &&
+          limit == other.limit &&
+          offset == other.offset;
+}
+
 class UIPageCollectedComic {
   final List<CollectedComic> list;
   final PlatformInt64 total;

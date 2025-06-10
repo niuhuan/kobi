@@ -954,3 +954,22 @@ impl From<Comment> for UIComment {
         }
     }
 }
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct UIPageBrowse {
+    pub list: Vec<Browse>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+impl From<Page<Browse>> for UIPageBrowse {
+    fn from(page: Page<Browse>) -> Self {
+        Self {
+            list: page.list,
+            total: page.total,
+            limit: page.limit,
+            offset: page.offset,
+        }
+    }
+}

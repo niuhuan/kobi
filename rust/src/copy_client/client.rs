@@ -1,5 +1,5 @@
 pub use super::types::*;
-use super::{Comment, Roast};
+use super::{Browse, Comment, Roast};
 use crate::copy_client::{
     ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch,
     ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response,
@@ -494,6 +494,19 @@ impl Client {
                 "comic_id": comic_id,
                 "comment": comment,
                 "reply_id": if let Some(reply_id) = reply_id { reply_id } else { "" },
+                "platform": 3,
+            }),
+        )
+        .await
+    }
+
+    pub async fn browser(&self, offset: u64, limit: u64) -> Result<Page<Browse>> {
+        self.request(
+            reqwest::Method::POST,
+            "/api/v3/member/browse/comics",
+            serde_json::json!({
+                "limit": limit,
+                "offset": offset,
                 "platform": 3,
             }),
         )
