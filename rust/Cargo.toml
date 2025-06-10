@@ -37,6 +37,6 @@ linked-hash-map = { version = "0.5.6", features = ["serde", "serde_impl"] }
 url = "2.5.0"
 tracing-subscriber = "0.3.18"
 tracing = "0.1.40"
-rand = "0.8.5"
 async_zip = { version = "0.0.16", features = ["full", "tokio-util", "tokio", "tokio-fs", "async-compression"] }
 async-trait = "0.1.79"
+rand = "0.9.1"

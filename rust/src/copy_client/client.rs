@@ -1,10 +1,15 @@
 pub use super::types::*;
 use super::{Browse, Comment, Roast};
 use crate::copy_client::{
-    BrowseComic, ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore, ComicInSearch, ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem, RegisterResult, Response, Tags
+    BrowseComic, ChapterData, CollectedComic, ComicChapter, ComicData, ComicInExplore,
+    ComicInSearch, ComicQuery, LoginResult, MemberInfo, Page, RankItem, RecommendItem,
+    RegisterResult, Response, Tags,
 };
 use base64::Engine;
 use chrono::Datelike;
+use rand::prelude::IndexedRandom;
+use rand::Rng;
+use std::ops::Deref;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -12,6 +17,8 @@ pub struct Client {
     agent: Mutex<Arc<reqwest::Client>>,
     api_host: Mutex<Arc<String>>,
     token: Mutex<Arc<String>>,
+    device: Mutex<Arc<String>>,
+    device_info: Mutex<Arc<String>>,
 }
 
 impl Client {
@@ -20,7 +27,16 @@ impl Client {
             agent: Mutex::new(agent.into()),
             api_host: Mutex::new(Arc::new(api_host.into())),
             token: Mutex::new(Arc::new(String::new())),
+            device: Mutex::new(Arc::new("".to_string())),
+            device_info: Mutex::new(Arc::new("".to_string())),
         }
+    }
+
+    pub async fn set_device(&self, device: impl Into<String>, device_info: impl Into<String>) {
+        let mut lock = self.device.lock().await;
+        *lock = Arc::new(device.into());
+        let mut info_lock = self.device_info.lock().await;
+        *info_lock = Arc::new(device_info.into());
     }
 
     pub async fn set_agent(&self, agent: impl Into<Arc<reqwest::Client>>) {
@@ -55,6 +71,12 @@ impl Client {
         mut params: serde_json::Value,
     ) -> Result<T> {
         let obj = params.as_object_mut().expect("query must be object");
+        let device_lock = self.device.lock().await;
+        let device = device_lock.deref().deref().clone();
+        drop(device_lock);
+        let device_info_lock = self.device_info.lock().await;
+        let device_info = device_info_lock.deref().deref().clone();
+        drop(device_info_lock);
         if !path.ends_with("/login") && !path.ends_with("/register") {
             if let reqwest::Method::POST = method {
                 obj.insert(
@@ -91,7 +113,7 @@ impl Client {
                 );
                 obj.insert(
                     "device".to_string(),
-                    serde_json::Value::String("QSR1.210802.001".to_string()),
+                    serde_json::Value::String(device.clone()),
                 );
                 obj.insert(
                     "umString".to_string(),
@@ -99,9 +121,7 @@ impl Client {
                 );
                 obj.insert(
                     "deviceInfo".to_string(),
-                    serde_json::Value::String(
-                        "Android SDK built for arm64-emulator64_arm64".to_string(),
-                    ),
+                    serde_json::Value::String(device_info.clone()),
                 );
                 obj.insert(
                     "isGoogle".to_string(),
@@ -133,9 +153,9 @@ impl Client {
             .header("region", "1")
             .header("platform", "3")
             .header("accept", "application/json")
-            .header("device", "QSR1.210802.001")
+            .header("device", device)
             .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
-            .header("deviceinfo", "Android SDK built for arm64-emu64a")
+            .header("deviceinfo", device_info)
             .header("dt", Self::dt());
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
@@ -510,4 +530,139 @@ impl Client {
         )
         .await
     }
+}
+
+pub fn random_device() -> String {
+    format!(
+        "{}{}{}{}.{}{}{}{}{}{}.{}{}{}",
+        (b'A' + rand::random::<u8>() % 26) as char,
+        (b'A' + rand::random::<u8>() % 26) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'A' + rand::random::<u8>() % 26) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+        (b'0' + rand::random::<u8>() % 10) as char,
+    )
+}
+
+fn random_device_info() -> String {
+    random_android_ua()
+}
+
+const ANDROID_VERSIONS: &[&str] = &[
+    "4.4", "5.0", "5.1", "6.0", "7.0", "7.1", "8.0", "8.1", "9", "10", "11", "12", "12.1", "13",
+    "14", "15",
+];
+
+// 常见设备名，包括模拟器和主流品牌型号
+const DEVICES: &[&str] = &[
+    "Android SDK built for arm64",
+    "Android SDK built for x86",
+    "Pixel 7 Pro",
+    "Pixel 7",
+    "Pixel 6 Pro",
+    "Pixel 6",
+    "Pixel 5",
+    "Pixel 4 XL",
+    "Pixel 4a",
+    "Pixel 3",
+    "Redmi Note 12 Pro",
+    "Redmi Note 11",
+    "Redmi K60",
+    "Redmi 10X",
+    "MI 13",
+    "MI 12",
+    "MI 11 Ultra",
+    "MI 10",
+    "MI 9",
+    "HUAWEI Mate 60 Pro",
+    "HUAWEI P60",
+    "HUAWEI nova 12",
+    "HUAWEI Mate 40",
+    "HUAWEI P40",
+    "HUAWEI Mate X5",
+    "OPPO Find X7",
+    "OPPO Reno11",
+    "OPPO A78",
+    "Vivo X100",
+    "Vivo S18",
+    "Vivo Y100",
+    "OnePlus 12",
+    "OnePlus 11",
+    "OnePlus 9 Pro",
+    "realme GT5",
+    "realme 12 Pro",
+    "Samsung Galaxy S24",
+    "Samsung Galaxy S23 Ultra",
+    "Samsung Galaxy S22",
+    "Samsung Galaxy Note10+",
+    "Meizu 21 Pro",
+    "Meizu 20",
+    "Lenovo Legion Y70",
+    "Lenovo K12",
+    "Sony Xperia 1V",
+    "Sony Xperia 10V",
+];
+
+// 常见 Build 前缀（按 Android 版本/厂商编译习惯）
+const BUILD_PREFIXES: &[&str] = &[
+    "AE3A",
+    "TP1A",
+    "UP1A",
+    "SP1A",
+    "RQ2A",
+    "QQ3A",
+    "RP1A",
+    "QP1A",
+    "RKQ1",
+    "PKQ1",
+    "SQ3A",
+    "TQ3A",
+    "UQ1A",
+    "VQ1A",
+    "WW",
+    "HMKQ1",
+    "V12.5.2.0",
+    "V13.0.1.0",
+    "V14.0.4.0",
+];
+
+fn random_build_id() -> String {
+    let mut rng = rand::rng();
+    let prefix = BUILD_PREFIXES.choose(&mut rng).unwrap();
+    let year = rng.random_range(20..=25);
+    let month = rng.random_range(1..=12);
+    let day = rng.random_range(1..=28);
+    format!(
+        "{}.{}{:02}{:02}.{:03}",
+        prefix,
+        year,
+        month,
+        day,
+        rng.random_range(1..=999)
+    )
+}
+
+fn random_fire_fox_version() -> String {
+    let mut rng = rand::rng();
+    let version = rng.random_range(85..=140);
+    format!("{}", version)
+}
+
+fn random_android_ua() -> String {
+    let mut rng = rand::rng();
+    let android_version = ANDROID_VERSIONS.choose(&mut rng).unwrap();
+    let device = DEVICES.choose(&mut rng).unwrap();
+    let build_id = random_build_id();
+    let firefox_version = random_fire_fox_version();
+    format!(
+        "Android {}; {} Build/{}/{}.0",
+        android_version, device, build_id, firefox_version
+    )
 }
