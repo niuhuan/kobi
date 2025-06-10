@@ -25,10 +25,12 @@
 
 仓库地址 https://github.com/niuhuan/kobi
 
-## 预览
+[//]: # (## 预览)
 
-![G01](images/G01.png)
-![G02](images/G02.png)
+[//]: # ()
+[//]: # (![G01]&#40;images/G01.png&#41;)
+
+[//]: # (![G02]&#40;images/G02.png&#41;)
 
 ## 其他
 
