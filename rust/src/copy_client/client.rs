@@ -82,14 +82,13 @@ impl Client {
                 obj.insert(
                     "authorization".to_string(),
                     serde_json::Value::String(format!("Token {}", self.get_token().await.as_str())),
-                );
-                obj.insert(
+                );                obj.insert(
                     "referer".to_string(),
-                    serde_json::Value::String("com.copymanga.app-2.3.0".to_string()),
+                    serde_json::Value::String("com.copymanga.app-2.3.1".to_string()),
                 );
                 obj.insert(
                     "userAgent".to_string(),
-                    serde_json::Value::String("COPY/2.3.0".to_string()),
+                    serde_json::Value::String("COPY/2.3.1".to_string()),
                 );
                 obj.insert(
                     "source".to_string(),
@@ -101,7 +100,7 @@ impl Client {
                 );
                 obj.insert(
                     "version".to_string(),
-                    serde_json::Value::String("2.3.0".to_string()),
+                    serde_json::Value::String("2.3.1".to_string()),
                 );
                 obj.insert(
                     "region".to_string(),
@@ -139,23 +138,23 @@ impl Client {
         let request = agent.request(
             method.clone(),
             format!("{}{}", &self.api_host_string().await.as_str(), path),
-        );
-        let request = request
+        );        let request = request
             .header(
                 "authorization",
                 format!("Token {}", self.get_token().await.as_str()),
             )
-            .header("referer", "com.copymanga.app-2.3.0")
-            .header("user-agent", "COPY/2.3.0")
+            .header("referer", "com.copymanga.app-2.3.1")
+            .header("user-agent", "COPY/2.3.1")
             .header("source", "copyApp")
             .header("webp", "1")
-            .header("version", "2.3.0")
+            .header("version", "2.3.1")
             .header("region", "1")
             .header("platform", "3")
             .header("accept", "application/json")
             .header("device", device)
             .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
             .header("deviceinfo", device_info)
+            .header("pseudoid", "eQcnVQUDUW08t8iH")
             .header("dt", Self::dt());
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
