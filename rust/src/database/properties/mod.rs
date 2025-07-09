@@ -19,6 +19,10 @@ pub(crate) async fn init() {
     migrations().await.unwrap();
 }
 
+pub(crate) async fn get_connect() -> &'static Mutex<DatabaseConnection> {
+    PROPERTIES_DATABASE.get().unwrap()
+}
+
 pub(crate) async fn migrations() -> anyhow::Result<()> {
     let lock = PROPERTIES_DATABASE.get().unwrap().lock().await;
     Migrator::up(lock.deref(), None).await?;

@@ -4,6 +4,10 @@ use sea_orm::entity::prelude::*;
 use sea_orm::IntoActiveModel;
 use sea_orm::Set;
 use std::ops::Deref;
+use sea_orm::ConnectionTrait;
+use anyhow::Result;
+
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "property")]
 pub struct Model {
@@ -78,3 +82,44 @@ pub(super) mod migrations {
     }
 }
 
+impl Entity {
+
+    /// 获取所有属性
+    pub async fn get_all() -> Result<Vec<Model>> {
+        let db = super::get_connect().await;
+        let lock = db.lock().await;
+        let records = Entity::find()
+            .all(&*lock)
+            .await?;
+        Ok(records)
+    }
+
+    /// 获取属性值
+    pub async fn get_value(key: &str) -> Result<Option<String>> {
+        let db = super::get_connect().await;
+        let lock = db.lock().await;
+        let record = Entity::find_by_id(key)
+            .one(&*lock)
+            .await?;
+        Ok(record.map(|m| m.v))
+    }
+
+    /// 设置属性值
+    pub async fn set_value(key: String, value: String) -> Result<()> {
+        let db = super::get_connect().await;
+        let lock = db.lock().await;
+        let model = ActiveModel {
+            k: Set(key),
+            v: Set(value),
+        };
+        Entity::insert(model)
+            .on_conflict(
+                sea_orm::sea_query::OnConflict::column(Column::K)
+                    .update_column(Column::V)
+                    .to_owned()
+            )
+            .exec(lock.deref())
+            .await?;
+        Ok(())
+    }
+} 
