@@ -13,6 +13,11 @@ use std::ops::Deref;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
+pub struct CopyHeader {
+    pub key: String,
+    pub value: String,
+}
+
 pub struct Client {
     agent: Mutex<Arc<reqwest::Client>>,
     api_host: Mutex<Arc<String>>,
