@@ -32,7 +32,6 @@ serde_json = "1.0.115"
 serde_path_to_error = "0.1.16"
 tokio = { version = "1.37.0", features = ["full"] }
 reqwest = { version = "0.12.2", features = ["rustls-tls", "socks"], default-features = false }
-sea-orm = { version = "0.12.15", features = ["sqlx-sqlite", "macros", "runtime-tokio-rustls"], default-features = false }
 linked-hash-map = { version = "0.5.6", features = ["serde", "serde_impl"] }
 url = "2.5.0"
 tracing-subscriber = "0.3.18"
@@ -40,3 +39,5 @@ tracing = "0.1.40"
 async_zip = { version = "0.0.16", features = ["full", "tokio-util", "tokio", "tokio-fs", "async-compression"] }
 async-trait = "0.1.79"
 rand = "0.9.1"
+sea-orm = { version = "1.1.13", features = ["sqlx-sqlite", "macros", "runtime-tokio-rustls"], default-features = false }
+sea-orm-migration = { version = "1.1.13", default-features = false, features = ["runtime-tokio-rustls", "sqlx-sqlite"] }
