@@ -8,6 +8,7 @@
 
 import 'api/api.dart';
 import 'api/simple.dart';
+import 'copy_client/client.dart';
 import 'copy_client/dtos.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -82,6 +83,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CollectedComicInfo dco_decode_collected_comic_info(dynamic raw);
 
   @protected
+  CopyHeader dco_decode_copy_header(dynamic raw);
+
+  @protected
   ExportsType dco_decode_exports_type(dynamic raw);
 
   @protected
@@ -113,6 +117,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<CollectedComic> dco_decode_list_collected_comic(dynamic raw);
+
+  @protected
+  List<CopyHeader> dco_decode_list_copy_header(dynamic raw);
 
   @protected
   List<Group> dco_decode_list_group(dynamic raw);
@@ -379,6 +386,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  CopyHeader sse_decode_copy_header(SseDeserializer deserializer);
+
+  @protected
   ExportsType sse_decode_exports_type(SseDeserializer deserializer);
 
   @protected
@@ -412,6 +422,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   List<CollectedComic> sse_decode_list_collected_comic(
       SseDeserializer deserializer);
+
+  @protected
+  List<CopyHeader> sse_decode_list_copy_header(SseDeserializer deserializer);
 
   @protected
   List<Group> sse_decode_list_group(SseDeserializer deserializer);
@@ -707,6 +720,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       CollectedComicInfo self, SseSerializer serializer);
 
   @protected
+  void sse_encode_copy_header(CopyHeader self, SseSerializer serializer);
+
+  @protected
   void sse_encode_exports_type(ExportsType self, SseSerializer serializer);
 
   @protected
@@ -741,6 +757,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_collected_comic(
       List<CollectedComic> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_copy_header(
+      List<CopyHeader> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_group(List<Group> self, SseSerializer serializer);

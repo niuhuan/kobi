@@ -1,4 +1,4 @@
-use crate::copy_client::{Author, ErrorInfo, LoginResult, MemberInfo, Roast};
+use crate::copy_client::{Author, CopyHeader, ErrorInfo, LoginResult, MemberInfo, Roast};
 use crate::database::active::comic_view_log;
 use crate::database::cache::{image_cache, web_cache};
 use crate::database::download::{
@@ -7,14 +7,14 @@ use crate::database::download::{
 use crate::database::properties::property;
 use crate::udto::{
     ExportsType, UICacheImage, UIChapterData, UIComicData, UIComicQuery, UIDownloadComic,
-    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState, UIPageBrowseComic,
-    UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore, UIPageComment, UIPageRankItem,
-    UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic, UIRegisterResult, UITags,
-    UIViewLog,
+    UIDownloadComicChapter, UIDownloadComicGroup, UIDownloadComicPage, UILoginState,
+    UIPageBrowseComic, UIPageCollectedComic, UIPageComicChapter, UIPageComicInExplore,
+    UIPageComment, UIPageRankItem, UIPageUIComicInList, UIPageUIViewLog, UIQueryDownloadComic,
+    UIRegisterResult, UITags, UIViewLog,
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
-use anyhow::Result;
+use anyhow::{Ok, Result};
 use image::EncodableLayout;
 use reqwest::Proxy;
 use std::future::Future;
@@ -55,6 +55,34 @@ pub fn set_proxy(proxy: String) -> Result<()> {
             .await;
         property::save_property("proxy".to_owned(), proxy).await?;
         Ok(())
+    })
+}
+
+pub fn set_header(key: String, value: String) -> Result<()> {
+    block_on(async {
+        crate::database::properties::header::Entity::set_value(key, value).await?;
+        crate::init_header().await;
+        Ok(())
+    })
+}
+
+pub fn get_header(key: String) -> Result<Option<String>> {
+    block_on(async {
+        Ok(crate::database::properties::header::Entity::get_value(key.as_str()).await?)
+    })
+}
+
+pub fn get_all_headers() -> Result<Vec<CopyHeader>> {
+    block_on(async {
+        let headers = crate::database::properties::header::Entity::get_all().await?;
+        let mut headers_vec = Vec::with_capacity(headers.len());
+        for header in headers {
+            headers_vec.push(CopyHeader {
+                key: header.k,
+                value: header.v,
+            });
+        }
+        Ok(headers_vec)
     })
 }
 

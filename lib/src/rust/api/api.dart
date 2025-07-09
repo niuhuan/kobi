@@ -3,6 +3,7 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../copy_client/client.dart';
 import '../copy_client/dtos.dart';
 import '../frb_generated.dart';
 import '../udto.dart';
@@ -23,6 +24,15 @@ Future<String> getProxy() => RustLib.instance.api.crateApiApiGetProxy();
 
 Future<void> setProxy({required String proxy}) =>
     RustLib.instance.api.crateApiApiSetProxy(proxy: proxy);
+
+Future<void> setHeader({required String key, required String value}) =>
+    RustLib.instance.api.crateApiApiSetHeader(key: key, value: value);
+
+Future<String?> getHeader({required String key}) =>
+    RustLib.instance.api.crateApiApiGetHeader(key: key);
+
+Future<List<CopyHeader>> getAllHeaders() =>
+    RustLib.instance.api.crateApiApiGetAllHeaders();
 
 Future<UILoginState> initLoginState() =>
     RustLib.instance.api.crateApiApiInitLoginState();

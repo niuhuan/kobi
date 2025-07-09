@@ -73,6 +73,7 @@ pub fn init_root(path: &str) {
     RUNTIME.block_on(reset_api());
     RUNTIME.block_on(load_api());
     RUNTIME.block_on(init_device());
+    RUNTIME.block_on(init_header());
     RUNTIME.block_on(async {
         *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
             database::properties::property::load_property("download_and_export_to".to_owned())
@@ -157,4 +158,17 @@ async fn init_device() {
             .unwrap();
     }
     CLIENT.set_device(device, device_info).await;
+}
+
+pub(crate) async fn init_header() {
+    let headers = database::properties::header::Entity::get_all().await.unwrap();
+    let mut headers_vec = Vec::with_capacity(headers.len());
+    for header in headers {
+        headers_vec.push(copy_client::CopyHeader {
+            key: header.k,
+            value: header.v,
+        });
+    }
+    // todo: set headers
+    // CLIENT.set_headers(headers_vec).await;
 }

@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.9.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 729362632;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -452209053;
 
 // Section: executor
 
@@ -1113,6 +1113,40 @@ fn wire__crate__api__api__find_comic_view_log_impl(
         },
     )
 }
+fn wire__crate__api__api__get_all_headers_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_all_headers",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::api::get_all_headers()?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__api__get_api_host_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -1140,6 +1174,41 @@ fn wire__crate__api__api__get_api_host_impl(
                 transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                     (move || {
                         let output_ok = crate::api::api::get_api_host()?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__api__get_header_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_header",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_key = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::api::get_header(api_key)?;
                         Ok(output_ok)
                     })(),
                 )
@@ -1781,6 +1850,42 @@ fn wire__crate__api__api__set_api_host_impl(
         },
     )
 }
+fn wire__crate__api__api__set_header_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "set_header",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_key = <String>::sse_decode(&mut deserializer);
+            let api_value = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::api::set_header(api_key, api_value)?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__api__set_proxy_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -2153,6 +2258,18 @@ impl SseDecode for crate::copy_client::dtos::CollectedComicInfo {
     }
 }
 
+impl SseDecode for crate::copy_client::client::CopyHeader {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_key = <String>::sse_decode(deserializer);
+        let mut var_value = <String>::sse_decode(deserializer);
+        return crate::copy_client::client::CopyHeader {
+            key: var_key,
+            value: var_value,
+        };
+    }
+}
+
 impl SseDecode for crate::udto::ExportsType {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2276,6 +2393,20 @@ impl SseDecode for Vec<crate::copy_client::dtos::CollectedComic> {
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
             ans_.push(<crate::copy_client::dtos::CollectedComic>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::copy_client::client::CopyHeader> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::copy_client::client::CopyHeader>::sse_decode(
                 deserializer,
             ));
         }
@@ -3646,30 +3777,33 @@ fn pde_ffi_dispatcher_primary_impl(
         26 => wire__crate__api__api__explorer_impl(port, ptr, rust_vec_len, data_len),
         27 => wire__crate__api__api__exports_impl(port, ptr, rust_vec_len, data_len),
         28 => wire__crate__api__api__find_comic_view_log_impl(port, ptr, rust_vec_len, data_len),
-        29 => wire__crate__api__api__get_api_host_impl(port, ptr, rust_vec_len, data_len),
-        30 => wire__crate__api__api__get_proxy_impl(port, ptr, rust_vec_len, data_len),
-        32 => wire__crate__api__api__http_get_impl(port, ptr, rust_vec_len, data_len),
-        33 => {
+        29 => wire__crate__api__api__get_all_headers_impl(port, ptr, rust_vec_len, data_len),
+        30 => wire__crate__api__api__get_api_host_impl(port, ptr, rust_vec_len, data_len),
+        31 => wire__crate__api__api__get_header_impl(port, ptr, rust_vec_len, data_len),
+        32 => wire__crate__api__api__get_proxy_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__api__api__http_get_impl(port, ptr, rust_vec_len, data_len),
+        35 => {
             wire__crate__api__api__in_download_chapter_uuid_impl(port, ptr, rust_vec_len, data_len)
         }
-        34 => wire__crate__api__api__init_impl(port, ptr, rust_vec_len, data_len),
-        35 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
-        36 => wire__crate__api__api__init_login_state_impl(port, ptr, rust_vec_len, data_len),
-        37 => wire__crate__api__api__list_comic_view_logs_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__api__api__load_property_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__api__api__login_impl(port, ptr, rust_vec_len, data_len),
-        40 => wire__crate__api__api__rank_impl(port, ptr, rust_vec_len, data_len),
-        41 => wire__crate__api__api__recommends_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__api__api__register_impl(port, ptr, rust_vec_len, data_len),
-        43 => wire__crate__api__api__reset_fail_downloads_impl(port, ptr, rust_vec_len, data_len),
-        44 => wire__crate__api__api__roasts_impl(port, ptr, rust_vec_len, data_len),
-        45 => wire__crate__api__api__save_property_impl(port, ptr, rust_vec_len, data_len),
-        46 => wire__crate__api__api__send_comment_impl(port, ptr, rust_vec_len, data_len),
-        47 => wire__crate__api__api__set_api_host_impl(port, ptr, rust_vec_len, data_len),
-        48 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
-        49 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
-        50 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
-        51 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__api__api__init_impl(port, ptr, rust_vec_len, data_len),
+        37 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        38 => wire__crate__api__api__init_login_state_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__api__api__list_comic_view_logs_impl(port, ptr, rust_vec_len, data_len),
+        40 => wire__crate__api__api__load_property_impl(port, ptr, rust_vec_len, data_len),
+        41 => wire__crate__api__api__login_impl(port, ptr, rust_vec_len, data_len),
+        42 => wire__crate__api__api__rank_impl(port, ptr, rust_vec_len, data_len),
+        43 => wire__crate__api__api__recommends_impl(port, ptr, rust_vec_len, data_len),
+        44 => wire__crate__api__api__register_impl(port, ptr, rust_vec_len, data_len),
+        45 => wire__crate__api__api__reset_fail_downloads_impl(port, ptr, rust_vec_len, data_len),
+        46 => wire__crate__api__api__roasts_impl(port, ptr, rust_vec_len, data_len),
+        47 => wire__crate__api__api__save_property_impl(port, ptr, rust_vec_len, data_len),
+        48 => wire__crate__api__api__send_comment_impl(port, ptr, rust_vec_len, data_len),
+        49 => wire__crate__api__api__set_api_host_impl(port, ptr, rust_vec_len, data_len),
+        50 => wire__crate__api__api__set_header_impl(port, ptr, rust_vec_len, data_len),
+        51 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
+        52 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
+        53 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
+        54 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -3682,7 +3816,7 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        31 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        33 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -3908,6 +4042,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::copy_client::dtos::CollectedComicI
     for crate::copy_client::dtos::CollectedComicInfo
 {
     fn into_into_dart(self) -> crate::copy_client::dtos::CollectedComicInfo {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::copy_client::client::CopyHeader {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.key.into_into_dart().into_dart(),
+            self.value.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::copy_client::client::CopyHeader
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::copy_client::client::CopyHeader>
+    for crate::copy_client::client::CopyHeader
+{
+    fn into_into_dart(self) -> crate::copy_client::client::CopyHeader {
         self
     }
 }
@@ -5055,6 +5210,14 @@ impl SseEncode for crate::copy_client::dtos::CollectedComicInfo {
     }
 }
 
+impl SseEncode for crate::copy_client::client::CopyHeader {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.key, serializer);
+        <String>::sse_encode(self.value, serializer);
+    }
+}
+
 impl SseEncode for crate::udto::ExportsType {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -5156,6 +5319,16 @@ impl SseEncode for Vec<crate::copy_client::dtos::CollectedComic> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <crate::copy_client::dtos::CollectedComic>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::copy_client::client::CopyHeader> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::copy_client::client::CopyHeader>::sse_encode(item, serializer);
         }
     }
 }
