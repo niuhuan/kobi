@@ -7,8 +7,12 @@ use copy_client::Client;
 use database::properties::property;
 use lazy_static::lazy_static;
 use once_cell::sync::OnceCell;
+use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 use tokio::runtime;
 use utils::create_dir_if_not_exists;
 use utils::join_paths;
@@ -38,8 +42,15 @@ lazy_static! {
         .max_blocking_threads(30)
         .build()
         .unwrap();
-    pub(crate) static ref CLIENT: Arc<Client> =
-        Arc::new(Client::new(reqwest::Client::new(), api_url()));
+    pub(crate) static ref CLIENT: Arc<Client> = Arc::new(Client::new(
+        reqwest::ClientBuilder::new()
+            .timeout(Duration::from_secs(60))
+            .connect_timeout(Duration::from_secs(30))
+            .read_timeout(Duration::from_secs(30))
+            .build()
+            .unwrap(),
+        api_url()
+    ));
     static ref INIT_ED: Mutex<bool> = Mutex::new(false);
 }
 
@@ -74,6 +85,7 @@ pub fn init_root(path: &str) {
     RUNTIME.block_on(load_api());
     RUNTIME.block_on(init_device());
     RUNTIME.block_on(init_header());
+    RUNTIME.spawn(sync_header());
     RUNTIME.block_on(async {
         *downloading::DOWNLOAD_AND_EXPORT_TO.lock().await =
             database::properties::property::load_property("download_and_export_to".to_owned())
@@ -150,7 +162,9 @@ async fn init_device() {
             .await
             .unwrap();
     }
-    let mut device_info = property::load_property("device_info".to_owned()).await.unwrap();
+    let mut device_info = property::load_property("device_info".to_owned())
+        .await
+        .unwrap();
     if device_info.is_empty() {
         device_info = copy_client::random_device();
         property::save_property("device_info".to_owned(), device_info.clone())
@@ -161,7 +175,9 @@ async fn init_device() {
 }
 
 pub(crate) async fn init_header() {
-    let headers = database::properties::header::Entity::get_all().await.unwrap();
+    let headers = database::properties::header::Entity::get_all()
+        .await
+        .unwrap();
     let mut headers_vec = Vec::with_capacity(headers.len());
     for header in headers {
         headers_vec.push(copy_client::CopyHeader {
@@ -169,6 +185,91 @@ pub(crate) async fn init_header() {
             value: header.v,
         });
     }
-    // todo: set headers
-    // CLIENT.set_headers(headers_vec).await;
+    CLIENT.set_headers(headers_vec).await;
+}
+
+pub async fn sync_header() {
+    let sync_time = property::load_property("sync_time".to_owned())
+        .await
+        .unwrap();
+    let sync_time = sync_time.parse::<u64>().unwrap_or(0);
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let need_sync = now - sync_time > 60 * 10;
+    if !need_sync {
+        return;
+    }
+    let fetch_url_vec = vec![
+        "https://ghfast.top/https://raw.githubusercontent.com/caolib/doki/main/docs/config/headers.json",
+        "https://raw.githubusercontent.com/caolib/doki/main/docs/config/headers.json",
+    ];
+    for url in fetch_url_vec {
+        if let Ok(_) = sync_raw(url).await {
+            save_sync_time(now).await;
+            init_header().await;
+            return;
+        }
+    }
+}
+
+async fn save_sync_time(now: u64) {
+    property::save_property("sync_time".to_owned(), now.to_string())
+        .await
+        .unwrap();
+}
+
+pub(crate) async fn sync_api_host() -> anyhow::Result<String> {
+    let mut new_api_host = Option::<String>::None;
+    let fetch_url_vec = vec![
+        "https://ghfast.top/https://raw.githubusercontent.com/caolib/doki/main/docs/config/headers.json",
+        "https://raw.githubusercontent.com/caolib/doki/main/docs/config/headers.json",
+    ];
+    for url in fetch_url_vec {
+        if let Ok(api_host) = load_api_host(url).await {
+            new_api_host = Some(api_host);
+            break;
+        }
+    }
+    if new_api_host.is_none() {
+        return Err(anyhow::anyhow!("同步失败"));
+    }
+    let new_api_host = new_api_host.unwrap();
+    if new_api_host.is_empty() {
+        return Err(anyhow::anyhow!("同步失败"));
+    }
+    CLIENT.set_api_host(new_api_host.clone()).await;
+    property::save_property("api".to_owned(), new_api_host.clone()).await?;
+    Ok(new_api_host)
+}
+
+async fn sync_raw(url: &str) -> anyhow::Result<()> {
+    let client = CLIENT.clone_agent().await;
+    let rsp = client.get(url).send().await?;
+    let data: HashMap<String, String> = rsp.json().await?;
+    for (key, value) in data {
+        if "device".eq(&key) || "device_info".eq(&key) || "deviceinfo".eq(&key) || "host".eq(&key) {
+            continue;
+        }
+        database::properties::header::Entity::set_value(key, value).await?;
+    }
+    Ok(())
+}
+
+async fn load_api_host(url: &str) -> anyhow::Result<String> {
+    let client = CLIENT.clone_agent().await;
+    let rsp = client.get(url).send().await?;
+    let data: HashMap<String, String> = rsp.json().await?;
+    for (key, value) in data.clone() {
+        if "device".eq(&key) || "device_info".eq(&key)  || "deviceinfo".eq(&key) || "host".eq(&key) {
+            continue;
+        }
+        database::properties::header::Entity::set_value(key, value).await?;
+    }
+    if let Some(api_host) = data.get("host") {
+        Ok(api_host.to_string())
+    } else {
+        Err(anyhow::anyhow!("同步失败"))
+    }
 }

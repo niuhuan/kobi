@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.9.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1814915168;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1100933531;
 
 // Section: executor
 
@@ -1992,6 +1992,40 @@ fn wire__crate__api__api__set_proxy_impl(
         },
     )
 }
+fn wire__crate__api__api__sync_api_host_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "sync_api_host",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::api::sync_api_host()?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__api__tags_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -3874,9 +3908,10 @@ fn pde_ffi_dispatcher_primary_impl(
         51 => wire__crate__api__api__set_header_impl(port, ptr, rust_vec_len, data_len),
         52 => wire__crate__api__api__set_headers_impl(port, ptr, rust_vec_len, data_len),
         53 => wire__crate__api__api__set_proxy_impl(port, ptr, rust_vec_len, data_len),
-        54 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
-        55 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
-        56 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
+        54 => wire__crate__api__api__sync_api_host_impl(port, ptr, rust_vec_len, data_len),
+        55 => wire__crate__api__api__tags_impl(port, ptr, rust_vec_len, data_len),
+        56 => wire__crate__api__api__view_chapter_page_impl(port, ptr, rust_vec_len, data_len),
+        57 => wire__crate__api__api__view_comic_info_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

@@ -370,6 +370,9 @@ class _ComicInfoScreenState extends State<ComicInfoScreen> with RouteAware {
                 AsyncSnapshot<dynamic> snapshot,
               ) {
                 if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return Container();
+                  }
                   if (loginState.state != 1) {
                     return Container();
                   }

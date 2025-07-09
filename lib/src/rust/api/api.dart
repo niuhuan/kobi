@@ -25,6 +25,8 @@ Future<String> getProxy() => RustLib.instance.api.crateApiApiGetProxy();
 Future<void> setProxy({required String proxy}) =>
     RustLib.instance.api.crateApiApiSetProxy(proxy: proxy);
 
+Future<String> syncApiHost() => RustLib.instance.api.crateApiApiSyncApiHost();
+
 Future<void> setHeader({required String key, required String value}) =>
     RustLib.instance.api.crateApiApiSetHeader(key: key, value: value);
 

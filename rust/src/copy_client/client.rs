@@ -9,6 +9,7 @@ use base64::Engine;
 use chrono::Datelike;
 use rand::prelude::IndexedRandom;
 use rand::Rng;
+use std::collections::HashMap;
 use std::ops::Deref;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -24,6 +25,7 @@ pub struct Client {
     token: Mutex<Arc<String>>,
     device: Mutex<Arc<String>>,
     device_info: Mutex<Arc<String>>,
+    headers: Mutex<Arc<HashMap<String, String>>>,
 }
 
 impl Client {
@@ -34,7 +36,23 @@ impl Client {
             token: Mutex::new(Arc::new(String::new())),
             device: Mutex::new(Arc::new("".to_string())),
             device_info: Mutex::new(Arc::new("".to_string())),
+            headers: Mutex::new(Arc::new(HashMap::new())),
         }
+    }
+
+    pub async fn clone_agent(&self) -> Arc<reqwest::Client> {
+        let agent_lock = self.agent.lock().await;
+        agent_lock.clone()
+    }
+
+    pub async fn set_headers(&self, headers: Vec<CopyHeader>) {
+        let mut lock = self.headers.lock().await;
+        *lock = Arc::new(
+            headers
+                .into_iter()
+                .map(|h| (h.key.to_lowercase(), h.value))
+                .collect::<HashMap<String, String>>(),
+        );
     }
 
     pub async fn set_device(&self, device: impl Into<String>, device_info: impl Into<String>) {
@@ -75,92 +93,110 @@ impl Client {
         path: &str,
         mut params: serde_json::Value,
     ) -> Result<T> {
-        let obj = params.as_object_mut().expect("query must be object");
+        let headers_lock = self.headers.lock().await;
+        let mut headers = HashMap::new();
+        for (key, value) in headers_lock.deref().deref().iter() {
+            headers.insert(key.to_lowercase(), value.clone());
+        }
+        drop(headers_lock);
         let device_lock = self.device.lock().await;
         let device = device_lock.deref().deref().clone();
         drop(device_lock);
         let device_info_lock = self.device_info.lock().await;
         let device_info = device_info_lock.deref().deref().clone();
         drop(device_info_lock);
+        headers.insert(
+            "authorization".to_lowercase(),
+            format!("Token {}", self.get_token().await.as_str()),
+        );
+        headers.insert("device".to_lowercase(), device);
+        headers.insert("deviceinfo".to_lowercase(), device_info);
+        if !headers.contains_key("referer") {
+            headers.insert(
+                "referer".to_lowercase(),
+                "com.copymanga.app-2.3.2".to_string(),
+            );
+        }
+        if !headers.contains_key("user-agent") {
+            headers.insert("user-agent".to_lowercase(), "COPY/2.3.2".to_string());
+        }
+        if !headers.contains_key("source") {
+            headers.insert("source".to_lowercase(), "copyApp".to_string());
+        }
+        if !headers.contains_key("webp") {
+            headers.insert("webp".to_lowercase(), "1".to_string());
+        }
+        if !headers.contains_key("version") {
+            headers.insert("version".to_lowercase(), "2.3.2".to_string());
+        }
+        if !headers.contains_key("region") {
+            headers.insert("region".to_lowercase(), "1".to_string());
+        }
+        if !headers.contains_key("platform") {
+            headers.insert("platform".to_lowercase(), "3".to_string());
+        }
+        if !headers.contains_key("umstring") {
+            headers.insert(
+                "umstring".to_lowercase(),
+                "b4c89ca4104ea9a97750314d791520ac".to_string(),
+            );
+        }
+        if !headers.contains_key("pseudoid") {
+            headers.insert("pseudoid".to_lowercase(), "eQcnVQUDUWD6t8iH".to_string());
+        }
+        headers.insert("dt".to_lowercase(), Self::dt());
+
+        let obj = params.as_object_mut().expect("query must be object");
         if !path.ends_with("/login") && !path.ends_with("/register") {
             if let reqwest::Method::POST = method {
-                obj.insert(
-                    "authorization".to_string(),
-                    serde_json::Value::String(format!("Token {}", self.get_token().await.as_str())),
-                );                obj.insert(
-                    "referer".to_string(),
-                    serde_json::Value::String("com.copymanga.app-2.3.1".to_string()),
-                );
-                obj.insert(
-                    "userAgent".to_string(),
-                    serde_json::Value::String("COPY/2.3.1".to_string()),
-                );
-                obj.insert(
-                    "source".to_string(),
-                    serde_json::Value::String("copyApp".to_string()),
-                );
-                obj.insert(
-                    "webp".to_string(),
-                    serde_json::Value::String("1".to_string()),
-                );
-                obj.insert(
-                    "version".to_string(),
-                    serde_json::Value::String("2.3.1".to_string()),
-                );
-                obj.insert(
-                    "region".to_string(),
-                    serde_json::Value::String("1".to_string()),
-                );
                 obj.insert(
                     "accept".to_string(),
                     serde_json::Value::String("application/json".to_string()),
                 );
                 obj.insert(
-                    "device".to_string(),
-                    serde_json::Value::String(device.clone()),
-                );
-                obj.insert(
-                    "umString".to_string(),
-                    serde_json::Value::String("b4c89ca4104ea9a97750314d791520ac".to_string()),
-                );
-                obj.insert(
-                    "deviceInfo".to_string(),
-                    serde_json::Value::String(device_info.clone()),
+                    "userAgent".to_string(),
+                    serde_json::Value::String(
+                        headers
+                            .get("user-agent")
+                            .unwrap_or(&"COPY/2.3.2".to_string())
+                            .to_string(),
+                    ),
                 );
                 obj.insert(
                     "isGoogle".to_string(),
                     serde_json::Value::String("false".to_string()),
                 );
                 obj.insert(
-                    "platform".to_string(),
-                    serde_json::Value::String("3".to_string()),
+                    "umString".to_string(),
+                    serde_json::Value::String("b4c89ca4104ea9a97750314d791520ac".to_string()),
                 );
+                for (key, value) in headers.iter() {
+                    if key.eq("authorization") || key.eq("device") || key.eq("deviceinfo") {
+                        continue;
+                    }
+                    if key.eq("umstring") {
+                        continue;
+                    }
+                    if key.eq("user-agent") {
+                        continue;
+                    }
+                    obj.insert(
+                        key.to_string(),
+                        serde_json::Value::String(value.to_string()),
+                    );
+                }
             }
         }
         let agent_lock = self.agent.lock().await;
         let agent = agent_lock.clone();
         drop(agent_lock);
-        let request = agent.request(
+        let mut request = agent.request(
             method.clone(),
             format!("{}{}", &self.api_host_string().await.as_str(), path),
-        );        let request = request
-            .header(
-                "authorization",
-                format!("Token {}", self.get_token().await.as_str()),
-            )
-            .header("referer", "com.copymanga.app-2.3.1")
-            .header("user-agent", "COPY/2.3.1")
-            .header("source", "copyApp")
-            .header("webp", "1")
-            .header("version", "2.3.1")
-            .header("region", "1")
-            .header("platform", "3")
-            .header("accept", "application/json")
-            .header("device", device)
-            .header("umstring", "b4c89ca4104ea9a97750314d791520ac")
-            .header("deviceinfo", device_info)
-            .header("pseudoid", "eQcnVQUDUW08t8iH")
-            .header("dt", Self::dt());
+        );
+        for (key, value) in headers.iter() {
+            request = request.header(key, value);
+        }
         let request = match method {
             reqwest::Method::GET => request.query(&obj),
             _ => request.form(&obj),

@@ -26,7 +26,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   file_picker: 7584aae6fa07a041af2b36a2655122d42f578c1a
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  rust_lib_kobi: 5cdaccb0cc9e9b5b782fd8731fff0f806f6ab20a
+  rust_lib_kobi: 71e263d5ef398aa0b1a929947d74dfe8d0f78e46
   url_launcher_macos: 0fba8ddabfc33ce0a9afe7c5fef5aab3d8d2d673
 
 PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367

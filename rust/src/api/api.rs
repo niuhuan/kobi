@@ -58,6 +58,10 @@ pub fn set_proxy(proxy: String) -> Result<()> {
     })
 }
 
+pub fn sync_api_host() -> Result<String> {
+    block_on(crate::sync_api_host())
+}
+
 pub fn set_header(key: String, value: String) -> Result<()> {
     block_on(async {
         crate::database::properties::header::Entity::set_value(key, value).await?;

@@ -9,7 +9,7 @@ use anyhow::Result;
 
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "property")]
+#[sea_orm(table_name = "header")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub k: String,
