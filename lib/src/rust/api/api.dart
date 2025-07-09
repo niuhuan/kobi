@@ -31,6 +31,12 @@ Future<void> setHeader({required String key, required String value}) =>
 Future<String?> getHeader({required String key}) =>
     RustLib.instance.api.crateApiApiGetHeader(key: key);
 
+Future<void> deleteHeader({required List<String> keys}) =>
+    RustLib.instance.api.crateApiApiDeleteHeader(keys: keys);
+
+Future<void> setHeaders({required List<CopyHeader> headers}) =>
+    RustLib.instance.api.crateApiApiSetHeaders(headers: headers);
+
 Future<List<CopyHeader>> getAllHeaders() =>
     RustLib.instance.api.crateApiApiGetAllHeaders();
 

@@ -14,7 +14,7 @@ use crate::udto::{
 };
 use crate::utils::{hash_lock, join_paths};
 use crate::{downloading, get_image_cache_dir, CLIENT, RUNTIME};
-use anyhow::{Ok, Result};
+use anyhow::{Result};
 use image::EncodableLayout;
 use reqwest::Proxy;
 use std::future::Future;
@@ -69,6 +69,31 @@ pub fn set_header(key: String, value: String) -> Result<()> {
 pub fn get_header(key: String) -> Result<Option<String>> {
     block_on(async {
         Ok(crate::database::properties::header::Entity::get_value(key.as_str()).await?)
+    })
+}
+
+pub fn delete_header(keys: Vec<String>) -> Result<()> {
+    block_on(async {
+        crate::database::properties::header::Entity::delete_by_keys(keys).await?;
+        crate::init_header().await;
+        Ok(())
+    })
+}
+
+pub fn set_headers(headers: Vec<CopyHeader>) -> Result<()> {
+    block_on(async {
+        crate::database::properties::header::Entity::set_values(
+            headers
+                .into_iter()
+                .map(|h| crate::database::properties::header::Model {
+                    k: h.key,
+                    v: h.value,
+                })
+                .collect(),
+        )
+        .await?;
+        crate::init_header().await;
+        Ok(())
     })
 }
 

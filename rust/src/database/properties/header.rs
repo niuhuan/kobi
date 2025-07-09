@@ -122,4 +122,21 @@ impl Entity {
             .await?;
         Ok(())
     }
+
+    pub async fn delete_by_keys(keys: Vec<String>) -> Result<()> {
+        let db = super::get_connect().await;
+        let lock = db.lock().await;
+        Entity::delete_many()
+            .filter(Column::K.is_in(keys))
+            .exec(lock.deref())
+            .await?;
+        Ok(())
+    }
+
+    pub async fn set_values(values: Vec<Model>) -> Result<()> {
+        for value in values {
+            Entity::set_value(value.k, value.v).await?;
+        }
+        Ok(())
+    }
 } 
