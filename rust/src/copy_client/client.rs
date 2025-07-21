@@ -8,6 +8,7 @@ use crate::copy_client::{
 use base64::Engine;
 use chrono::Datelike;
 use rand::prelude::IndexedRandom;
+use rand::seq::IteratorRandom;
 use rand::Rng;
 use std::collections::HashMap;
 use std::ops::Deref;
@@ -25,6 +26,7 @@ pub struct Client {
     token: Mutex<Arc<String>>,
     device: Mutex<Arc<String>>,
     device_info: Mutex<Arc<String>>,
+    pseudoid: Mutex<Arc<String>>,
     headers: Mutex<Arc<HashMap<String, String>>>,
 }
 
@@ -36,6 +38,7 @@ impl Client {
             token: Mutex::new(Arc::new(String::new())),
             device: Mutex::new(Arc::new("".to_string())),
             device_info: Mutex::new(Arc::new("".to_string())),
+            pseudoid: Mutex::new(Arc::new("".to_string())),
             headers: Mutex::new(Arc::new(HashMap::new())),
         }
     }
@@ -55,11 +58,18 @@ impl Client {
         );
     }
 
-    pub async fn set_device(&self, device: impl Into<String>, device_info: impl Into<String>) {
+    pub async fn set_device(
+        &self,
+        device: impl Into<String>,
+        device_info: impl Into<String>,
+        pseudoid: impl Into<String>,
+    ) {
         let mut lock = self.device.lock().await;
         *lock = Arc::new(device.into());
         let mut info_lock = self.device_info.lock().await;
         *info_lock = Arc::new(device_info.into());
+        let mut pseudoid_lock = self.pseudoid.lock().await;
+        *pseudoid_lock = Arc::new(pseudoid.into());
     }
 
     pub async fn set_agent(&self, agent: impl Into<Arc<reqwest::Client>>) {
@@ -105,12 +115,23 @@ impl Client {
         let device_info_lock = self.device_info.lock().await;
         let device_info = device_info_lock.deref().deref().clone();
         drop(device_info_lock);
-        headers.insert(
-            "authorization".to_lowercase(),
-            format!("Token {}", self.get_token().await.as_str()),
-        );
+        let pseudoid_lock = self.pseudoid.lock().await;
+        let pseudoid = pseudoid_lock.deref().deref().clone();
+        drop(pseudoid_lock);
+        if path.ends_with("/chapters") {
+            headers.insert(
+                "authorization".to_lowercase(),
+                format!("Token {}", random_token()),
+            );
+        } else {
+            headers.insert(
+                "authorization".to_lowercase(),
+                format!("Token {}", self.get_token().await.as_str()),
+            );
+        }
         headers.insert("device".to_lowercase(), device);
         headers.insert("deviceinfo".to_lowercase(), device_info);
+        headers.insert("pseudoid".to_lowercase(), pseudoid);
         if !headers.contains_key("referer") {
             headers.insert(
                 "referer".to_lowercase(),
@@ -591,7 +612,7 @@ pub fn random_device() -> String {
     )
 }
 
-fn random_device_info() -> String {
+pub fn random_device_info() -> String {
     random_android_ua()
 }
 
@@ -705,4 +726,26 @@ fn random_android_ua() -> String {
         "Android {}; {} Build/{}/{}.0",
         android_version, device, build_id, firefox_version
     )
+}
+
+pub fn random_pseudoid() -> String {
+    let mut rng = rand::rng();
+    let mut pseudoid = String::new();
+    // like :  eQcnVQUDUWD6t8iH
+    let chars: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".chars().collect();
+    for _ in 0..16 {
+        pseudoid.push(*chars.choose(&mut rng).unwrap());
+    }
+    pseudoid
+}
+
+// 1802674ed64a526a7bcb697e29a9d2ecaf2bf3ca
+fn random_token() -> String {
+    let mut rng = rand::rng();
+    let chars: Vec<char> = "abcdefghijklmnopqrstuvwxyz0123456789".chars().collect();
+    let mut token = String::new();
+    for _ in 0..32 {
+        token.push(*chars.choose(&mut rng).unwrap());
+    }
+    token
 }

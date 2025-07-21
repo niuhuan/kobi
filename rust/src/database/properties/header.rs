@@ -139,4 +139,13 @@ impl Entity {
         }
         Ok(())
     }
+
+    pub async fn delete_all() -> Result<()> {
+        let db = super::get_connect().await;
+        let lock = db.lock().await;
+        Entity::delete_many()
+            .exec(lock.deref())
+            .await?;
+        Ok(())
+    }
 } 

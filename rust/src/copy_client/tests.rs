@@ -3,7 +3,7 @@ use anyhow::Result;
 use base64::Engine;
 use serde_json::json;
 
-const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weW1hbmdhLm5ldA==";
+const API_URL: &str = "aHR0cHM6Ly9hcGkuY29weTIwMDAub25saW5l";
 
 fn api_url() -> String {
     String::from_utf8(base64::prelude::BASE64_STANDARD.decode(API_URL).unwrap()).unwrap()
@@ -82,5 +82,14 @@ async fn test_collected_comics() -> Result<()> {
         .collected_comics(1, "-datetime_modifier", 0, 21)
         .await?;
     println!("{}", serde_json::to_string(&value).unwrap());
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_login() -> Result<()> {
+    let client = client();
+     client.login("", "").await?;
+    let token = client.get_token().await;
+    println!("{}", token.as_str());
     Ok(())
 }

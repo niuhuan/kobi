@@ -166,12 +166,19 @@ async fn init_device() {
         .await
         .unwrap();
     if device_info.is_empty() {
-        device_info = copy_client::random_device();
+        device_info = copy_client::random_device_info();
         property::save_property("device_info".to_owned(), device_info.clone())
             .await
             .unwrap();
     }
-    CLIENT.set_device(device, device_info).await;
+    let mut pseudoid = property::load_property("pseudoid".to_owned()).await.unwrap();
+    if pseudoid.is_empty() {
+        pseudoid = copy_client::random_pseudoid();
+        property::save_property("pseudoid".to_owned(), pseudoid.clone())
+            .await
+            .unwrap();
+    }
+    CLIENT.set_device(device, device_info, pseudoid).await;
 }
 
 pub(crate) async fn init_header() {
@@ -248,8 +255,9 @@ async fn sync_raw(url: &str) -> anyhow::Result<()> {
     let client = CLIENT.clone_agent().await;
     let rsp = client.get(url).send().await?;
     let data: HashMap<String, String> = rsp.json().await?;
+    database::properties::header::Entity::delete_all().await?;
     for (key, value) in data {
-        if "device".eq(&key) || "device_info".eq(&key) || "deviceinfo".eq(&key) || "host".eq(&key) {
+        if "device".eq(&key) || "device_info".eq(&key) || "deviceinfo".eq(&key) || "host".eq(&key) || "pseudoid".eq(&key) {
             continue;
         }
         database::properties::header::Entity::set_value(key, value).await?;
@@ -261,8 +269,9 @@ async fn load_api_host(url: &str) -> anyhow::Result<String> {
     let client = CLIENT.clone_agent().await;
     let rsp = client.get(url).send().await?;
     let data: HashMap<String, String> = rsp.json().await?;
+    database::properties::header::Entity::delete_all().await?;
     for (key, value) in data.clone() {
-        if "device".eq(&key) || "device_info".eq(&key)  || "deviceinfo".eq(&key) || "host".eq(&key) {
+        if "device".eq(&key) || "device_info".eq(&key)  || "deviceinfo".eq(&key) || "host".eq(&key) || "pseudoid".eq(&key) {
             continue;
         }
         database::properties::header::Entity::set_value(key, value).await?;
