@@ -118,7 +118,7 @@ impl Client {
         let pseudoid_lock = self.pseudoid.lock().await;
         let pseudoid = pseudoid_lock.deref().deref().clone();
         drop(pseudoid_lock);
-        if path.ends_with("/chapters") {
+        if path.contains("/chapter2/") {
             headers.insert(
                 "authorization".to_lowercase(),
                 format!("Token {}", random_token()),
